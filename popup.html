@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Latest Announcements</title>
+    <style>
+        /* Base Theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Modal Box Design */
+        .modal-box {
+            background: #152238; width: 90%; max-width: 380px;
+            border-radius: 16px; border: 2px solid #00e6ff;
+            position: relative; overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 230, 255, 0.2);
+            text-align: center; padding-bottom: 25px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { 
+            from { transform: scale(0.8); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
+        }
+
+        /* Close Button (X) */
+        .close-btn {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(255, 77, 77, 0.15); color: #ff4d4d;
+            border: 1px solid #ff4d4d; width: 35px; height: 35px;
+            border-radius: 50%; font-size: 18px; font-weight: bold;
+            cursor: pointer; z-index: 10; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .close-btn:hover { background: #ff4d4d; color: #fff; transform: rotate(90deg); }
+
+        /* Slider System */
+        .slide { display: none; padding: 25px 20px 0 20px; animation: slideFade 0.4s ease-in-out; }
+        .slide.active { display: block; }
+        @keyframes slideFade { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .slide img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; border: 1px dashed #2d4a77; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .slide h3 { color: #00e6ff; font-size: 22px; margin-bottom: 8px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
+        .slide p { color: #cbd5e1; font-size: 14px; line-height: 1.5; }
+
+        /* Dots Navigation */
+        .slider-dots { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .dot { width: 12px; height: 12px; background: #2d4a77; border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .dot.active { background: #00e6ff; box-shadow: 0 0 12px #00e6ff; transform: scale(1.3); }
+
+        /* Proceed Button (Optional fallback for X) */
+        .btn-enter {
+            margin-top: 20px; padding: 10px 30px; border-radius: 8px; border: 1px solid #00e6ff;
+            background: transparent; color: #00e6ff; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-enter:hover { background: #00e6ff; color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="modal-box">
+        <button class="close-btn" onclick="goToDashboard()">✖</button>
+
+        <div class="slide active" id="slide-1">
+            <img src="https://via.placeholder.com/350x160/090e17/00e6ff?text=Welcome+to+LNT" id="admin-img-1" alt="Promo">
+            <h3 id="admin-title-1">Welcome to LNT</h3>
+            <p id="admin-desc-1">Join VIP Jobs today and start earning daily profit directly to your bank account.</p>
+        </div>
+
+        <div class="slide" id="slide-2">
+            <img src="https://via.placeholder.com/350x160/090e17/00ff88?text=Deposit+Bonus" id="admin-img-2" alt="Promo">
+            <h3 id="admin-title-2">Deposit Bonus</h3>
+            <p id="admin-desc-2">Get extra 10% bonus on your first deposit above ₹1000.</p>
+        </div>
+
+        <div class="slide" id="slide-3">
+            <img src="https://via.placeholder.com/350x160/090e17/ffaa00?text=Team+Commission" id="admin-img-3" alt="Promo">
+            <h3 id="admin-title-3">Team Commission</h3>
+            <p id="admin-desc-3">Invite friends and earn up to 3 levels of commission every day.</p>
+        </div>
+
+        <div class="slide" id="slide-4">
+            <img src="https://via.placeholder.com/350x160/090e17/ff4d4d?text=Level+G8+Unlocked" id="admin-img-4" alt="Promo">
+            <h3 id="admin-title-4">Level G8 Unlocked</h3>
+            <p id="admin-desc-4">The ultimate G8 level is now available. Highest return guaranteed!</p>
+        </div>
+
+        <div class="slider-dots">
+            <div class="dot active" onclick="showSlide(1)"></div>
+            <div class="dot" onclick="showSlide(2)"></div>
+            <div class="dot" onclick="showSlide(3)"></div>
+            <div class="dot" onclick="showSlide(4)"></div>
+        </div>
+
+        <button class="btn-enter" onclick="goToDashboard()">Enter Dashboard</button>
+    </div>
+
+    <script>
+        // Go to dashboard function
+        function goToDashboard() {
+            window.location.href = "dashboard.html";
+        }
+
+        // Slider Logic
+        let currentSlide = 1;
+        let slideInterval;
+
+        function showSlide(index) {
+            // Hide all slides and dots
+            document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+
+            // Show selected slide
+            document.getElementById('slide-' + index).classList.add('active');
+            document.querySelectorAll('.dot')[index - 1].classList.add('active');
+            currentSlide = index;
+
+            // Reset the timer when user clicks a dot
+            resetTimer();
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            if(currentSlide > 4) currentSlide = 1;
+            showSlide(currentSlide);
+        }
+
+        // Auto slide every 3 seconds
+        function startTimer() {
+            slideInterval = setInterval(nextSlide, 3000);
+        }
+
+        function resetTimer() {
+            clearInterval(slideInterval);
+            startTimer();
+        }
+
+        // Start animation on load
+        startTimer();
+    </script>
+</body>
+</html>
