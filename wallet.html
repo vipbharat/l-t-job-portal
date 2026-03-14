@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Secure Wallet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            height: 100vh; display: flex; align-items: center; justify-content: center; 
+            color: #fff;
+        }
+
+        .wallet-card { 
+            background: #152238; 
+            padding: 30px; 
+            border-radius: 12px; 
+            border: 1px solid #1f365c; 
+            width: 400px; 
+            box-shadow: 0 15px 35px rgba(0, 200, 255, 0.1);
+        }
+
+        /* Header / Balance Section */
+        .balance-box {
+            text-align: center; background: rgba(0, 230, 255, 0.05);
+            padding: 20px; border-radius: 10px; border: 1px dashed #2d4a77;
+            margin-bottom: 25px;
+        }
+        .balance-box p { color: #8898aa; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-box h2 { color: #00e6ff; font-size: 36px; margin-top: 5px; font-weight: 800; }
+
+        /* Tabs */
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn {
+            flex: 1; padding: 12px; background: #0f172a; border: 1px solid #2d4a77;
+            color: #8898aa; border-radius: 8px; cursor: pointer; font-weight: bold;
+            transition: 0.3s; text-transform: uppercase;
+        }
+        .tab-btn.active {
+            background: rgba(0, 230, 255, 0.1); border-color: #00e6ff; color: #00e6ff;
+            box-shadow: 0 0 10px rgba(0, 230, 255, 0.2);
+        }
+
+        /* Forms */
+        .form-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .form-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; color: #a0aec0; font-size: 13px; margin-bottom: 8px; }
+        .input-group input {
+            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #2d4a77;
+            background: #0f172a; color: #fff; font-size: 15px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #00e6ff; box-shadow: 0 0 10px rgba(0, 230, 255, 0.2); }
+
+        /* UPI Payment Info Box */
+        .pay-info {
+            background: #090e17; padding: 15px; border-radius: 8px; border-left: 4px solid #00e6ff;
+            margin-bottom: 15px; font-size: 14px; color: #cbd5e1;
+        }
+        .upi-id { color: #00e6ff; font-weight: bold; letter-spacing: 1px; font-size: 16px; margin-top: 5px; display: block;}
+
+        .btn {
+            width: 100%; padding: 14px; border-radius: 8px; border: none;
+            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
+            color: #000; font-weight: bold; font-size: 16px; cursor: pointer;
+            transition: 0.3s; text-transform: uppercase; margin-top: 10px;
+        }
+        .btn:hover { box-shadow: 0 5px 15px rgba(0, 230, 255, 0.4); transform: translateY(-2px); }
+        .btn-withdraw { background: linear-gradient(90deg, #ff4d4d 0%, #ff7675 100%); color: #fff; }
+        .btn-withdraw:hover { box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4); }
+
+        .support-link { text-align: center; margin-top: 20px; font-size: 13px; }
+        .support-link a { color: #00e6ff; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="wallet-card">
+        
+        <div class="balance-box">
+            <p>Total Balance</p>
+            <h2 id="main-balance">₹0.00</h2>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" id="btn-deposit" onclick="switchTab('deposit')">Deposit</button>
+            <button class="tab-btn" id="btn-withdraw" onclick="switchTab('withdraw')">Withdraw</button>
+        </div>
+
+        <div id="deposit-sec" class="form-section active">
+            <div class="pay-info">
+                Send the exact amount to our official company UPI ID below:
+                <span class="upi-id">8878888590@ybl</span>
+            </div>
+            
+            <div class="input-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="dep-amount" placeholder="Enter amount (Min ₹100)">
+            </div>
+            <div class="input-group">
+                <label>12-Digit UTR / Reference No.</label>
+                <input type="number" id="dep-utr" placeholder="e.g. 301234567890">
+            </div>
+            
+            <button class="btn" onclick="submitDeposit()">Submit Deposit Request</button>
+        </div>
+
+        <div id="withdraw-sec" class="form-section">
+            <div class="input-group">
+                <label>Withdrawal Amount (₹)</label>
+                <input type="number" id="with-amount" placeholder="Enter amount to withdraw">
+            </div>
+            <div class="input-group">
+                <label>Your Bank Account / UPI ID</label>
+                <input type="text" id="with-account" placeholder="Where should we send the money?">
+            </div>
+            <div class="input-group">
+                <label>Login Password</label>
+                <input type="password" id="with-pass" placeholder="Enter password for security">
+            </div>
+            
+            <button class="btn btn-withdraw" onclick="submitWithdraw()">Request Withdrawal</button>
+        </div>
+
+        <div class="support-link">
+            Need help? <a href="https://wa.me/918878888590" target="_blank">Contact LNT Support</a>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            // Remove active classes
+            document.getElementById('btn-deposit').classList.remove('active');
+            document.getElementById('btn-withdraw').classList.remove('active');
+            document.getElementById('deposit-sec').classList.remove('active');
+            document.getElementById('withdraw-sec').classList.remove('active');
+
+            // Add active classes to selected tab
+            if(tab === 'deposit') {
+                document.getElementById('btn-deposit').classList.add('active');
+                document.getElementById('deposit-sec').classList.add('active');
+            } else {
+                document.getElementById('btn-withdraw').classList.add('active');
+                document.getElementById('withdraw-sec').classList.add('active');
+            }
+        }
+
+        function submitDeposit() {
+            const amt = document.getElementById('dep-amount').value;
+            const utr = document.getElementById('dep-utr').value;
+            
+            if(amt === "" || utr.length < 12) {
+                alert("Please enter a valid amount and 12-digit UTR number.");
+                return;
+            }
+            // Real app mein yahan Firebase par data bhejenge
+            alert("Deposit request submitted for ₹" + amt + "\nUTR: " + utr + "\nPending Admin Approval.");
+            document.getElementById('dep-amount').value = "";
+            document.getElementById('dep-utr').value = "";
+        }
+
+        function submitWithdraw() {
+            const amt = document.getElementById('with-amount').value;
+            const acc = document.getElementById('with-account').value;
+            const pass = document.getElementById('with-pass').value;
+
+            if(amt === "" || acc === "" || pass === "") {
+                alert("Please fill all withdrawal details completely.");
+                return;
+            }
+            // Real app mein yahan pehle balance aur password check hoga Firebase se
+            alert("Withdrawal request for ₹" + amt + " submitted successfully.\nProcessing time: 2-4 hours.");
+            document.getElementById('with-amount').value = "";
+            document.getElementById('with-account').value = "";
+            document.getElementById('with-pass').value = "";
+        }
+    </script>
+</body>
+</html>
