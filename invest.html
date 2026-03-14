@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Investment Plan</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px;
+        }
+
+        /* Header */
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .page-title { color: #fff; font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+
+        .invest-card { background: #152238; padding: 25px; border-radius: 12px; border: 1px solid #1f365c; max-width: 500px; margin: 0 auto; box-shadow: 0 15px 35px rgba(0, 200, 255, 0.05); }
+
+        /* Job Selection Box */
+        .job-details { background: #0f172a; padding: 20px; border-radius: 10px; border: 1px dashed #00e6ff; text-align: center; margin-bottom: 25px; }
+        .job-details label { color: #8898aa; font-size: 13px; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 10px; }
+        
+        .job-select { 
+            width: 100%; padding: 12px; background: #090e17; color: #00e6ff; 
+            border: 1px solid #2d4a77; border-radius: 8px; font-size: 18px; 
+            font-weight: bold; outline: none; cursor: pointer; text-align: center;
+        }
+        .job-select option { background: #090e17; color: #fff; }
+
+        /* Plan Selection */
+        .plan-title { color: #cbd5e1; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        
+        .plan-box { background: #0f172a; border: 1px solid #2d4a77; padding: 15px 5px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .plan-box.active { background: rgba(0, 230, 255, 0.1); border-color: #00e6ff; box-shadow: 0 0 15px rgba(0, 230, 255, 0.2); transform: translateY(-5px); }
+        .days { color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+        .return { color: #00ff88; font-size: 14px; font-weight: bold; }
+
+        /* Calculation Summary */
+        .calc-summary { background: rgba(255, 255, 255, 0.02); padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .calc-row.total { border-top: 1px solid #2d4a77; padding-top: 10px; font-size: 18px; font-weight: bold; color: #00e6ff; margin-bottom: 0; }
+        .val-text { color: #fff; font-weight: bold; }
+
+        /* Confirm Button */
+        .btn-confirm { width: 100%; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-confirm:hover { box-shadow: 0 5px 20px rgba(0, 230, 255, 0.4); }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="header">
+            <a href="job.html" class="back-btn">⬅ Back</a>
+            <div class="page-title">LOCK & EARN</div>
+        </div>
+
+        <div class="invest-card">
+            
+            <div class="job-details">
+                <label>Choose VIP Job Package</label>
+                <select id="job-selector" class="job-select" onchange="updateCalculations()">
+                    <option value="499" data-name="G1">Level G1 - ₹499</option>
+                    <option value="1450" data-name="G2">Level G2 - ₹1,450</option>
+                    <option value="4200" data-name="G3">Level G3 - ₹4,200</option>
+                    <option value="12000" data-name="G4">Level G4 - ₹12,000</option>
+                    <option value="22000" data-name="G5">Level G5 - ₹22,000</option>
+                    <option value="400000" data-name="G6">Level G6 - ₹4,00,000</option>
+                    <option value="750000" data-name="G7">Level G7 - ₹7,50,000</option>
+                    <option value="1400000" data-name="G8">Level G8 - ₹14,00,000</option>
+                </select>
+            </div>
+
+            <div class="plan-title">Select Lock-in Period</div>
+            <div class="plan-grid">
+                <div class="plan-box" id="plan-7" onclick="selectPlan(7, 30)">
+                    <div class="days">7 Days</div>
+                    <div class="return">+30%</div>
+                </div>
+                <div class="plan-box" id="plan-15" onclick="selectPlan(15, 50)">
+                    <div class="days">15 Days</div>
+                    <div class="return">+50%</div>
+                </div>
+                <div class="plan-box active" id="plan-30" onclick="selectPlan(30, 140)">
+                    <div class="days">30 Days</div>
+                    <div class="return">+140%</div>
+                </div>
+            </div>
+
+            <div class="calc-summary">
+                <div class="calc-row">
+                    <span>Investment Amount:</span>
+                    <span class="val-text" id="calc-principal">₹0</span>
+                </div>
+                <div class="calc-row">
+                    <span>Profit Earnings:</span>
+                    <span class="val-text" id="calc-profit" style="color:#00ff88;">₹0</span>
+                </div>
+                <div class="calc-row total">
+                    <span>Total Return:</span>
+                    <span id="calc-total">₹0</span>
+                </div>
+            </div>
+
+            <button class="btn-confirm" onclick="confirmInvestment()">CONFIRM DEPOSIT</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedDays = 30;
+        let selectedReturnRate = 140; // Default 30 days (140%)
+
+        // Agar user job.html se click karke aaya hai, toh URL se data nikal lo
+        const urlParams = new URLSearchParams(window.location.search);
+        let preSelectedPrice = urlParams.get('price');
+        if(preSelectedPrice) {
+            document.getElementById('job-selector').value = preSelectedPrice;
+        }
+
+        function selectPlan(days, returnRate) {
+            // Update Variables
+            selectedDays = days;
+            selectedReturnRate = returnRate;
+
+            // UI mein color change karo
+            document.querySelectorAll('.plan-box').forEach(box => box.classList.remove('active'));
+            document.getElementById('plan-' + days).classList.add('active');
+
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            // Dropdown se value nikalo
+            let selector = document.getElementById('job-selector');
+            let principal = parseInt(selector.value);
+            
+            // Formula: Amount * Percentage / 100
+            let profit = (principal * selectedReturnRate) / 100; 
+            let totalReturn = principal + profit;
+
+            // Screen par update karo
+            document.getElementById('calc-principal').innerText = "₹" + principal.toLocaleString('en-IN');
+            document.getElementById('calc-profit').innerText = "+₹" + profit.toLocaleString('en-IN');
+            document.getElementById('calc-total').innerText = "₹" + totalReturn.toLocaleString('en-IN');
+        }
+
+        function confirmInvestment() {
+            let selector = document.getElementById('job-selector');
+            let jobName = selector.options[selector.selectedIndex].getAttribute('data-name');
+            let jobPrice = parseInt(selector.value);
+            let profit = (jobPrice * selectedReturnRate) / 100;
+            
+            let msg = `Request Submitted!\n\nPackage: ${jobName}\nAmount: ₹${jobPrice}\nLock Period: ${selectedDays} Days\n\nYou will receive ₹${jobPrice + profit} in your wallet after ${selectedDays} days.\n\nPlease ensure your wallet has sufficient balance.`;
+            
+            alert(msg);
+            window.location.href = "dashboard.html";
+        }
+
+        // Jab page load ho tab ek baar calculate kardo
+        updateCalculations();
+    </script>
+</body>
+</html>
