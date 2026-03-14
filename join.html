@@ -1,0 +1,126 @@
+<style>
+    .live-board {
+        background: #152238;
+        border: 1px solid #1f365c;
+        border-radius: 12px;
+        padding: 15px;
+        margin: 20px 0;
+        box-shadow: 0 5px 20px rgba(0, 230, 255, 0.05);
+    }
+    .board-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        border-bottom: 1px dashed #2d4a77;
+        padding-bottom: 10px;
+    }
+    .live-dot-small {
+        width: 8px; height: 8px; background: #00ff88; border-radius: 50%;
+        animation: blinkLive 1s infinite;
+    }
+    .board-title { color: #fff; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    
+    @keyframes blinkLive { 0% {opacity: 0.3;} 50% {opacity: 1; box-shadow: 0 0 8px #00ff88;} 100% {opacity: 0.3;} }
+
+    /* Scrolling Area */
+    .scroll-container {
+        height: 180px; /* List ki height */
+        overflow: hidden;
+        position: relative;
+        /* Upar aur niche fade effect ke liye */
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    }
+    
+    .scroll-content {
+        display: flex;
+        flex-direction: column;
+        animation: scrollVertical 20s linear infinite;
+    }
+
+    /* Jab koi list par ungli rakhega toh scroll ruk jayega */
+    .scroll-content:hover { animation-play-state: paused; }
+
+    .feed-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        margin-bottom: 8px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border-left: 3px solid #00e6ff;
+    }
+    .feed-left { display: flex; align-items: center; gap: 10px; }
+    .feed-avatar {
+        width: 32px; height: 32px; border-radius: 50%; background: #2d4a77;
+        display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #fff;
+    }
+    .feed-info { display: flex; flex-direction: column; }
+    .feed-phone { color: #fff; font-size: 13px; font-weight: bold; }
+    .feed-time { color: #8898aa; font-size: 11px; margin-top: 2px; }
+    
+    .feed-right { text-align: right; }
+    .feed-action { color: #00e6ff; font-size: 12px; font-weight: bold; }
+    .feed-level { color: #00ff88; font-size: 14px; font-weight: 900; }
+
+    @keyframes scrollVertical {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-50%); } 
+    }
+</style>
+
+<div class="live-board">
+    <div class="board-header">
+        <div class="live-dot-small"></div>
+        <div class="board-title">Live VIP Joinings</div>
+    </div>
+    <div class="scroll-container">
+        <div class="scroll-content" id="live-feed-content">
+            </div>
+    </div>
+</div>
+
+<script>
+    // Random data generator list ke liye
+    const levels = ["Level G1", "Level G2", "Level G3", "Level G4", "Level G5"];
+    const avatars = ["👤", "👨", "👩", "👱", "🧔"];
+    
+    function generateFeedItems() {
+        let htmlContent = "";
+        
+        // 20 dummy records banana
+        for(let i = 0; i < 20; i++) {
+            let randStart = [9, 8, 7, 6][Math.floor(Math.random() * 4)];
+            let randEnd = Math.floor(100 + Math.random() * 900);
+            let phone = `${randStart}8****${randEnd}`; // Example: 98****452
+            
+            let level = levels[Math.floor(Math.random() * levels.length)];
+            let avatar = avatars[Math.floor(Math.random() * avatars.length)];
+            let time = Math.floor(Math.random() * 50) + 1; // 1 to 50 seconds ago
+            
+            htmlContent += `
+                <div class="feed-item">
+                    <div class="feed-left">
+                        <div class="feed-avatar">${avatar}</div>
+                        <div class="feed-info">
+                            <span class="feed-phone">User ${phone}</span>
+                            <span class="feed-time">${time} seconds ago</span>
+                        </div>
+                    </div>
+                    <div class="feed-right">
+                        <div class="feed-action">Purchased</div>
+                        <div class="feed-level">${level}</div>
+                    </div>
+                </div>
+            `;
+        }
+        return htmlContent;
+    }
+
+    // List ko seamless (kabhi khatam na hone wala) banane ke liye 
+    // same data ko 2 baar daalenge
+    let feedData = generateFeedItems();
+    document.getElementById('live-feed-content').innerHTML = feedData + feedData;
+</script>
