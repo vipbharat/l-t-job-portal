@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Position Salary Schedule</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            /* Blue geometric/polygon type background mimic */
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* App Back Button */
+        .back-btn {
+            position: absolute; top: 15px; left: 15px;
+            background: #152238; color: #00e6ff; padding: 8px 15px; 
+            border-radius: 8px; text-decoration: none; 
+            font-weight: bold; border: 1px solid #2d4a77;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 30px 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Red Serif Headings matching the image */
+        .main-title, .bottom-title {
+            color: #cc0000;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 1px 1px 0px #fff;
+        }
+
+        .main-title { font-size: 38px; margin-bottom: 25px; }
+        .bottom-title { font-size: 34px; margin-top: 25px; }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 5px;
+            text-align: center;
+            color: #000;
+            font-size: 18px;
+        }
+
+        th {
+            font-weight: bold;
+            font-size: 20px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Alternate row styling like in the image */
+        tr:nth-child(even) { background: rgba(255, 255, 255, 0.2); }
+        tr:nth-child(odd) { background: rgba(255, 255, 255, 0.4); }
+
+        .sub-text {
+            display: block;
+            font-size: 12px;
+            color: #333;
+            margin-top: 2px;
+        }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 600px) {
+            .main-title { font-size: 26px; }
+            .bottom-title { font-size: 24px; }
+            th { font-size: 15px; }
+            td { font-size: 14px; padding: 12px 5px; }
+            .sub-text { font-size: 10px; }
+            .chart-container { padding: 20px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="refer.html" class="back-btn">⬅ Back</a>
+
+    <div class="chart-container">
+        
+        <h1 class="main-title">Position Salary Schedule</h1>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Position In Company</th>
+                    <th>Team Size</th>
+                    <th>Promotion Monthly Salary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Assistant</td>
+                    <td>15<span class="sub-text">（Direct subordinates）</span></td>
+                    <td>10000</td>
+                </tr>
+                <tr>
+                    <td>Junior Team Leader</td>
+                    <td>25<span class="sub-text">（Direct subordinates）</span></td>
+                    <td>15000</td>
+                </tr>
+                <tr>
+                    <td>Senior Team Lead</td>
+                    <td>150</td>
+                    <td>40000</td>
+                </tr>
+                <tr>
+                    <td>Formal Supervisor</td>
+                    <td>400</td>
+                    <td>100000</td>
+                </tr>
+                <tr>
+                    <td>Regional Manager</td>
+                    <td>700</td>
+                    <td>250000</td>
+                </tr>
+                <tr>
+                    <td>Director of Marketing</td>
+                    <td>3000</td>
+                    <td>800000</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="bottom-title">Job Promotion Mechanism</h2>
+
+    </div>
+
+</body>
+</html>
