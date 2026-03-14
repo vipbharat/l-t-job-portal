@@ -3,129 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Professional Login</title>
+    <title>LNT Job - VIP Tasks</title>
     <style>
-        /* Tech-focused Corporate Styling */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             background: #090e17; 
             background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            height: 100vh; display: flex; align-items: center; justify-content: center; 
-            color: #fff;
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        .login-card { 
-            background: #152238; 
-            padding: 40px; 
-            border-radius: 12px; 
-            border: 1px solid #1f365c; 
-            width: 380px; 
-            box-shadow: 0 15px 35px rgba(0, 200, 255, 0.1);
+        /* Header Section */
+        .header { display: flex; justify-content: space-between; align-items: center; background: #152238; padding: 15px 20px; border-radius: 12px; border: 1px solid #1f365c; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 200, 255, 0.05); }
+        .logo-text { color: #00e6ff; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+        .wallet-info { text-align: right; }
+        .wallet-info p { color: #8898aa; font-size: 12px; text-transform: uppercase; }
+        .wallet-info h3 { color: #fff; font-size: 18px; }
+
+        .page-title { color: #cbd5e1; font-size: 18px; margin-bottom: 15px; border-left: 4px solid #00e6ff; padding-left: 10px; }
+
+        /* Job Cards Grid */
+        .job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto; }
+
+        .job-card {
+            background: #0f172a; border: 1px solid #2d4a77; border-radius: 12px; padding: 20px 15px;
+            text-align: center; transition: 0.3s; position: relative; overflow: hidden;
         }
-
-        .brand { text-align: center; margin-bottom: 30px; }
-        .brand h1 { color: #00e6ff; font-size: 34px; letter-spacing: 2px; font-weight: 800; }
-        .brand p { color: #8898aa; font-size: 13px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
-
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; color: #a0aec0; font-size: 13px; margin-bottom: 8px; }
-        .input-group input {
-            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #2d4a77;
-            background: #0f172a; color: #fff; font-size: 15px; outline: none;
-            transition: all 0.3s ease;
-        }
-        .input-group input:focus { border-color: #00e6ff; box-shadow: 0 0 10px rgba(0, 230, 255, 0.2); }
-
-        .btn {
-            width: 100%; padding: 14px; border-radius: 8px; border: none;
+        .job-card:hover { border-color: #00e6ff; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.15); transform: translateY(-5px); }
+        
+        /* Card Content */
+        .job-name { color: #8898aa; font-size: 16px; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; }
+        .job-price { color: #00e6ff; font-size: 24px; font-weight: 900; margin-bottom: 15px; }
+        
+        /* Action Button */
+        .apply-btn {
+            width: 100%; padding: 10px; border-radius: 6px; border: none;
             background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
-            color: #000; font-weight: bold; font-size: 16px; cursor: pointer;
-            transition: 0.3s; text-transform: uppercase; margin-top: 10px;
+            color: #000; font-weight: bold; font-size: 14px; cursor: pointer;
+            text-transform: uppercase; transition: 0.3s;
         }
-        .btn:hover { box-shadow: 0 5px 15px rgba(0, 230, 255, 0.4); transform: translateY(-2px); }
+        .apply-btn:hover { box-shadow: 0 0 10px rgba(0, 230, 255, 0.5); color: #fff; }
 
-        /* Simulated OTP Box */
-        #otp-section { display: none; margin-top: 20px; border-top: 1px solid #2d4a77; padding-top: 20px; }
-        .system-otp-display { 
-            background: rgba(0, 230, 255, 0.1); border: 1px dashed #00e6ff; 
-            color: #00e6ff; padding: 10px; border-radius: 8px; text-align: center; 
-            margin-bottom: 15px; font-weight: bold; font-size: 18px; letter-spacing: 3px;
-        }
-
-        .alert-msg { color: #ff4d4d; font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+        /* Navigation Bar (Bottom) */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <div class="brand">
-            <h1>LNT JOB</h1>
-            <p>Secure Tech Portal</p>
-        </div>
+    <div class="header">
+        <div class="logo-text">LNT JOB</div>
+        <div class="wallet-info">
+            <p>My Balance</p>
+            <h3 id="user-balance">₹0.00</h3> </div>
+    </div>
 
-        <div id="login-section">
-            <div class="input-group">
-                <label>Mobile Number</label>
-                <input type="tel" id="phone" placeholder="Enter 10-digit number" maxlength="10">
-            </div>
-            <div class="input-group">
-                <label>Create / Enter Password</label>
-                <input type="password" id="password" placeholder="Secure Password">
-            </div>
-
-            <button class="btn" onclick="generateSystemOTP()">Generate OTP</button>
-            <p class="alert-msg" id="error-msg">Please enter valid details.</p>
-        </div>
-
-        <div id="otp-section">
-            <div class="system-otp-display" id="display-otp">------</div>
-            <p style="text-align: center; color: #8898aa; font-size: 12px; margin-bottom: 15px;">System Generated OTP (No SMS Cost)</p>
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 class="page-title">Available VIP Jobs</h2>
+        
+        <div class="job-grid">
             
-            <div class="input-group">
-                <input type="number" id="otp-input" placeholder="Enter the OTP shown above">
+            <div class="job-card">
+                <div class="job-name">Level G1</div>
+                <div class="job-price">₹499</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G1&price=499'">Unlock</button>
             </div>
-            <button class="btn" onclick="verifyLogin()">Secure Login</button>
+
+            <div class="job-card">
+                <div class="job-name">Level G2</div>
+                <div class="job-price">₹1,450</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G2&price=1450'">Unlock</button>
+            </div>
+
+            <div class="job-card">
+                <div class="job-name">Level G3</div>
+                <div class="job-price">₹4,200</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G3&price=4200'">Unlock</button>
+            </div>
+
+            <div class="job-card">
+                <div class="job-name">Level G4</div>
+                <div class="job-price">₹12,000</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G4&price=12000'">Unlock</button>
+            </div>
+
+            <div class="job-card">
+                <div class="job-name">Level G5</div>
+                <div class="job-price">₹22,000</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G5&price=22000'">Unlock</button>
+            </div>
+
+            <div class="job-card">
+                <div class="job-name">Level G6</div>
+                <div class="job-price">₹4,00,000</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G6&price=400000'">Unlock</button>
+            </div>
+
+            <div class="job-card">
+                <div class="job-name">Level G7</div>
+                <div class="job-price">₹7,50,000</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G7&price=750000'">Unlock</button>
+            </div>
+
+            <div class="job-card">
+                <div class="job-name">Level G8</div>
+                <div class="job-price">₹14,00,000</div>
+                <button class="apply-btn" onclick="window.location.href='invest.html?job=G8&price=1400000'">Unlock</button>
+            </div>
+
         </div>
     </div>
 
-    <script>
-        let currentGeneratedOTP = "";
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">🏠 Home</a>
+        <a href="job.html" class="nav-item active">🚀 Jobs</a>
+        <a href="wallet.html" class="nav-item">💼 Wallet</a>
+        <a href="profile.html" class="nav-item">👤 Profile</a>
+    </div>
 
-        function generateSystemOTP() {
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error-msg');
-
-            // Basic Validation
-            if(phone.length < 10 || password.length < 4) {
-                errorMsg.style.display = "block";
-                return;
-            }
-            errorMsg.style.display = "none";
-
-            // Generate a random 6-digit OTP
-            currentGeneratedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            // Show OTP on screen (Simulating SMS)
-            document.getElementById('display-otp').innerText = currentGeneratedOTP;
-            
-            // Hide some fields and show OTP section
-            document.getElementById('password').disabled = true;
-            document.getElementById('phone').disabled = true;
-            document.getElementById('otp-section').style.display = "block";
-        }
-
-        function verifyLogin() {
-            const enteredOTP = document.getElementById('otp-input').value;
-
-            if(enteredOTP === currentGeneratedOTP) {
-                alert("Login Successful! Welcome to LNT Job Portal.");
-                // Yahan aap next page par bhej sakte hain
-                // window.location.href = "dashboard.html"; 
-            } else {
-                alert("Incorrect OTP. Please try again.");
-            }
-        }
-    </script>
 </body>
 </html>
