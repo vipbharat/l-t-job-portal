@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT HQ - Master Control</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: #050a10; color: white; padding: 20px; }
+        .header { border-bottom: 2px solid #00e6ff; padding-bottom: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { color: #00e6ff; font-size: 18px; text-transform: uppercase; }
+        
+        .card { background: #111b2b; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #1f365c; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .user-info { margin-bottom: 10px; }
+        .phone { font-size: 16px; font-weight: bold; color: #fff; }
+        .balance { font-size: 18px; color: #00ff88; font-weight: 900; margin-left: 10px; }
+        
+        .controls { display: flex; gap: 10px; margin-top: 10px; }
+        input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #2d4a77; background: #090e17; color: #fff; outline: none; }
+        button { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .btn-add { background: #00ff88; color: #000; }
+        .btn-cut { background: #ff4d4d; color: #fff; }
+        
+        .refresh-msg { text-align: center; color: #8898aa; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>LNT System Control</h1>
+        <div id="stat-count" style="font-size: 12px; background: #1f365c; padding: 5px 10px; border-radius: 20px;">Users: 0</div>
+    </div>
+
+    <div id="user-display">
+        <p style="text-align: center; color: #8898aa;">Connecting to Firebase Database...</p>
+    </div>
+
+    <div class="refresh-msg">Real-time update active 🟢</div>
+
+    <script>
+        // --- AAPKA FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            authDomain: "lnt-job-portal.firebaseapp.com",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com",
+            projectId: "lnt-job-portal"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. Users ka Live Data dikhana
+        db.ref('users').on('value', (snapshot) => {
+            const users = snapshot.val();
+            let html = "";
+            let count = 0;
+
+            if (users) {
+                for (let id in users) {
+                    count++;
+                    html += `
+                    <div class="card">
+                        <div class="user-info">
+                            <span class="phone">📱 ${users[id].phone}</span>
+                            <span class="balance">₹${users[id].balance || 0}</span>
+                        </div>
+                        <div class="controls">
+                            <input type="number" id="amt-${id}" placeholder="Amount (e.g. 500)">
+                            <button class="btn-add" onclick="updateBalance('${id}', 'add')">Add</button>
+                            <button class="btn-cut" onclick="updateBalance('${id}', 'sub')">Cut</button>
+                        </div>
+                    </div>`;
+                }
+                document.getElementById('user-display').innerHTML = html;
+                document.getElementById('stat-count').innerText = "Users: " + count;
+            } else {
+                document.getElementById('user-display').innerHTML = "<p style='text-align:center;'>No users joined yet.</p>";
+            }
+        });
+
+        // 2. Balance Update karne ka function
+        function updateBalance(userId, action) {
+            let amountField = document.getElementById('amt-' + userId);
+            let amount = parseInt(amountField.value);
+            
+            if (!amount || amount <= 0) {
+                alert("Sahi amount daalein bhai!");
+                return;
+            }
+
+            let userRef = db.ref('users/' + userId);
+            userRef.once('value').then((snap) => {
+                let currentData = snap.val();
+                let currentBal = currentData.balance || 0;
+                let newBal = (action === 'add') ? (currentBal + amount) : (currentBal - amount);
+                
+                userRef.update({ balance: newBal }).then(() => {
+                    amountField.value = "";
+                    // No alert needed for pro feel, data updates live!
+                });
+            });
+        }
+    </script>
+</body>
+</html>
