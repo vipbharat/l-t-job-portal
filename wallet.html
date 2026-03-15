@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LNT Wallet - Withdraw</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { 
@@ -12,38 +14,39 @@
             min-height: 100vh; color: #fff; padding: 20px;
         }
 
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
         .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .history-btn { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #00e6ff; }
 
-        /* Wallet Display */
         .wallet-card {
             background: linear-gradient(135deg, #152238 0%, #1f365c 100%);
             padding: 30px 20px; border-radius: 15px; border: 1px solid #00e6ff;
             text-align: center; margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1);
         }
-        .balance-label { color: #8898aa; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; }
-        .balance-amount { color: #00ff88; font-size: 36px; font-weight: 900; }
+        .balance-label { color: #8898aa; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; }
+        .balance-amount { color: #00ff88; font-size: 40px; font-weight: 900; letter-spacing: 1px; }
 
-        /* Withdrawal Form */
         .form-box { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; }
         .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; color: #cbd5e1; font-size: 14px; margin-bottom: 8px; }
+        .input-group label { display: block; color: #cbd5e1; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
         .input-group input { 
             width: 100%; padding: 15px; background: #090e17; border: 1px solid #2d4a77; 
-            border-radius: 8px; color: #fff; font-size: 18px; outline: none;
+            border-radius: 8px; color: #fff; font-size: 18px; outline: none; font-weight: bold;
         }
+        .input-group input:focus { border-color: #00e6ff; }
 
-        /* Withdrawal Schedule Table (Social Proof) */
-        .schedule-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 12px; color: #8898aa; }
-        .schedule-table th, .schedule-table td { padding: 10px; border: 1px solid #1f365c; text-align: left; }
-        .schedule-table th { background: #152238; color: #00e6ff; }
-        .active-row { color: #00ff88; background: rgba(0, 255, 136, 0.05); }
+        .schedule-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 13px; color: #8898aa; background: #090e17; border-radius: 8px; overflow: hidden; }
+        .schedule-table th, .schedule-table td { padding: 12px; border: 1px solid #1f365c; text-align: center; }
+        .schedule-table th { background: #152238; color: #00e6ff; font-weight: 900; }
+        .active-row { color: #00ff88 !important; background: rgba(0, 255, 136, 0.1); font-weight: bold; border: 2px solid #00ff88; }
 
         .btn-withdraw { 
             width: 100%; padding: 16px; border-radius: 8px; border: none; 
             background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase;
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px;
         }
+        .btn-withdraw:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -51,79 +54,138 @@
     <div style="max-width: 500px; margin: 0 auto;">
         <div class="header">
             <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <h2 style="font-size: 20px; text-transform: uppercase;">Withdraw Money</h2>
+            <h2 style="font-size: 18px; text-transform: uppercase; color: #fff;">Wallet</h2>
+            <a href="history.html" class="history-btn">📜 History</a>
         </div>
 
         <div class="wallet-card">
-            <p class="balance-label">Available for Withdrawal</p>
-            <p class="balance-amount">₹4,550.00</p>
+            <p class="balance-label">Available Balance</p>
+            <p class="balance-amount" id="display-balance">₹0</p>
         </div>
 
         <div class="form-box">
             <div class="input-group">
-                <label>Enter Amount to Withdraw</label>
+                <label>Withdrawal Amount</label>
                 <input type="number" id="withdraw-amount" placeholder="Min ₹200">
             </div>
 
             <div style="margin-bottom: 20px;">
-                <p style="color: #ffaa00; font-size: 13px; font-weight: bold; margin-bottom: 10px;">📅 Withdrawal Schedule:</p>
+                <p style="color: #ffaa00; font-size: 13px; font-weight: bold; margin-bottom: 10px;">📅 VIP Withdrawal Schedule:</p>
                 <table class="schedule-table">
-                    <tr><th>VIP Level</th><th>Dates Allowed</th></tr>
-                    <tr id="row-G13"><td>G1, G2, G3</td><td>1st - 10th</td></tr>
-                    <tr id="row-G46"><td>G4, G5, G6</td><td>11th - 20th</td></tr>
-                    <tr id="row-G78"><td>G7, G8</td><td>21st - 28th</td></tr>
+                    <tr><th>VIP Level</th><th>Dates</th></tr>
+                    <tr id="row-G13"><td>G1, G2, G3</td><td>1 - 10</td></tr>
+                    <tr id="row-G46"><td>G4, G5, G6</td><td>11 - 20</td></tr>
+                    <tr id="row-G78"><td>G7, G8</td><td>21 - 28</td></tr>
                 </table>
             </div>
 
-            <button class="btn-withdraw" onclick="checkAndWithdraw()">SUBMIT WITHDRAWAL</button>
+            <button class="btn-withdraw" id="withdraw-btn" onclick="checkAndWithdraw()">Withdraw Now</button>
         </div>
     </div>
 
     <script>
-        // Assume user is G3 for testing (Yeh Admin Panel se control hoga)
-        let currentUserLevel = "G3"; 
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Check Login
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        let userData = null;
+
+        // Fetch Live Balance
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            userData = snap.val();
+            if (userData) {
+                document.getElementById('display-balance').innerText = "₹" + (userData.balance || 0);
+                highlightActiveRow();
+            }
+        });
 
         function checkAndWithdraw() {
-            let amount = document.getElementById('withdraw-amount').value;
+            let amountField = document.getElementById('withdraw-amount');
+            let amount = parseInt(amountField.value);
+            let btn = document.getElementById('withdraw-btn');
+            
             let today = new Date();
-            let date = today.getDate(); // Current Date
+            let date = today.getDate();
+            let userLevel = userData.level || "G1";
             
             let canWithdraw = false;
             let ruleMsg = "";
 
-            // 1. G1-G3 Rule
-            if (["G1", "G2", "G3"].includes(currentUserLevel)) {
+            // VIP Logic
+            if (["G1", "G2", "G3"].includes(userLevel)) {
                 if (date >= 1 && date <= 10) canWithdraw = true;
-                ruleMsg = "1st to 10th";
-            } 
-            // 2. G4-G6 Rule
-            else if (["G4", "G5", "G6"].includes(currentUserLevel)) {
+                ruleMsg = "1 se 10";
+            } else if (["G4", "G5", "G6"].includes(userLevel)) {
                 if (date >= 11 && date <= 20) canWithdraw = true;
-                ruleMsg = "11th to 20th";
-            }
-            // 3. G7-G8 Rule
-            else if (["G7", "G8"].includes(currentUserLevel)) {
+                ruleMsg = "11 se 20";
+            } else if (["G7", "G8"].includes(userLevel)) {
                 if (date >= 21 && date <= 28) canWithdraw = true;
-                ruleMsg = "21st to 28th";
+                ruleMsg = "21 se 28";
             }
 
+            // Validations
             if (!canWithdraw) {
-                alert(`❌ Withdrawal Locked!\n\nAs a ${currentUserLevel} member, you can only withdraw between ${ruleMsg} of every month.\n\nToday's Date: ${date}`);
+                alert(`❌ Abhi Aapka Samay Nahi Aaya Hai!\n\nAapka VIP Level: ${userLevel}\nTumhara withdrawal ka samay: Mahine ki ${ruleMsg} tareek tak hai.\n\nAaj ki tareek: ${date} hai.\n\nKripya apne samay par hi withdrawal lagayein.`);
                 return;
             }
 
-            if (amount < 200) {
-                alert("Minimum withdrawal amount is ₹200.");
+            if (!amount || amount < 200) {
+                alert("Kam se kam ₹200 ka withdrawal laga sakte hain.");
                 return;
             }
 
-            // Success Case
-            alert(`✅ Request Sent!\nYour withdrawal of ₹${amount} is under review. It will be credited within 24 hours.`);
+            if (amount > userData.balance) {
+                alert("Aapke wallet mein itna balance nahi hai!");
+                return;
+            }
+
+            // Disable button to prevent double click
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+
+            let txnDate = new Date().toLocaleString();
+
+            // 1. Balance Cut Karna
+            let newBalance = userData.balance - amount;
+            db.ref('users/' + userPhone).update({ balance: newBalance }).then(() => {
+                
+                // 2. Admin ke paas request bhejna
+                db.ref('withdrawRequests').push({
+                    phone: userPhone,
+                    amount: amount,
+                    status: 'Pending',
+                    date: txnDate
+                });
+
+                // 3. User ki History me add karna
+                db.ref('users/' + userPhone + '/transactions').push({
+                    type: 'Withdrawal',
+                    amount: amount,
+                    status: 'Pending',
+                    date: txnDate
+                }).then(() => {
+                    alert(`✅ Request Sent!\nAapka ₹${amount} ka withdrawal review ke liye bhej diya gaya hai.`);
+                    amountField.value = "";
+                    btn.disabled = false;
+                    btn.innerText = "Withdraw Now";
+                });
+            });
         }
 
-        // Highlight current active row based on date
-        window.onload = function() {
+        function highlightActiveRow() {
             let d = new Date().getDate();
+            document.getElementById('row-G13').classList.remove('active-row');
+            document.getElementById('row-G46').classList.remove('active-row');
+            document.getElementById('row-G78').classList.remove('active-row');
+
             if (d >= 1 && d <= 10) document.getElementById('row-G13').classList.add('active-row');
             if (d >= 11 && d <= 20) document.getElementById('row-G46').classList.add('active-row');
             if (d >= 21 && d <= 28) document.getElementById('row-G78').classList.add('active-row');
