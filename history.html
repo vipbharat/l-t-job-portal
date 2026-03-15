@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT - All Transactions</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 50px;
+        }
+
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        
+        /* History Card Styles */
+        .history-card { 
+            background: #152238; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-left: 5px solid #8898aa; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* Kamai (Income) - Green */
+        .card-income { border-left-color: #00ff88; }
+        .text-income { color: #00ff88; }
+
+        /* Kharcha/Withdrawal (Expense) - Red */
+        .card-expense { border-left-color: #ff4d4d; }
+        .text-expense { color: #ff4d4d; }
+        
+        .tx-left { display: flex; align-items: center; gap: 12px; }
+        .tx-icon { font-size: 24px; background: #090e17; padding: 8px; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; border: 1px solid #2d4a77;}
+        
+        .title { font-size: 15px; font-weight: 900; margin-bottom: 3px; text-transform: capitalize; }
+        .date { font-size: 11px; color: #8898aa; font-weight: bold; }
+        
+        .amount { font-size: 18px; font-weight: 900; margin-bottom: 5px; text-align: right;}
+        
+        .status { font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; display: inline-block; }
+        .status-pending { background: #ffaa00; color: #000; }
+        .status-success { background: #00ff88; color: #000; }
+        .status-rejected { background: #ff4d4d; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 style="font-size: 18px; text-transform: uppercase;">All Records</h2>
+        </div>
+
+        <div id="history-list">
+            <p style="text-align: center; color: #8898aa; margin-top: 50px;">Loading History...</p>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        // Live History Fetch Karna
+        db.ref('users/' + userPhone + '/transactions').on('value', (snap) => {
+            const data = snap.val();
+            let html = "";
+            
+            if (data) {
+                // Naya transaction sabse upar (Reverse)
+                const transactions = Object.values(data).reverse();
+                
+                transactions.forEach(tx => {
+                    // Logic: Agar Withdrawal ya Plan Buy kiya hai toh Kharcha (Red), varna Kamai (Green)
+                    let isExpense = (tx.type.toLowerCase().includes('withdraw') || tx.type.toLowerCase().includes('buy') || tx.type.toLowerCase().includes('invest'));
+                    
+                    let cardClass = isExpense ? 'card-expense' : 'card-income';
+                    let textClass = isExpense ? 'text-expense' : 'text-income';
+                    let sign = isExpense ? '-' : '+';
+                    let statusClass = 'status-' + (tx.status ? tx.status.toLowerCase() : 'success');
+
+                    // Icon set karna type ke hisaab se
+                    let icon = "💰"; // Default
+                    if(tx.type.toLowerCase().includes('deposit')) icon = "💳";
+                    else if(tx.type.toLowerCase().includes('withdraw')) icon = "🏦";
+                    else if(tx.type.toLowerCase().includes('bonus')) icon = "🎁";
+                    else if(tx.type.toLowerCase().includes('refer')) icon = "👥";
+                    else if(tx.type.toLowerCase().includes('profit')) icon = "📈";
+
+                    html += `
+                    <div class="history-card ${cardClass}">
+                        <div class="tx-left">
+                            <div class="tx-icon">${icon}</div>
+                            <div>
+                                <div class="title">${tx.type}</div>
+                                <div class="date">${tx.date}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="amount ${textClass}">${sign}₹${tx.amount}</div>
+                            <div class="status ${statusClass}">${tx.status || 'Success'}</div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                html = `
+                <div style="text-align: center; margin-top: 50px;">
+                    <div style="font-size: 40px; margin-bottom: 10px;">📜</div>
+                    <p style="color: #8898aa; font-weight: bold;">No transactions yet.</p>
+                </div>`;
+            }
+            document.getElementById('history-list').innerHTML = html;
+        });
+    </script>
+</body>
+</html>
