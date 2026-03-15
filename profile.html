@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LNT Job - User Profile</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
@@ -12,61 +14,66 @@
             min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        /* Top Header */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; border-bottom: 1px solid #1f365c; margin-bottom: 20px; }
-        .top-bar h2 { color: #00e6ff; font-size: 22px; font-weight: 800; letter-spacing: 1px; }
-        .logout-btn { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; }
+        .top-bar h2 { color: #00e6ff; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .logout-btn { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; transition: 0.3s; }
+        .logout-btn:hover { background: #ff4d4d; color: #fff; }
 
-        /* Profile Info Card */
         .profile-card { background: #152238; padding: 20px; border-radius: 12px; border: 1px solid #2d4a77; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.05); }
         .avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #000; }
-        .user-details h3 { color: #fff; font-size: 18px; margin-bottom: 5px; }
-        .user-details p { color: #8898aa; font-size: 14px; }
+        .user-details h3 { color: #fff; font-size: 18px; margin-bottom: 5px; text-transform: uppercase; font-weight: 900; }
+        .user-details p { color: #8898aa; font-size: 14px; font-weight: bold; }
 
-        /* Wallet Sync Card */
         .wallet-sync { background: linear-gradient(135deg, #0f172a 0%, #1a2a44 100%); padding: 20px; border-radius: 12px; border: 1px dashed #00e6ff; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .wallet-sync div p { color: #8898aa; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
-        .wallet-sync div h2 { color: #00ff88; font-size: 24px; }
-        .btn-withdraw { background: #00e6ff; color: #000; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .wallet-sync div h2 { color: #00ff88; font-size: 26px; font-weight: 900; letter-spacing: 1px;}
+        .btn-withdraw { background: #00e6ff; color: #000; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; transition: 0.3s; }
+        .btn-withdraw:hover { box-shadow: 0 0 15px rgba(0, 230, 255, 0.5); }
 
-        /* Bank Binding Form */
-        .section-title { color: #cbd5e1; font-size: 16px; margin-bottom: 15px; border-left: 4px solid #00e6ff; padding-left: 10px; text-transform: uppercase; }
+        .section-title { color: #cbd5e1; font-size: 16px; margin-bottom: 15px; border-left: 4px solid #00e6ff; padding-left: 10px; text-transform: uppercase; font-weight: bold; }
         .form-card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; }
         
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; color: #a0aec0; font-size: 13px; margin-bottom: 8px; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2d4a77; background: #152238; color: #fff; font-size: 15px; outline: none; transition: 0.3s; }
+        .input-group label { display: block; color: #a0aec0; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2d4a77; background: #152238; color: #fff; font-size: 15px; outline: none; transition: 0.3s; font-weight: bold;}
         .input-group input:focus { border-color: #00e6ff; box-shadow: 0 0 10px rgba(0, 230, 255, 0.2); }
+        
+        /* Locked Input Style */
+        .input-group input.locked { background: #090e17; color: #8898aa; border-color: #1f365c; cursor: not-allowed; opacity: 0.7; }
 
-        .btn-save { width: 100%; padding: 14px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
+        .btn-save { width: 100%; padding: 14px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
         .btn-save:hover { box-shadow: 0 5px 15px rgba(0, 230, 255, 0.4); transform: translateY(-2px); }
+        
+        /* Locked Button Style */
+        .btn-save.locked-btn { background: #1f365c; color: #8898aa; box-shadow: none; cursor: not-allowed; transform: none; border: 1px solid #2d4a77; }
 
-        /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <div style="max-width: 600px; margin: 0 auto;">
+    <div style="max-width: 500px; margin: 0 auto;">
         
         <div class="top-bar">
             <h2>MY PROFILE</h2>
-            <a href="index.html" class="logout-btn">LOGOUT</a>
+            <button onclick="logout()" class="logout-btn">LOGOUT</button>
         </div>
 
         <div class="profile-card">
-            <div class="avatar">👤</div>
+            <div class="avatar">👨‍💼</div>
             <div class="user-details">
-                <h3>LNT Member</h3>
-                <p id="user-phone">+91 98765 43210</p>
+                <h3 id="user-display-name">LNT Member</h3>
+                <p id="user-phone">Loading...</p>
             </div>
         </div>
 
         <div class="wallet-sync">
             <div>
-                <p>Available Wallet Balance</p>
+                <p>Available Balance</p>
                 <h2 id="profile-balance">₹0.00</h2>
             </div>
             <a href="wallet.html" class="btn-withdraw">Withdraw ➡</a>
@@ -74,7 +81,7 @@
 
         <h3 class="section-title">Bind Bank Account</h3>
         <div class="form-card">
-            <p style="color: #ffaa00; font-size: 12px; margin-bottom: 15px;">* Please enter correct details. Withdrawals will be sent to this account only.</p>
+            <p id="warning-text" style="color: #ffaa00; font-size: 12px; margin-bottom: 15px; font-weight: bold;">* Details can only be entered once. It will be permanently locked for security.</p>
             
             <div class="input-group">
                 <label>Actual Name (As per Bank)</label>
@@ -93,32 +100,93 @@
                 <input type="text" id="bank-upi" placeholder="e.g. 9876543210@ybl">
             </div>
 
-            <button class="btn-save" onclick="saveBankDetails()">SAVE DETAILS</button>
+            <button class="btn-save" id="save-btn" onclick="saveBankDetails()">SAVE & LOCK DETAILS</button>
         </div>
 
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">🏠 Home</a>
-        <a href="job.html" class="nav-item">🚀 Jobs</a>
-        <a href="wallet.html" class="nav-item">💼 Wallet</a>
-        <a href="profile.html" class="nav-item active">👤 Profile</a>
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="refer.html" class="nav-item">
+            <div class="nav-icon">🔗</div>
+            Team
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
     </div>
 
     <script>
-        // Check if details are already saved in LocalStorage (Simulation of Database)
-        window.onload = function() {
-            if(localStorage.getItem("bankAcc")) {
-                document.getElementById('bank-name').value = localStorage.getItem("bankName");
-                document.getElementById('bank-acc').value = localStorage.getItem("bankAcc");
-                document.getElementById('bank-ifsc').value = localStorage.getItem("bankIFSC");
-                document.getElementById('bank-upi').value = localStorage.getItem("bankUPI");
-                
-                // Change button text if already saved
-                document.querySelector('.btn-save').innerText = "UPDATE DETAILS";
-            }
-        }
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
+        // 1. Security Check
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        document.getElementById('user-phone').innerText = "+91 " + userPhone.substring(0,2) + "******" + userPhone.substring(8,10);
+
+        let userData = null;
+
+        // 2. Fetch Live Data & Lock Logic
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            userData = snap.val();
+            if (userData) {
+                // Update Balance
+                document.getElementById('profile-balance').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+                
+                // Agar Bank Details pehle se Firebase me hain toh usko LOCK kar do
+                if(userData.bankDetails) {
+                    let bName = document.getElementById('bank-name');
+                    let bAcc = document.getElementById('bank-acc');
+                    let bIfsc = document.getElementById('bank-ifsc');
+                    let bUpi = document.getElementById('bank-upi');
+                    let sBtn = document.getElementById('save-btn');
+                    let wText = document.getElementById('warning-text');
+
+                    // Set values
+                    bName.value = userData.bankDetails.name || "";
+                    bAcc.value = userData.bankDetails.account || "";
+                    bIfsc.value = userData.bankDetails.ifsc || "";
+                    bUpi.value = userData.bankDetails.upi || "Not Provided";
+                    
+                    // Update Name in Profile Card
+                    if(userData.bankDetails.name) {
+                        document.getElementById('user-display-name').innerText = userData.bankDetails.name;
+                    }
+
+                    // LOCK The Inputs (Make them Read-Only and change style)
+                    bName.readOnly = true; bName.classList.add('locked');
+                    bAcc.readOnly = true; bAcc.classList.add('locked');
+                    bIfsc.readOnly = true; bIfsc.classList.add('locked');
+                    bUpi.readOnly = true; bUpi.classList.add('locked');
+
+                    // Disable Save Button
+                    sBtn.innerText = "DETAILS LOCKED 🔒";
+                    sBtn.disabled = true;
+                    sBtn.classList.add('locked-btn');
+
+                    // Change Warning text to Success text
+                    wText.innerText = "✅ Your bank details are securely locked. Contact support to change.";
+                    wText.style.color = "#00ff88";
+                }
+            }
+        });
+
+        // 3. Save Bank Details to Firebase (First Time Only)
         function saveBankDetails() {
             let name = document.getElementById('bank-name').value;
             let acc = document.getElementById('bank-acc').value;
@@ -126,18 +194,39 @@
             let upi = document.getElementById('bank-upi').value;
 
             if(name === "" || acc === "" || ifsc === "") {
-                alert("Please fill all required bank details.");
+                alert("❌ Required Error\nPlease fill Name, Account Number and IFSC Code.");
                 return;
             }
 
-            // Save locally so Wallet page can check it later
-            localStorage.setItem("bankName", name);
-            localStorage.setItem("bankAcc", acc);
-            localStorage.setItem("bankIFSC", ifsc);
-            localStorage.setItem("bankUPI", upi);
+            let confirmLock = confirm("Warning: Please check your details carefully!\nOnce saved, your details will be PERMANENTLY LOCKED and you cannot change them later.\n\nDo you want to continue?");
+            if(!confirmLock) return;
 
-            alert("Bank Details Saved Successfully!\nNow you can withdraw your wallet balance.");
-            document.querySelector('.btn-save').innerText = "UPDATE DETAILS";
+            let btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.innerText = "LOCKING...";
+
+            // Update details securely in Firebase (Admin panel ke paas chali jayegi)
+            db.ref('users/' + userPhone + '/bankDetails').set({
+                name: name,
+                account: acc,
+                ifsc: ifsc,
+                upi: upi
+            }).then(() => {
+                alert("✅ Success!\nYour Bank Details have been saved and securely locked.");
+                // Note: Upar wala db.ref('.on') function apne aap page ko lock state me daal dega
+            }).catch((error) => {
+                alert("Error saving details. Please try again.");
+                btn.disabled = false;
+                btn.innerText = "SAVE & LOCK DETAILS";
+            });
+        }
+
+        // 4. Secure Logout Function
+        function logout() {
+            if(confirm("Are you sure you want to log out from LNT?")) {
+                localStorage.removeItem('loggedInUser');
+                window.location.href = "login.html"; 
+            }
         }
     </script>
 </body>
