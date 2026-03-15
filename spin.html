@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Level Spin Rewards</title>
+    <title>LNT Job - VIP Spin Rewards</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
@@ -12,22 +14,18 @@
             min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px; text-align: center;
         }
 
-        /* Header */
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
         .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        .page-title { color: #fff; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .page-title { color: #fff; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* Status Box */
-        .status-box { background: rgba(0, 230, 255, 0.05); border: 1px dashed #00e6ff; padding: 15px; border-radius: 12px; margin-bottom: 30px; }
+        .status-box { background: rgba(0, 230, 255, 0.05); border: 1px dashed #00e6ff; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .status-box p { color: #8898aa; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
         .status-box h2 { color: #00ff88; font-size: 24px; }
 
-        /* Level Selector */
-        .level-select { width: 100%; max-width: 300px; padding: 12px; background: #152238; color: #00e6ff; border: 1px solid #2d4a77; border-radius: 8px; font-size: 16px; font-weight: bold; outline: none; margin-bottom: 30px; cursor: pointer; }
-
-        /* Digital Spinner UI */
-        .spinner-container { position: relative; width: 220px; height: 220px; margin: 0 auto 30px auto; }
+        /* Locked Select Box */
+        .level-select { width: 100%; max-width: 300px; padding: 12px; background: #0f172a; color: #00ff88; border: 1px solid #00ff88; border-radius: 8px; font-size: 14px; font-weight: bold; outline: none; margin-bottom: 30px; cursor: not-allowed; text-align: center; appearance: none; }
         
+        .spinner-container { position: relative; width: 220px; height: 220px; margin: 0 auto 30px auto; }
         .spinner-ring { 
             width: 100%; height: 100%; border-radius: 50%; 
             border: 8px solid #152238; border-top-color: #00e6ff; border-right-color: #00ff88;
@@ -35,8 +33,7 @@
             transition: all 0.1s;
         }
 
-        /* Animation class for spinning */
-        .spinning-active { animation: spin 0.5s linear infinite; }
+        .spinning-active { animation: spin 0.2s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .spinner-center {
@@ -46,14 +43,12 @@
             box-shadow: inset 0 0 20px #000;
         }
         .spinner-center p { color: #8898aa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;}
-        .prize-display { color: #fff; font-size: 32px; font-weight: 900; }
+        .prize-display { color: #fff; font-size: 28px; font-weight: 900; }
 
-        /* Action Button */
         .btn-spin { width: 100%; max-width: 300px; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.3s; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.3); }
         .btn-spin:active { transform: scale(0.95); }
         .btn-spin:disabled { background: #2d4a77; color: #8898aa; box-shadow: none; cursor: not-allowed; }
 
-        /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
@@ -63,24 +58,25 @@
 
     <div style="max-width: 500px; margin: 0 auto;">
         <div class="header">
-            <a href="refer.html" class="back-btn">⬅ Back</a>
-            <div class="page-title">DIGITAL REWARD SPIN</div>
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <div class="page-title">VIP REWARD SPIN</div>
+            <a href="history.html" class="back-btn" style="border-color:#00ff88; color:#00ff88;">History</a>
         </div>
 
         <div class="status-box">
-            <p>Available Spins for selected level</p>
-            <h2 id="spin-count">1</h2>
+            <p>Available VIP Spins</p>
+            <h2 id="spin-count">0</h2>
         </div>
 
-        <select id="level-select" class="level-select" onchange="changeLevel()">
-            <option value="G1">Level G1 Spin (Reward: ₹50 - ₹500)</option>
-            <option value="G2">Level G2 Spin (Reward: ₹300 - ₹1,500)</option>
-            <option value="G3">Level G3 Spin (Reward: ₹1,000 - ₹4,500)</option>
-            <option value="G4">Level G4 Spin (Reward: ₹3,000 - ₹15,000)</option>
-            <option value="G5">Level G5 Spin (Reward: ₹8,000 - ₹25,000)</option>
-            <option value="G6">Level G6 Spin (Reward: ₹50,000 - ₹4,00,000)</option>
-            <option value="G7">Level G7 Spin (Reward: ₹1,00,000 - ₹8,00,000)</option>
-            <option value="G8">Level G8 Spin (Reward: ₹2,00,000 - ₹15,00,000)</option>
+        <select id="level-select" class="level-select" disabled>
+            <option value="G1">Level G1 (Reward: ₹50 - ₹500)</option>
+            <option value="G2">Level G2 (Reward: ₹300 - ₹1,500)</option>
+            <option value="G3">Level G3 (Reward: ₹1,000 - ₹4,500)</option>
+            <option value="G4">Level G4 (Reward: ₹3,000 - ₹15,000)</option>
+            <option value="G5">Level G5 (Reward: ₹8,000 - ₹25,000)</option>
+            <option value="G6">Level G6 (Reward: ₹50,000 - ₹4,00,000)</option>
+            <option value="G7">Level G7 (Reward: ₹1,00,000 - ₹8,00,000)</option>
+            <option value="G8">Level G8 (Reward: ₹2,00,000 - ₹15,00,000)</option>
         </select>
 
         <div class="spinner-container">
@@ -91,18 +87,32 @@
             </div>
         </div>
 
-        <button class="btn-spin" id="spin-btn" onclick="startSpin()">SPIN NOW</button>
+        <button class="btn-spin" id="spin-btn" onclick="startSpin()" disabled>LOADING...</button>
     </div>
 
     <div class="bottom-nav">
         <a href="dashboard.html" class="nav-item">🏠 Home</a>
-        <a href="refer.html" class="nav-item active">🔗 Team</a>
-        <a href="wallet.html" class="nav-item">💼 Wallet</a>
+        <a href="invest.html" class="nav-item">📈 Invest</a>
+        <a href="spin.html" class="nav-item active">🎡 Spin</a>
         <a href="profile.html" class="nav-item">👤 Profile</a>
     </div>
 
     <script>
-        // Har level ke minimum aur maximum rewards ka data
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        let userData = null;
+        let userCurrentLevel = "G1";
+
+        // Har level ke dikhane wale fake rewards (Niklega hamesha minimum ke paas hi)
         const spinRewards = {
             "G1": { min: 50, max: 500 },
             "G2": { min: 300, max: 1500 },
@@ -114,14 +124,25 @@
             "G8": { min: 200000, max: 1500000 }
         };
 
-        // Dummy spin available for testing. Real app me ye database se aayega.
-        let availableSpins = {
-            "G1": 1, "G2": 0, "G3": 2, "G4": 0, "G5": 0, "G6": 0, "G7": 0, "G8": 0
-        };
+        // Live Data Fetch Karna
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            userData = snap.val();
+            if (userData) {
+                userCurrentLevel = userData.level || "G1"; // Database se user ka asli level uthao
+                
+                // Dropdown ko user ke level par set karke LOCK kar do
+                document.getElementById('level-select').value = userCurrentLevel;
+                
+                updateUI(); 
+            }
+        });
 
-        function changeLevel() {
-            let selected = document.getElementById('level-select').value;
-            let count = availableSpins[selected];
+        function updateUI() {
+            if (!userData) return;
+            
+            // User ke paas uske level ke kitne spin baaki hain?
+            let count = (userData.spins && userData.spins[userCurrentLevel]) ? userData.spins[userCurrentLevel] : 0;
+            
             document.getElementById('spin-count').innerText = count;
             document.getElementById('prize-text').innerText = "₹???";
             document.getElementById('ring').classList.remove('spinning-active');
@@ -132,62 +153,69 @@
                 btn.innerText = "SPIN NOW";
             } else {
                 btn.disabled = true;
-                btn.innerText = "NO SPINS AVAILABLE";
+                btn.innerText = "NO SPINS LEFT";
             }
         }
 
         function startSpin() {
-            let selected = document.getElementById('level-select').value;
-            
-            // Double check spins
-            if(availableSpins[selected] <= 0) return;
+            let currentSpins = (userData.spins && userData.spins[userCurrentLevel]) ? userData.spins[userCurrentLevel] : 0;
+            if(currentSpins <= 0) return; 
 
             let btn = document.getElementById('spin-btn');
             let ring = document.getElementById('ring');
             let prizeText = document.getElementById('prize-text');
             
-            // Button disable karo taaki user baar-baar na dabaye
             btn.disabled = true;
             btn.innerText = "SPINNING...";
-
-            // Animation start
             ring.classList.add('spinning-active');
 
-            // Number tezi se change hone ka effect
-            let min = spinRewards[selected].min;
-            let max = spinRewards[selected].max;
+            let min = spinRewards[userCurrentLevel].min;
+            let max = spinRewards[userCurrentLevel].max;
             
+            // Dhoka: Ghumte time bade numbers dikhao
             let interval = setInterval(() => {
                 let randomTemp = Math.floor(Math.random() * (max - min + 1)) + min;
-                prizeText.innerText = "₹" + randomTemp;
-            }, 100);
+                prizeText.innerText = "₹" + randomTemp.toLocaleString('en-IN');
+            }, 60);
 
-            // 3 Second baad wheel rokna aur final amount dena
+            // 3 Second baad wheel rokna aur "SABSE KAM" wala amount dena
             setTimeout(() => {
-                clearInterval(interval); // Number ghumna band
-                ring.classList.remove('spinning-active'); // Wheel ghumna band
+                clearInterval(interval); 
+                ring.classList.remove('spinning-active'); 
                 
-                // Final winning amount nikalna
-                let finalWin = Math.floor(Math.random() * (max - min + 1)) + min;
+                // ADMIN TRICK: Hamesha Min + 3% to 8% ke beech niklega
+                let trickLimit = min + Math.floor((max - min) * 0.08); 
+                let finalWin = Math.floor(Math.random() * (trickLimit - min + 1)) + min;
+                
                 prizeText.innerText = "₹" + finalWin.toLocaleString('en-IN');
-                prizeText.style.color = "#00ff88"; // Winner color green
+                prizeText.style.color = "#00ff88"; 
 
-                // Ek spin kam kardo
-                availableSpins[selected] -= 1;
-                document.getElementById('spin-count').innerText = availableSpins[selected];
+                // 1. Balance badhao aur 1 spin kam karo
+                let newBalance = (userData.balance || 0) + finalWin;
+                let remainingSpins = currentSpins - 1;
 
-                // Badhai ho!
-                setTimeout(() => {
-                    alert(`Congratulations! 🎉\n\nYou won ₹${finalWin.toLocaleString('en-IN')} from Level ${selected} Spin!\nThe amount has been added to your Wallet.`);
-                    prizeText.style.color = "#fff"; // reset color
-                    changeLevel(); // reset button state
-                }, 500);
+                let updates = {};
+                updates['users/' + userPhone + '/balance'] = newBalance;
+                updates['users/' + userPhone + '/spins/' + userCurrentLevel] = remainingSpins;
 
-            }, 3000); // 3000ms = 3 seconds
+                db.ref().update(updates).then(() => {
+                    // 2. History me mast "Spin Reward" record daalna
+                    db.ref('users/' + userPhone + '/transactions').push({
+                        type: `Spin Reward (${userCurrentLevel})`,
+                        amount: finalWin,
+                        status: 'Success',
+                        date: new Date().toLocaleString()
+                    }).then(() => {
+                        setTimeout(() => {
+                            alert(`Bhai Waah! 🎉\n\nAapne ₹${finalWin} jeete hain!\nYe amount aapke Wallet aur History mein add ho gaya hai.`);
+                            prizeText.style.color = "#fff"; 
+                            updateUI(); 
+                        }, 500);
+                    });
+                });
+
+            }, 3000); 
         }
-
-        // Page load hone par pehla level check karo
-        window.onload = changeLevel;
     </script>
 </body>
 </html>
