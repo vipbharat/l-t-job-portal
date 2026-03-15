@@ -3,105 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Main Dashboard</title>
+    <title>LNT Job - Dashboard</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             background: #090e17; 
             background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding-bottom: 70px;
+            min-height: 100vh; color: #fff; padding: 15px; padding-bottom: 80px;
         }
 
-        /* Top Header */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: rgba(21, 34, 56, 0.9); border-bottom: 1px solid #1f365c; }
-        .user-greeting h2 { color: #00e6ff; font-size: 20px; font-weight: 800; }
-        .user-greeting p { color: #8898aa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .logout-btn { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; }
+        /* --- Top Bar & Profile --- */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #152238; padding: 10px 15px; border-radius: 12px; border: 1px solid #1f365c; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 45px; height: 45px; background: #2d4a77; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 20px; border: 2px solid #00e6ff; box-shadow: 0 0 10px rgba(0,230,255,0.2);}
+        .greeting { font-size: 12px; color: #8898aa; text-transform: uppercase; letter-spacing: 1px; }
+        .phone-no { font-weight: 900; font-size: 16px; color: #fff; }
 
-        /* Stats Container */
-        .stats-container { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 800px; margin: 0 auto; }
-        .stat-card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #2d4a77; text-align: center; }
-        .stat-card.main-wallet { grid-column: span 2; background: linear-gradient(135deg, #0f172a 0%, #1a2a44 100%); border-color: #00e6ff; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.1); }
+        /* --- Main Balance Card --- */
+        .balance-card {
+            background: linear-gradient(135deg, #152238 0%, #1f365c 100%);
+            padding: 25px 20px; border-radius: 15px; border: 1px solid #00e6ff;
+            text-align: center; margin-bottom: 25px; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.15);
+            position: relative; overflow: hidden;
+        }
+        /* Card background design effect */
+        .balance-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; width: 100px; height: 100px;
+            background: rgba(0, 230, 255, 0.1); border-radius: 50%;
+        }
+        .balance-label { color: #8898aa; font-size: 13px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+        .balance-amount { color: #00ff88; font-size: 40px; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; }
         
-        .stat-title { color: #8898aa; font-size: 13px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .stat-value { color: #fff; font-size: 24px; font-weight: 900; }
-        .main-wallet .stat-value { color: #00e6ff; font-size: 36px; }
+        .bal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .btn-main { flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; text-decoration: none; text-align: center; font-size: 14px; text-transform: uppercase; border: none; cursor: pointer;}
+        .btn-deposit { background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; }
+        .btn-withdraw { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #8898aa; }
 
-        /* Main Action Area */
-        .action-area { padding: 20px; max-width: 800px; margin: 0 auto; text-align: center; }
-        
-        /* The Big Job Button */
-        .big-job-btn {
-            display: block; width: 100%; padding: 25px 20px; border-radius: 15px; text-decoration: none;
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
-            color: #000; font-weight: 900; font-size: 22px; text-transform: uppercase;
-            box-shadow: 0 10px 25px rgba(0, 230, 255, 0.3); transition: 0.3s;
-            margin-bottom: 20px; position: relative; overflow: hidden;
+        /* --- Quick Action Grid (8 Buttons) --- */
+        .section-title { font-size: 16px; color: #cbd5e1; margin-bottom: 12px; border-left: 3px solid #00e6ff; padding-left: 8px; font-weight: bold; text-transform: uppercase;}
+        .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .action-btn { 
+            background: #152238; border: 1px solid #2d4a77; border-radius: 10px; padding: 12px 5px; 
+            text-align: center; text-decoration: none; color: #fff; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
-        .big-job-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0, 230, 255, 0.5); }
-        .big-job-btn p { font-size: 12px; color: #111; margin-top: 5px; font-weight: bold; }
+        .action-btn:hover { background: #1f365c; border-color: #00e6ff; transform: translateY(-3px); }
+        .action-icon { font-size: 26px; }
+        .action-text { font-size: 11px; font-weight: bold; text-transform: uppercase; color: #cbd5e1; }
 
-        /* Quick Action Buttons */
-        .quick-actions { display: flex; gap: 15px; }
-        .quick-btn {
-            flex: 1; padding: 15px; border-radius: 10px; text-align: center; text-decoration: none;
-            background: #152238; border: 1px solid #2d4a77; color: #cbd5e1; font-weight: bold; transition: 0.3s;
-        }
-        .quick-btn:hover { background: rgba(0, 230, 255, 0.1); border-color: #00e6ff; color: #00e6ff; }
+        /* --- Live Feed Board (Job Placements) --- */
+        .live-board { background: #152238; border: 1px solid #1f365c; border-radius: 12px; padding: 15px; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.05); margin-bottom: 20px; }
+        .board-header { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; border-bottom: 1px dashed #2d4a77; padding-bottom: 10px; }
+        .live-dot-small { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; animation: blinkLive 1s infinite; }
+        .board-title { color: #fff; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        @keyframes blinkLive { 0% {opacity: 0.3;} 50% {opacity: 1; box-shadow: 0 0 8px #00ff88;} 100% {opacity: 0.3;} }
 
-        /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .scroll-container { height: 180px; overflow: hidden; position: relative; mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); }
+        .scroll-content { display: flex; flex-direction: column; animation: scrollVertical 20s linear infinite; }
+        .scroll-content:hover { animation-play-state: paused; }
+
+        .feed-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.2); margin-bottom: 8px; padding: 10px 12px; border-radius: 8px; border-left: 3px solid #00e6ff; }
+        .feed-left { display: flex; align-items: center; gap: 10px; }
+        .feed-avatar { width: 32px; height: 32px; border-radius: 50%; background: #1f365c; border: 1px solid #00e6ff; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .feed-info { display: flex; flex-direction: column; }
+        .feed-phone { color: #fff; font-size: 13px; font-weight: bold; }
+        .feed-time { color: #8898aa; font-size: 11px; margin-top: 2px; }
+        .feed-right { text-align: right; }
+        .feed-action { color: #00ff88; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .feed-level { color: #fff; font-size: 13px; font-weight: 900; }
+
+        @keyframes scrollVertical { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+
+        /* --- Bottom Nav --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <div class="user-greeting">
-            <p>Welcome back,</p>
-            <h2>LNT Member</h2>
-        </div>
-        <a href="index.html" class="logout-btn">LOGOUT</a>
-    </div>
-
-    <div class="stats-container">
-        <div class="stat-card main-wallet">
-            <div class="stat-title">Total Balance</div>
-            <div class="stat-value" id="dash-balance">₹0.00</div>
-        </div>
+    <div style="max-width: 500px; margin: 0 auto;">
         
-        <div class="stat-card">
-            <div class="stat-title">Total Earning</div>
-            <div class="stat-value" style="color: #00ff88;">₹0.00</div>
+        <div class="top-bar">
+            <div class="user-profile">
+                <div class="avatar">👨‍💼</div>
+                <div>
+                    <div class="greeting">Welcome Back</div>
+                    <div class="phone-no" id="display-phone">Loading...</div>
+                </div>
+            </div>
+            <div style="color: #00e6ff; font-weight: bold; font-size: 20px;">LNT</div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-title">Active Jobs</div>
-            <div class="stat-value" style="color: #ffaa00;">0</div>
+        <div class="balance-card">
+            <p class="balance-label">Total Work Salary</p>
+            <p class="balance-amount" id="display-balance">₹0.00</p>
+            
+            <div class="bal-buttons">
+                <a href="deposit.html" class="btn-main btn-deposit">Deposit</a>
+                <a href="wallet.html" class="btn-main btn-withdraw">Withdraw</a>
+            </div>
         </div>
-    </div>
 
-    <div class="action-area">
+        <div class="section-title">App Services</div>
         
-        <a href="job.html" class="big-job-btn">
-            EXPLORE VIP JOBS
-            <p>Unlock G1 to G8 Levels & Start Earning</p>
-        </a>
-
-        <div class="quick-actions">
-            <a href="wallet.html" class="quick-btn">📥 Deposit</a>
-            <a href="wallet.html" class="quick-btn">📤 Withdraw</a>
+        <div class="action-grid">
+            <a href="deposit.html" class="action-btn">
+                <div class="action-icon">💳</div>
+                <div class="action-text">Recharge</div>
+            </a>
+            <a href="wallet.html" class="action-btn">
+                <div class="action-icon">🏦</div>
+                <div class="action-text">Withdraw</div>
+            </a>
+            <a href="job.html" class="action-btn">
+                <div class="action-icon">💼</div>
+                <div class="action-text">VIP Jobs</div>
+            </a>
+            <a href="history.html" class="action-btn">
+                <div class="action-icon">📜</div>
+                <div class="action-text">History</div>
+            </a>
+            <a href="spin.html" class="action-btn">
+                <div class="action-icon">🎡</div>
+                <div class="action-text">Spin</div>
+            </a>
+            <a href="refer.html" class="action-btn">
+                <div class="action-icon">👥</div>
+                <div class="action-text">Team</div>
+            </a>
+            <a href="telegram.html" class="action-btn">
+                <div class="action-icon">✈️</div>
+                <div class="action-text">Channel</div>
+            </a>
+            <a href="#" class="action-btn" onclick="alert('Support system will be live soon!')">
+                <div class="action-icon">🎧</div>
+                <div class="action-text">Support</div>
+            </a>
         </div>
-        
+
+        <div class="live-board">
+            <div class="board-header">
+                <div class="live-dot-small"></div>
+                <div class="board-title">Live Job Placements</div>
+            </div>
+            <div class="scroll-container">
+                <div class="scroll-content" id="live-feed-content">
+                    </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item active">🏠 Home</a>
-        <a href="job.html" class="nav-item">🚀 Jobs</a>
-        <a href="wallet.html" class="nav-item">💼 Wallet</a>
-        <a href="profile.html" class="nav-item">👤 Profile</a>
+        <a href="dashboard.html" class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="refer.html" class="nav-item">
+            <div class="nav-icon">🔗</div>
+            Team
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
     </div>
 
+    <script>
+        // --- FIREBASE CONFIG (Aapki API Key) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. Security Check (Login check karna)
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) {
+            window.location.href = "login.html"; // Agar login nahi hai toh bahar
+        }
+
+        // 2. User Phone Dikhana (Masked)
+        document.getElementById('display-phone').innerText = "+91 " + userPhone.substring(0,2) + "******" + userPhone.substring(8,10);
+
+        // 3. Live Balance Firebase se uthana
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            let userData = snap.val();
+            if (userData) {
+                // Number ko comma lagakar dikhane ke liye (e.g. 4,550)
+                document.getElementById('display-balance').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+            }
+        });
+
+        // 4. --- LIVE JOB PLACEMENT GENERATOR ---
+        const levels = ["G1 Assistant", "G2 Team Leader", "G3 Senior Lead", "G4 Supervisor", "G5 Manager"];
+        const avatars = ["👨‍💼", "👩‍💼", "👨‍💻", "👩‍💻", "💼"]; 
+        
+        function generateFeedItems() {
+            let htmlContent = "";
+            for(let i = 0; i < 20; i++) {
+                let randStart = [9, 8, 7, 6][Math.floor(Math.random() * 4)];
+                let randEnd = Math.floor(100 + Math.random() * 900);
+                let phone = `${randStart}8****${randEnd}`; 
+                
+                let level = levels[Math.floor(Math.random() * levels.length)];
+                let avatar = avatars[Math.floor(Math.random() * avatars.length)];
+                let time = Math.floor(Math.random() * 50) + 1; 
+                
+                htmlContent += `
+                    <div class="feed-item">
+                        <div class="feed-left">
+                            <div class="feed-avatar">${avatar}</div>
+                            <div class="feed-info">
+                                <span class="feed-phone">Applicant ${phone}</span>
+                                <span class="feed-time">${time} secs ago</span>
+                            </div>
+                        </div>
+                        <div class="feed-right">
+                            <div class="feed-action">Hired For</div>
+                            <div class="feed-level">${level}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            return htmlContent;
+        }
+
+        // List ko lamba banane ke liye 2 baar data daalenge taaki scroll rukey nahi
+        let feedData = generateFeedItems();
+        document.getElementById('live-feed-content').innerHTML = feedData + feedData;
+    </script>
 </body>
 </html>
