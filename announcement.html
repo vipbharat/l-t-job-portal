@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Announcement</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { 
+            background: #090e17; 
+            height: 100vh; display: flex; align-items: center; justify-content: center; color: #fff;
+        }
+
+        .popup-card {
+            width: 90%; max-width: 400px; background: #152238; padding: 25px;
+            border-radius: 20px; border: 1px solid #00e6ff; text-align: center;
+            box-shadow: 0 0 30px rgba(0, 230, 255, 0.2);
+        }
+
+        .icon { font-size: 50px; margin-bottom: 15px; }
+        h2 { color: #00e6ff; margin-bottom: 10px; }
+        p { color: #8898aa; font-size: 15px; line-height: 1.6; margin-bottom: 25px; }
+
+        .btn-ok { 
+            width: 100%; padding: 12px; border-radius: 10px; border: none;
+            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
+            color: #000; font-weight: bold; font-size: 16px; cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .bonus-text {
+            color: #00ff88; font-weight: bold; font-size: 18px; display: block; margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="popup-card">
+        <div class="icon">📢</div>
+        <h2>Official Update!</h2>
+        <p>Congratulations! Aapka account ban gaya hai aur <span class="bonus-text">₹50 Bonus</span> aapke wallet mein add kar diya gaya hai.</p>
+        
+        <p>Aaj se hi kaam shuru karein aur daily ₹500 - ₹2000 tak kamayein.</p>
+
+        <button class="btn-ok" onclick="goToDashboard()">Go to Dashboard</button>
+    </div>
+
+    <script>
+        function goToDashboard() {
+            // Check karo ki aapki dashboard file ka naam kya hai
+            window.location.href = "dashboard.html"; 
+        }
+    </script>
+</body>
+</html>
