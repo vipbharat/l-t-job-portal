@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - My Team Details</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
+        }
+
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+
+        .team-summary { background: linear-gradient(135deg, #152238 0%, #1f365c 100%); padding: 20px; border-radius: 12px; border: 1px solid #00ff88; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 255, 136, 0.1); }
+        .team-summary div p { color: #8898aa; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+        .team-summary div h2 { color: #00ff88; font-size: 24px; font-weight: 900; }
+
+        .level-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .level-btn { flex: 1; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.3s; }
+        .level-btn.active { background: #00e6ff; color: #000; border-color: #00e6ff; }
+
+        /* Team List */
+        .team-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .member-card { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1f365c; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .member-card:hover { border-color: #00e6ff; }
+        
+        .member-left { display: flex; flex-direction: column; gap: 5px; }
+        .member-phone { font-size: 15px; font-weight: bold; color: #fff; }
+        .member-date { font-size: 11px; color: #8898aa; }
+
+        .member-right { text-align: right; display: flex; flex-direction: column; gap: 5px; }
+        .member-level { font-size: 12px; font-weight: bold; background: rgba(0, 230, 255, 0.1); color: #00e6ff; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+        .member-comm { font-size: 14px; font-weight: 900; color: #00ff88; }
+
+        .no-data { text-align: center; color: #8898aa; font-size: 14px; margin-top: 40px; font-style: italic; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        
+        <div class="header">
+            <a href="refer.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">My Team Data</h2>
+        </div>
+
+        <div class="team-summary">
+            <div>
+                <p>Direct Members</p>
+                <h2 id="total-members">0</h2>
+            </div>
+            <div style="text-align: right;">
+                <p>Total Contribution</p>
+                <h2 style="color:#00e6ff;" id="total-contribution">₹0</h2>
+            </div>
+        </div>
+
+        <div class="level-tabs">
+            <button class="level-btn active" onclick="filterTeam('Level 1')">Level 1</button>
+            <button class="level-btn" onclick="filterTeam('Level 2')">Level 2</button>
+            <button class="level-btn" onclick="filterTeam('Level 3')">Level 3</button>
+        </div>
+
+        <div class="team-list" id="team-container">
+            <div class="no-data">Loading your team members...</div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="refer.html" class="nav-item active">
+            <div class="nav-icon">🔗</div>
+            Team
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        // Fake Data Logic (To show something if actual referral logic isn't fully linked yet)
+        // Aap isko baad me real Firebase database se connect kar sakte ho.
+        let teamData = {
+            "Level 1": [],
+            "Level 2": [],
+            "Level 3": []
+        };
+
+        // Simulated function to show how it will look
+        function loadFakeData() {
+            teamData["Level 1"] = [
+                { phone: "98****1234", date: "16/03/2026", level: "G2", comm: 150 },
+                { phone: "87****5678", date: "17/03/2026", level: "G1", comm: 25 }
+            ];
+            
+            document.getElementById('total-members').innerText = teamData["Level 1"].length;
+            document.getElementById('total-contribution').innerText = "₹175";
+            
+            filterTeam('Level 1');
+        }
+
+        // Filter Logic
+        function filterTeam(levelType) {
+            let tabs = document.querySelectorAll('.level-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            let container = document.getElementById('team-container');
+            let html = "";
+            let currentList = teamData[levelType];
+
+            if(!currentList || currentList.length === 0) {
+                container.innerHTML = `<div class="no-data">No members found in ${levelType}.<br>Invite more friends!</div>`;
+                return;
+            }
+
+            currentList.forEach(member => {
+                html += `
+                <div class="member-card">
+                    <div class="member-left">
+                        <div class="member-phone">+91 ${member.phone}</div>
+                        <div class="member-date">Joined: ${member.date}</div>
+                    </div>
+                    <div class="member-right">
+                        <div class="member-level">VIP ${member.level}</div>
+                        <div class="member-comm">+₹${member.comm}</div>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Initialize
+        setTimeout(loadFakeData, 1000); // 1 second fake loading
+    </script>
+</body>
+</html>
