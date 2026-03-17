@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - VIP Tasks</title>
+    <title>LNT Job - VIP Plans</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
@@ -14,110 +14,97 @@
             min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        .header { display: flex; justify-content: space-between; align-items: center; background: #152238; padding: 15px 20px; border-radius: 12px; border: 1px solid #1f365c; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 200, 255, 0.05); }
-        .logo-text { color: #00e6ff; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-        .wallet-info { text-align: right; }
-        .wallet-info p { color: #8898aa; font-size: 12px; text-transform: uppercase; }
-        .wallet-info h3 { color: #00ff88; font-size: 18px; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+        .current-level { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border: 1px solid #00e6ff; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; }
 
-        .page-title { color: #cbd5e1; font-size: 18px; margin-bottom: 15px; border-left: 4px solid #00e6ff; padding-left: 10px; }
-
-        .job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto; }
-
-        .job-card {
-            background: #0f172a; border: 1px solid #2d4a77; border-radius: 12px; padding: 20px 15px;
-            text-align: center; transition: 0.3s; position: relative; overflow: hidden;
+        .vip-banner {
+            background: linear-gradient(135deg, #ffaa00 0%, #ff7700 100%);
+            padding: 25px 20px; border-radius: 16px; text-align: center; margin-bottom: 25px;
+            color: #000; box-shadow: 0 10px 20px rgba(255, 170, 0, 0.2);
         }
-        
-        .job-name { color: #8898aa; font-size: 16px; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; }
-        .job-price { color: #00e6ff; font-size: 24px; font-weight: 900; margin-bottom: 15px; }
-        
-        .apply-btn {
-            width: 100%; padding: 10px; border-radius: 6px; border: none;
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
-            color: #000; font-weight: bold; font-size: 14px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s;
+        .vip-banner h2 { font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .vip-banner p { font-size: 13px; font-weight: bold; }
+
+        /* VIP Cards Grid */
+        .vip-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .vip-card {
+            background: #152238; border: 1px solid #1f365c; border-radius: 12px;
+            padding: 20px; display: flex; flex-direction: column; position: relative;
+            transition: 0.3s; overflow: hidden;
         }
+        .vip-card:hover { border-color: #00e6ff; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
         
-        /* State for unlocked jobs */
-        .btn-unlocked { background: rgba(0, 255, 136, 0.2); color: #00ff88; border: 1px solid #00ff88; cursor: not-allowed; }
+        /* Highlight border for higher levels */
+        .card-premium { border-color: #ffaa00; }
+
+        .vip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .vip-title { font-size: 20px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .vip-price { font-size: 20px; font-weight: 900; color: #00ff88; }
+
+        .vip-details { display: flex; justify-content: space-between; margin-bottom: 15px; background: #090e17; padding: 10px; border-radius: 8px; border: 1px dashed #2d4a77; }
+        .detail-box { text-align: center; width: 50%; }
+        .detail-box:first-child { border-right: 1px solid #1f365c; }
+        .d-label { color: #8898aa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .d-val { color: #fff; font-size: 16px; font-weight: bold; }
+
+        .btn-unlock { 
+            width: 100%; padding: 14px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
+            color: #000; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-unlock:active { transform: scale(0.98); }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .btn-owned { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; cursor: default; }
+        .btn-locked { background: #2d4a77; color: #8898aa; cursor: not-allowed; }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo-text">LNT JOB</div>
-        <div class="wallet-info">
-            <p>My Balance</p>
-            <h3 id="user-balance">₹0.00</h3> 
-        </div>
-    </div>
-
-    <div style="max-width: 800px; margin: 0 auto;">
-        <h2 class="page-title">Available VIP Jobs</h2>
+    <div style="max-width: 500px; margin: 0 auto;">
         
-        <div class="job-grid">
-            
-            <div class="job-card" id="card-G1">
-                <div class="job-name">Level G1</div>
-                <div class="job-price">₹499</div>
-                <button class="apply-btn" id="btn-G1" onclick="buyJob('G1', 499)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G2">
-                <div class="job-name">Level G2</div>
-                <div class="job-price">₹1,450</div>
-                <button class="apply-btn" id="btn-G2" onclick="buyJob('G2', 1450)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G3">
-                <div class="job-name">Level G3</div>
-                <div class="job-price">₹4,200</div>
-                <button class="apply-btn" id="btn-G3" onclick="buyJob('G3', 4200)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G4">
-                <div class="job-name">Level G4</div>
-                <div class="job-price">₹12,000</div>
-                <button class="apply-btn" id="btn-G4" onclick="buyJob('G4', 12000)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G5">
-                <div class="job-name">Level G5</div>
-                <div class="job-price">₹22,000</div>
-                <button class="apply-btn" id="btn-G5" onclick="buyJob('G5', 22000)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G6">
-                <div class="job-name">Level G6</div>
-                <div class="job-price">₹4,00,000</div>
-                <button class="apply-btn" id="btn-G6" onclick="buyJob('G6', 400000)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G7">
-                <div class="job-name">Level G7</div>
-                <div class="job-price">₹7,50,000</div>
-                <button class="apply-btn" id="btn-G7" onclick="buyJob('G7', 750000)">Unlock</button>
-            </div>
-
-            <div class="job-card" id="card-G8">
-                <div class="job-name">Level G8</div>
-                <div class="job-price">₹14,00,000</div>
-                <button class="apply-btn" id="btn-G8" onclick="buyJob('G8', 1400000)">Unlock</button>
-            </div>
-
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">VIP Privileges</h2>
+            <div class="current-level" id="user-level-badge">VIP G1</div>
         </div>
+
+        <div class="vip-banner">
+            <h2>Upgrade Your Rank</h2>
+            <p>Higher VIP level = Higher daily income & benefits!</p>
+        </div>
+
+        <div class="vip-list" id="vip-container">
+            <div style="text-align: center; color: #8898aa;">Loading VIP Plans...</div>
+        </div>
+
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">🏠 Home</a>
-        <a href="job.html" class="nav-item active">🚀 Jobs</a>
-        <a href="wallet.html" class="nav-item">💼 Wallet</a>
-        <a href="profile.html" class="nav-item">👤 Profile</a>
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="vip.html" class="nav-item active">
+            <div class="nav-icon">💎</div>
+            VIP Plans
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
     </div>
 
     <script>
@@ -129,38 +116,87 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Security: Get logged-in user
         const userPhone = localStorage.getItem('loggedInUser');
         if (!userPhone) window.location.href = "login.html";
 
-        let userData = null;
+        // Admin Set VIP Plans
+        const vipPlans = [
+            { level: "G1", price: 0, daily: 15, validity: "Lifetime", icon: "🥉" },
+            { level: "G2", price: 1450, daily: 50, validity: "Lifetime", icon: "🥈" },
+            { level: "G3", price: 4200, daily: 150, validity: "Lifetime", icon: "🥇" },
+            { level: "G4", price: 12000, daily: 450, validity: "Lifetime", icon: "🏅" },
+            { level: "G5", price: 25000, daily: 850, validity: "Lifetime", icon: "💎" },
+            { level: "G6", price: 50000, daily: 2000, validity: "Lifetime", icon: "👑" },
+            { level: "G7", price: 100000, daily: 4000, validity: "Lifetime", icon: "🔥" },
+            { level: "G8", price: 200000, daily: 8000, validity: "Lifetime", icon: "🚀" }
+        ];
 
-        // Live Balance & Level Fetch
+        let currentUserLevel = "G1";
+
+        // Fetch User Data
         db.ref('users/' + userPhone).on('value', (snap) => {
-            userData = snap.val();
-            if (userData) {
-                document.getElementById('user-balance').innerText = "₹" + (userData.balance || 0);
-                
-                // Jo level khareed liya hai, uska button disable kar do
-                let currentLevel = userData.level || "G1";
-                if(currentLevel) {
-                    let btn = document.getElementById('btn-' + currentLevel);
-                    let card = document.getElementById('card-' + currentLevel);
-                    if(btn) {
-                        btn.innerText = "Active ✅";
-                        btn.classList.add('btn-unlocked');
-                        btn.disabled = true;
-                        card.style.borderColor = "#00ff88"; // Green border for active job
-                    }
-                }
+            let userData = snap.val();
+            if(userData) {
+                currentUserLevel = userData.level || "G1";
+                document.getElementById('user-level-badge').innerText = "VIP " + currentUserLevel;
+                renderVIPPlans();
             }
         });
 
-        // Function jab user "Unlock" par click karega
-        function buyJob(jobLevel, price) {
-            // Hum seedha yahan se invest page par redirect kar rahe hain
-            // aur URL mein data bhej rahe hain taaki wahan pata chale kya kharidna hai
-            window.location.href = `invest.html?job=${jobLevel}&price=${price}`;
+        function renderVIPPlans() {
+            let container = document.getElementById('vip-container');
+            let html = "";
+
+            // User ka current level number nikalna (e.g. "G3" -> 3) taaki pata chale chote plan lock karne hain
+            let userLevelNum = parseInt(currentUserLevel.replace("G", ""));
+
+            vipPlans.forEach(plan => {
+                let planLevelNum = parseInt(plan.level.replace("G", ""));
+                
+                let btnHTML = "";
+                let premiumClass = planLevelNum >= 4 ? "card-premium" : ""; // G4 and above have orange border
+
+                if(plan.level === currentUserLevel) {
+                    // Agar user yahi plan use kar raha hai
+                    btnHTML = `<button class="btn-unlock btn-owned">CURRENT PLAN ✅</button>`;
+                } 
+                else if(planLevelNum < userLevelNum) {
+                    // Agar user bade plan par hai, toh chote plan locked dikhenge
+                    btnHTML = `<button class="btn-unlock btn-locked" disabled>LOCKED 🔒</button>`;
+                } 
+                else {
+                    // Upgrade available
+                    btnHTML = `<button class="btn-unlock" onclick="buyPlan('${plan.level}', ${plan.price})">UNLOCK FOR ₹${plan.price.toLocaleString('en-IN')}</button>`;
+                }
+
+                html += `
+                <div class="vip-card ${premiumClass}">
+                    <div class="vip-header">
+                        <div class="vip-title">${plan.icon} VIP ${plan.level}</div>
+                        <div class="vip-price">₹${plan.price.toLocaleString('en-IN')}</div>
+                    </div>
+                    
+                    <div class="vip-details">
+                        <div class="detail-box">
+                            <div class="d-label">Daily Income</div>
+                            <div class="d-val" style="color:#00ff88;">₹${plan.daily}</div>
+                        </div>
+                        <div class="detail-box">
+                            <div class="d-label">Validity</div>
+                            <div class="d-val">${plan.validity}</div>
+                        </div>
+                    </div>
+                    
+                    ${btnHTML}
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function buyPlan(level, price) {
+            // Seedha invest.html par bhej do jahan payment confirm hogi
+            window.location.href = `invest.html?job=${level}&price=${price}`;
         }
     </script>
 </body>
