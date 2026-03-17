@@ -3,140 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT HQ - Super Admin</title>
+    <title>LNT Master - Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #050a10; color: white; padding: 20px; padding-bottom: 50px;}
-        
-        /* --- Login Screen --- */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050a10; display: flex; align-items: center; justify-content: center; z-index: 1000; flex-direction: column; }
-        .login-box { background: #111b2b; padding: 30px; border-radius: 12px; border: 1px solid #00e6ff; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 0 20px rgba(0,230,255,0.2); }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #2d4a77; background: #090e17; color: #fff; outline: none; }
-        .login-box button { width: 100%; padding: 12px; border-radius: 6px; border: none; background: #00e6ff; color: #000; font-weight: bold; margin-top: 10px; cursor: pointer; text-transform: uppercase;}
+        body { background: #050914; color: #fff; padding: 20px; }
 
-        /* --- Main Panel --- */
-        #admin-panel { display: none; max-width: 600px; margin: 0 auto; }
-        .header { border-bottom: 2px solid #00e6ff; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        h1 { color: #00e6ff; font-size: 18px; text-transform: uppercase; font-weight: 900;}
-        
-        /* Tabs */
+        /* Login Screen */
+        #admin-login { max-width: 400px; margin: 100px auto; background: #0f172a; padding: 30px; border-radius: 12px; border: 1px solid #ff4d4d; text-align: center; box-shadow: 0 0 30px rgba(255, 77, 77, 0.2); }
+        .admin-title { color: #ff4d4d; font-size: 24px; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
+        .input-box { width: 100%; padding: 15px; margin-bottom: 15px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; outline: none; }
+        .btn-login { width: 100%; padding: 15px; background: #ff4d4d; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Dashboard Screen */
+        #admin-dashboard { display: none; max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .header h1 { color: #ff4d4d; font-size: 22px; text-transform: uppercase; }
+        .btn-logout { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; }
+
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; background: #111b2b; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { background: #00e6ff; color: #000; border-color: #00e6ff; }
+        .tab-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tab-btn.active { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
 
-        .card { background: #111b2b; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #1f365c; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .user-info { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
-        .phone { font-size: 16px; font-weight: bold; color: #fff; }
-        .balance { font-size: 18px; color: #00ff88; font-weight: 900; }
+        /* Request Cards */
+        .req-list { display: flex; flex-direction: column; gap: 15px; }
+        .req-card { background: #0f172a; border: 1px solid #1f365c; border-left: 4px solid #ffaa00; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .req-info p { margin-bottom: 5px; font-size: 13px; color: #cbd5e1; }
+        .req-info span { color: #00e6ff; font-weight: bold; }
+        .req-amount { font-size: 20px; font-weight: 900; color: #00ff88; margin-bottom: 10px; }
         
-        .controls { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;}
-        input.amt-input { flex: 1; min-width: 120px; padding: 10px; border-radius: 6px; border: 1px solid #2d4a77; background: #090e17; color: #fff; outline: none; font-weight: bold;}
-        .action-btn { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; flex: 1;}
-        .btn-add { background: #00ff88; color: #000; }
-        .btn-cut { background: #ff4d4d; color: #fff; }
-        .btn-full { background: #00e6ff; color: #000; width: 100%; margin-top: 8px;}
+        .action-btns { display: flex; gap: 10px; }
+        .btn-approve { background: #00ff88; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-reject { background: #ff4d4d; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* Popup Notification Form */
-        .anno-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #2d4a77; background: #090e17; color: #fff; outline: none; }
-        textarea.anno-input { resize: vertical; min-height: 80px; }
-        .btn-publish { width: 100%; padding: 14px; background: #00ff88; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 20px;}
-        
-        /* Modal for Full Details */
-        #detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: #111b2b; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; border: 2px solid #00e6ff; position: relative; }
-        .close-modal { position: absolute; top: 10px; right: 15px; color: #ff4d4d; font-size: 20px; cursor: pointer; font-weight: bold; }
-        .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #2d4a77; padding-bottom: 5px;}
-        .detail-label { color: #8898aa; font-size: 12px; text-transform: uppercase;}
-        .detail-val { color: #fff; font-weight: bold; font-size: 14px; text-align: right;}
+        .no-data { text-align: center; color: #8898aa; padding: 40px; font-style: italic; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <h2 style="color: #00e6ff; margin-bottom: 20px;">SYSTEM LOCK</h2>
-        <div class="login-box">
-            <input type="text" id="admin-id" placeholder="Enter Admin ID">
-            <input type="password" id="admin-pass" placeholder="Enter Password">
-            <button onclick="checkAdmin()">ACCESS PANEL</button>
-        </div>
+    <div id="admin-login">
+        <h2 class="admin-title">Master Control</h2>
+        <input type="text" id="admin-id" class="input-box" placeholder="Admin ID">
+        <input type="password" id="admin-pass" class="input-box" placeholder="Password">
+        <button class="btn-login" onclick="loginAdmin()">ENTER SYSTEM</button>
+        <p id="error-msg" style="color: #ff4d4d; margin-top: 15px; display: none; font-size: 13px;">Invalid ID or Password!</p>
     </div>
 
-    <div id="admin-panel">
+    <div id="admin-dashboard">
         <div class="header">
-            <h1>HQ Master Control</h1>
-            <div id="stat-count" style="font-size: 12px; background: #1f365c; padding: 5px 10px; border-radius: 20px; font-weight: bold;">Users: 0</div>
+            <h1>LNT Master Panel</h1>
+            <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('users')" id="tab-users">Player Control</button>
-            <button class="tab-btn" onclick="switchTab('anno')" id="tab-anno">Push Notifications</button>
+            <button class="tab-btn active" onclick="switchTab('deposits')">Pending Deposits</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">Pending Withdrawals</button>
         </div>
 
-        <div id="section-users">
-            <div id="user-display">
-                <p style="text-align: center; color: #8898aa;">Fetching User Data...</p>
-            </div>
-        </div>
-
-        <div id="section-anno" style="display: none;">
-            <div class="card" style="border-color: #00ff88;">
-                <h3 style="color: #00ff88; margin-bottom: 15px; text-transform: uppercase;">Broadcast New Popup</h3>
-                <input type="text" id="anno-img" class="anno-input" placeholder="Image URL (Leave empty for default)">
-                <input type="text" id="anno-title" class="anno-input" placeholder="Popup Title (e.g., MEGA BONUS!)">
-                <textarea id="anno-desc" class="anno-input" placeholder="Write full message details here..."></textarea>
-                <button class="btn-publish" onclick="publishAnno()">🚀 Send To All Players</button>
-            </div>
-            
-            <h3 style="color: #cbd5e1; margin-bottom: 10px; font-size: 14px;">Live Active Announcements:</h3>
-            <div id="anno-list">
-                </div>
-        </div>
-    </div>
-
-    <div id="detail-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="document.getElementById('detail-modal').style.display='none'">✖</span>
-            <h2 style="color: #00e6ff; margin-bottom: 15px; font-size: 18px;" id="mod-phone">Player Details</h2>
-            
-            <div class="detail-row"><span class="detail-label">Password</span><span class="detail-val" id="mod-pass" style="color:#ffaa00;"></span></div>
-            <div class="detail-row"><span class="detail-label">Balance</span><span class="detail-val" id="mod-bal" style="color:#00ff88;"></span></div>
-            <div class="detail-row"><span class="detail-label">VIP Level</span><span class="detail-val" id="mod-level"></span></div>
-            <div class="detail-row"><span class="detail-label">Bank Name</span><span class="detail-val" id="mod-bname"></span></div>
-            <div class="detail-row"><span class="detail-label">Account No.</span><span class="detail-val" id="mod-bacc"></span></div>
-            <div class="detail-row"><span class="detail-label">IFSC Code</span><span class="detail-val" id="mod-bifsc"></span></div>
-            <div class="detail-row"><span class="detail-label">UPI ID</span><span class="detail-val" id="mod-bupi"></span></div>
-        </div>
+        <div id="deposits-view" class="req-list"></div>
+        <div id="withdrawals-view" class="req-list" style="display: none;"></div>
     </div>
 
     <script>
-        // --- ADMIN LOGIN (Hardcoded Security) ---
-        function checkAdmin() {
-            let id = document.getElementById('admin-id').value;
-            let pass = document.getElementById('admin-pass').value;
-
-            // Priority Override Rules (Matched exactly)
-            if (id === "3603236032" && pass === "J1a2y3a4") {
-                document.getElementById('login-screen').style.display = "none";
-                document.getElementById('admin-panel').style.display = "block";
-                loadFirebaseData(); 
-                loadAnnouncements();
-            } else {
-                alert("❌ Unauthorized Access! Incorrect ID or Password.");
-            }
-        }
-
-        // --- TAB SWITCHER ---
-        function switchTab(tabName) {
-            document.getElementById('section-users').style.display = (tabName === 'users') ? 'block' : 'none';
-            document.getElementById('section-anno').style.display = (tabName === 'anno') ? 'block' : 'none';
-            
-            document.getElementById('tab-users').classList.toggle('active', tabName === 'users');
-            document.getElementById('tab-anno').classList.toggle('active', tabName === 'anno');
-        }
-
         // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
@@ -145,138 +74,113 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let allUsersData = {};
+        // Admin Security Check
+        function loginAdmin() {
+            let id = document.getElementById('admin-id').value;
+            let pass = document.getElementById('admin-pass').value;
 
-        // --- 1. USER MANAGEMENT SYSTEM ---
-        function loadFirebaseData() {
-            db.ref('users').on('value', (snapshot) => {
-                allUsersData = snapshot.val();
-                let html = "";
-                let count = 0;
-
-                if (allUsersData) {
-                    const userKeys = Object.keys(allUsersData).reverse();
-
-                    userKeys.forEach(id => {
-                        let user = allUsersData[id];
-                        count++;
-                        let levelText = user.level || "G1";
-                        
-                        html += `
-                        <div class="card">
-                            <div class="user-info">
-                                <span class="phone">📱 ${id} <span style="font-size:12px; color:#00e6ff; margin-left:5px;">[${levelText}]</span></span>
-                                <span class="balance">₹${user.balance || 0}</span>
-                            </div>
-                            
-                            <div class="controls">
-                                <input type="number" id="amt-${id}" class="amt-input" placeholder="Amount (e.g. 500)">
-                                <button class="action-btn btn-add" onclick="updateBalance('${id}', 'add')">Add</button>
-                                <button class="action-btn btn-cut" onclick="updateBalance('${id}', 'sub')">Cut</button>
-                            </div>
-                            <button class="action-btn btn-full" onclick="showFullDetails('${id}')">📋 View Full Details</button>
-                        </div>`;
-                    });
-                    document.getElementById('user-display').innerHTML = html;
-                    document.getElementById('stat-count').innerText = "Total Players: " + count;
-                } else {
-                    document.getElementById('user-display').innerHTML = "<p style='text-align:center;'>No players joined yet.</p>";
-                }
-            });
-        }
-
-        function updateBalance(userId, action) {
-            let amountField = document.getElementById('amt-' + userId);
-            let amount = parseInt(amountField.value);
-            
-            if (!amount || amount <= 0) { alert("Please enter a valid amount!"); return; }
-
-            let userRef = db.ref('users/' + userId);
-            userRef.once('value').then((snap) => {
-                let currentBal = snap.val().balance || 0;
-                let newBal = (action === 'add') ? (currentBal + amount) : (currentBal - amount);
-                let historyType = (action === 'add') ? 'System Reward' : 'System Deduction';
-
-                db.ref().update({ ['users/' + userId + '/balance']: newBal }).then(() => {
-                    db.ref('users/' + userId + '/transactions').push({
-                        type: historyType, amount: amount, status: 'Success', date: new Date().toLocaleString()
-                    });
-                    amountField.value = "";
-                });
-            });
-        }
-
-        // FULL DETAILS MODAL
-        function showFullDetails(userId) {
-            let user = allUsersData[userId];
-            if(!user) return;
-
-            document.getElementById('mod-phone').innerText = "Player: " + userId;
-            document.getElementById('mod-pass').innerText = user.password || "N/A";
-            document.getElementById('mod-bal').innerText = "₹" + (user.balance || 0);
-            document.getElementById('mod-level').innerText = user.level || "G1";
-
-            if(user.bankDetails) {
-                document.getElementById('mod-bname').innerText = user.bankDetails.name || "N/A";
-                document.getElementById('mod-bacc').innerText = user.bankDetails.account || "N/A";
-                document.getElementById('mod-bifsc').innerText = user.bankDetails.ifsc || "N/A";
-                document.getElementById('mod-bupi').innerText = user.bankDetails.upi || "N/A";
+            if(id === "3603236032" && pass === "J1a2y3a4") {
+                document.getElementById('admin-login').style.display = "none";
+                document.getElementById('admin-dashboard').style.display = "block";
+                loadRequests();
             } else {
-                document.getElementById('mod-bname').innerText = "Not Bound";
-                document.getElementById('mod-bacc').innerText = "Not Bound";
-                document.getElementById('mod-bifsc').innerText = "Not Bound";
-                document.getElementById('mod-bupi').innerText = "Not Bound";
+                document.getElementById('error-msg').style.display = "block";
             }
-
-            document.getElementById('detail-modal').style.display = "flex";
         }
 
-        // --- 2. POPUP NOTIFICATION (ANNOUNCEMENTS) SYSTEM ---
-        function publishAnno() {
-            let title = document.getElementById('anno-title').value;
-            let desc = document.getElementById('anno-desc').value;
-            let img = document.getElementById('anno-img').value;
-
-            if(title === "" || desc === "") {
-                alert("Title aur Message likhna zaroori hai!");
-                return;
-            }
-
-            db.ref('settings/announcements').push({
-                title: title,
-                desc: desc,
-                image: img
-            }).then(() => {
-                alert("✅ Notification successfully pushed to all devices!");
-                document.getElementById('anno-title').value = "";
-                document.getElementById('anno-desc').value = "";
-                document.getElementById('anno-img').value = "";
-            });
+        function logoutAdmin() {
+            document.getElementById('admin-login').style.display = "block";
+            document.getElementById('admin-dashboard').style.display = "none";
+            document.getElementById('admin-id').value = "";
+            document.getElementById('admin-pass').value = "";
         }
 
-        function loadAnnouncements() {
-            db.ref('settings/announcements').on('value', (snap) => {
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if(tab === 'deposits') {
+                document.getElementById('deposits-view').style.display = "flex";
+                document.getElementById('withdrawals-view').style.display = "none";
+            } else {
+                document.getElementById('deposits-view').style.display = "none";
+                document.getElementById('withdrawals-view').style.display = "flex";
+            }
+        }
+
+        function loadRequests() {
+            // Load Deposits
+            db.ref('depositRequests').on('value', snap => {
                 let data = snap.val();
                 let html = "";
                 if(data) {
                     for(let key in data) {
-                        html += `
-                        <div class="card" style="border-color:#2d4a77; padding: 10px;">
-                            <h4 style="color:#00e6ff; margin-bottom:5px;">${data[key].title}</h4>
-                            <p style="font-size:12px; color:#8898aa; margin-bottom:10px;">${data[key].desc}</p>
-                            <button class="action-btn btn-cut" onclick="deleteAnno('${key}')" style="width:100%;">Delete</button>
-                        </div>`;
+                        if(data[key].status === 'Pending') {
+                            html += `
+                            <div class="req-card">
+                                <div class="req-info">
+                                    <p>User: <span>${data[key].phone}</span></p>
+                                    <p>UTR: <span>${data[key].utr}</span></p>
+                                    <p>Date: ${data[key].date}</p>
+                                    <div class="req-amount">₹${data[key].amount}</div>
+                                </div>
+                                <div class="action-btns">
+                                    <button class="btn-approve" onclick="approveDeposit('${key}', '${data[key].phone}', ${data[key].amount})">Approve</button>
+                                </div>
+                            </div>`;
+                        }
                     }
-                } else {
-                    html = "<p style='font-size:12px; color:#8898aa;'>No active announcements.</p>";
                 }
-                document.getElementById('anno-list').innerHTML = html;
+                document.getElementById('deposits-view').innerHTML = html || "<div class='no-data'>No pending deposits.</div>";
+            });
+
+            // Load Withdrawals
+            db.ref('withdrawRequests').on('value', snap => {
+                let data = snap.val();
+                let html = "";
+                if(data) {
+                    for(let key in data) {
+                        if(data[key].status === 'Pending') {
+                            html += `
+                            <div class="req-card" style="border-left-color: #00e6ff;">
+                                <div class="req-info">
+                                    <p>User: <span>${data[key].phone}</span></p>
+                                    <p>Bank: ${data[key].bankName} | A/C: <span>${data[key].accountNo}</span></p>
+                                    <p>IFSC: <span>${data[key].ifsc}</span></p>
+                                    <div class="req-amount" style="color: #00e6ff;">₹${data[key].amount}</div>
+                                </div>
+                                <div class="action-btns">
+                                    <button class="btn-approve" onclick="approveWithdraw('${key}', '${data[key].phone}')">Paid</button>
+                                </div>
+                            </div>`;
+                        }
+                    }
+                }
+                document.getElementById('withdrawals-view').innerHTML = html || "<div class='no-data'>No pending withdrawals.</div>";
             });
         }
 
-        function deleteAnno(key) {
-            if(confirm("Delete this notification? It will disappear from all user screens.")) {
-                db.ref('settings/announcements/' + key).remove();
+        // --- ACTION FUNCTIONS ---
+        function approveDeposit(reqId, phone, amount) {
+            if(confirm(`Add ₹${amount} to user ${phone}?`)) {
+                db.ref('users/' + phone).once('value').then(snap => {
+                    let currentBal = snap.val().balance || 0;
+                    // Update user balance
+                    db.ref('users/' + phone).update({ balance: currentBal + amount });
+                    // Update request status
+                    db.ref('depositRequests/' + reqId).update({ status: 'Approved' });
+                    // Add to user history
+                    db.ref('users/' + phone + '/transactions').push({ type: 'Deposit Approved', amount: amount, status: 'Success', date: new Date().toLocaleString() });
+                });
+            }
+        }
+
+        function approveWithdraw(reqId, phone) {
+            if(confirm(`Did you send money to ${phone}'s bank account?`)) {
+                // Update request status
+                db.ref('withdrawRequests/' + reqId).update({ status: 'Approved' });
+                // Add to user history
+                db.ref('users/' + phone + '/transactions').push({ type: 'Withdrawal Approved', amount: 0, status: 'Success (Paid)', date: new Date().toLocaleString() });
             }
         }
     </script>
