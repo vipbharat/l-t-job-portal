@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Download App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .header { width: 100%; max-width: 400px; display: flex; align-items: center; margin-bottom: 30px; position: absolute; top: 20px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+
+        .app-card {
+            background: #152238; width: 100%; max-width: 400px;
+            padding: 40px 20px; border-radius: 16px; border: 1px solid #1f365c;
+            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.15);
+            text-align: center; position: relative; overflow: hidden; margin-top: 50px;
+        }
+
+        .app-icon { 
+            width: 100px; height: 100px; background: linear-gradient(135deg, #007bff, #00e6ff); 
+            border-radius: 25px; margin: 0 auto 20px auto; display: flex; align-items: center; 
+            justify-content: center; font-size: 50px; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.4); border: 2px solid #fff;
+        }
+
+        .app-title { color: #fff; font-size: 24px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .app-version { color: #00ff88; font-size: 14px; font-weight: bold; margin-bottom: 25px; }
+
+        .features-list { text-align: left; background: #090e17; padding: 15px; border-radius: 8px; border: 1px dashed #2d4a77; margin-bottom: 25px; }
+        .features-list p { color: #cbd5e1; font-size: 13px; margin-bottom: 10px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .features-list p:last-child { margin-bottom: 0; }
+
+        .btn-download { 
+            width: 100%; padding: 16px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #00ff88 0%, #00b359 100%); 
+            color: #000; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+        .btn-download:active { transform: scale(0.95); }
+
+        .instruction { color: #8898aa; font-size: 11px; margin-top: 20px; line-height: 1.5; font-weight: bold; }
+        .instruction span { color: #ffaa00; }
+        
+        .os-badge { display: inline-block; background: #1f365c; color: #8898aa; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 15px; border: 1px solid #2d4a77; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">⬅ Back</a>
+    </div>
+
+    <div class="app-card">
+        <div class="app-icon">💎</div>
+        <div class="app-title">LNT VIP Portal</div>
+        <div class="app-version">Version 2.0.4 | Size: 18.5 MB</div>
+
+        <div class="features-list">
+            <p>🚀 <span>Faster Loading & Smoother Gameplay</span></p>
+            <p>🔒 <span>Bank-Grade Secure Transactions</span></p>
+            <p>🎁 <span>Exclusive App-Only VIP Bonuses</span></p>
+            <p>🔔 <span>Instant Withdrawal Notifications</span></p>
+        </div>
+
+        <a href="#" class="btn-download" onclick="startDownload()">
+            📥 DOWNLOAD FOR ANDROID
+        </a>
+
+        <div class="os-badge">Supported on Android 6.0 & Above</div>
+
+        <p class="instruction">
+            <span>Note:</span> If your phone asks for permission, please go to Settings and enable <span>"Install from Unknown Sources"</span> to complete the VIP installation.
+        </p>
+    </div>
+
+    <script>
+        function startDownload() {
+            let btn = document.querySelector('.btn-download');
+            btn.innerHTML = "⏳ DOWNLOADING...";
+            btn.style.background = "#ffaa00";
+            btn.style.boxShadow = "none";
+            
+            // Yahan par hum abhi ek alert de rahe hain. 
+            // Jab aapke paas asli APK ho, toh alert hata kar link download start karwa dena.
+            setTimeout(() => {
+                alert("Downloading started! Please check your notification bar.\n\n(Admin Note: Please link your actual .apk file in the code!)");
+                btn.innerHTML = "📥 DOWNLOAD FOR ANDROID";
+                btn.style.background = "linear-gradient(90deg, #00ff88 0%, #00b359 100%)";
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
