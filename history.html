@@ -3,66 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT - All Transactions</title>
+    <title>LNT Job - Transaction History</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             background: #090e17; 
             background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 50px;
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        
-        /* History Card Styles */
-        .history-card { 
-            background: #152238; 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin-bottom: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-left: 5px solid #8898aa; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        /* Kamai (Income) - Green */
-        .card-income { border-left-color: #00ff88; }
-        .text-income { color: #00ff88; }
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
 
-        /* Kharcha/Withdrawal (Expense) - Red */
-        .card-expense { border-left-color: #ff4d4d; }
-        .text-expense { color: #ff4d4d; }
+        .summary-box { background: linear-gradient(135deg, #152238 0%, #1f365c 100%); padding: 20px; border-radius: 12px; border: 1px solid #00e6ff; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
+        .summary-box div p { color: #8898aa; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+        .summary-box div h2 { color: #00ff88; font-size: 24px; font-weight: 900; }
+
+        .filter-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        .filter-btn.active { background: #00e6ff; color: #000; border-color: #00e6ff; }
+
+        /* History List */
+        .history-list { display: flex; flex-direction: column; gap: 15px; }
         
-        .tx-left { display: flex; align-items: center; gap: 12px; }
-        .tx-icon { font-size: 24px; background: #090e17; padding: 8px; border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; border: 1px solid #2d4a77;}
+        .txn-card { background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #1f365c; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .txn-card:hover { border-color: #2d4a77; transform: translateY(-2px); }
         
-        .title { font-size: 15px; font-weight: 900; margin-bottom: 3px; text-transform: capitalize; }
-        .date { font-size: 11px; color: #8898aa; font-weight: bold; }
+        .txn-left { display: flex; flex-direction: column; gap: 5px; }
+        .txn-title { font-size: 15px; font-weight: bold; color: #fff; }
+        .txn-date { font-size: 12px; color: #8898aa; }
+        .txn-utr { font-size: 11px; color: #cbd5e1; background: #152238; padding: 2px 5px; border-radius: 4px; display: inline-block; margin-top: 3px; border: 1px dashed #2d4a77;}
+
+        .txn-right { text-align: right; display: flex; flex-direction: column; gap: 5px; }
+        .txn-amt { font-size: 18px; font-weight: 900; }
         
-        .amount { font-size: 18px; font-weight: 900; margin-bottom: 5px; text-align: right;}
-        
-        .status { font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; display: inline-block; }
-        .status-pending { background: #ffaa00; color: #000; }
-        .status-success { background: #00ff88; color: #000; }
-        .status-rejected { background: #ff4d4d; color: #fff; }
+        /* Status Colors */
+        .status { font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+        .status-success { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; }
+        .status-pending { background: rgba(255, 170, 0, 0.1); color: #ffaa00; border: 1px solid #ffaa00; }
+        .status-failed { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; }
+
+        /* Amount Colors */
+        .amt-in { color: #00ff88; } /* Paisa aaya */
+        .amt-out { color: #ff4d4d; } /* Paisa gaya */
+
+        .no-data { text-align: center; color: #8898aa; font-size: 14px; margin-top: 40px; font-style: italic; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
     <div style="max-width: 500px; margin: 0 auto;">
+        
         <div class="header">
             <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <h2 style="font-size: 18px; text-transform: uppercase;">All Records</h2>
+            <h2 class="page-title">Financial Records</h2>
         </div>
 
-        <div id="history-list">
-            <p style="text-align: center; color: #8898aa; margin-top: 50px;">Loading History...</p>
+        <div class="summary-box">
+            <div>
+                <p>Current Balance</p>
+                <h2 id="live-balance">₹0</h2>
+            </div>
+            <div style="text-align: right;">
+                <p>VIP Level</p>
+                <h2 id="live-level" style="color:#00e6ff;">G1</h2>
+            </div>
         </div>
+
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterData('All')">All Records</button>
+            <button class="filter-btn" onclick="filterData('Deposit')">Deposits</button>
+            <button class="filter-btn" onclick="filterData('Withdrawal')">Withdrawals</button>
+            <button class="filter-btn" onclick="filterData('Reward')">Rewards</button>
+        </div>
+
+        <div class="history-list" id="transactions-container">
+            <div class="no-data">Loading your records...</div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="deposit.html" class="nav-item">
+            <div class="nav-icon">💳</div>
+            Recharge
+        </a>
+        <a href="wallet.html" class="nav-item">
+            <div class="nav-icon">🏦</div>
+            Withdraw
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
     </div>
 
     <script>
@@ -77,56 +122,87 @@
         const userPhone = localStorage.getItem('loggedInUser');
         if (!userPhone) window.location.href = "login.html";
 
-        // Live History Fetch Karna
-        db.ref('users/' + userPhone + '/transactions').on('value', (snap) => {
-            const data = snap.val();
-            let html = "";
-            
-            if (data) {
-                // Naya transaction sabse upar (Reverse)
-                const transactions = Object.values(data).reverse();
-                
-                transactions.forEach(tx => {
-                    // Logic: Agar Withdrawal ya Plan Buy kiya hai toh Kharcha (Red), varna Kamai (Green)
-                    let isExpense = (tx.type.toLowerCase().includes('withdraw') || tx.type.toLowerCase().includes('buy') || tx.type.toLowerCase().includes('invest'));
-                    
-                    let cardClass = isExpense ? 'card-expense' : 'card-income';
-                    let textClass = isExpense ? 'text-expense' : 'text-income';
-                    let sign = isExpense ? '-' : '+';
-                    let statusClass = 'status-' + (tx.status ? tx.status.toLowerCase() : 'success');
+        let allTransactions = [];
 
-                    // Icon set karna type ke hisaab se
-                    let icon = "💰"; // Default
-                    if(tx.type.toLowerCase().includes('deposit')) icon = "💳";
-                    else if(tx.type.toLowerCase().includes('withdraw')) icon = "🏦";
-                    else if(tx.type.toLowerCase().includes('bonus')) icon = "🎁";
-                    else if(tx.type.toLowerCase().includes('refer')) icon = "👥";
-                    else if(tx.type.toLowerCase().includes('profit')) icon = "📈";
-
-                    html += `
-                    <div class="history-card ${cardClass}">
-                        <div class="tx-left">
-                            <div class="tx-icon">${icon}</div>
-                            <div>
-                                <div class="title">${tx.type}</div>
-                                <div class="date">${tx.date}</div>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="amount ${textClass}">${sign}₹${tx.amount}</div>
-                            <div class="status ${statusClass}">${tx.status || 'Success'}</div>
-                        </div>
-                    </div>`;
-                });
-            } else {
-                html = `
-                <div style="text-align: center; margin-top: 50px;">
-                    <div style="font-size: 40px; margin-bottom: 10px;">📜</div>
-                    <p style="color: #8898aa; font-weight: bold;">No transactions yet.</p>
-                </div>`;
+        // Fetch Live Balance & Level
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            let userData = snap.val();
+            if(userData) {
+                document.getElementById('live-balance').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+                document.getElementById('live-level').innerText = userData.level || "G1";
             }
-            document.getElementById('history-list').innerHTML = html;
         });
+
+        // Fetch Transactions History
+        db.ref('users/' + userPhone + '/transactions').on('value', (snap) => {
+            let data = snap.val();
+            allTransactions = [];
+            
+            if(data) {
+                // Firebase object ko array me badalna taaki reverse kar sakein (Newest First)
+                for(let key in data) {
+                    allTransactions.push(data[key]);
+                }
+                allTransactions.reverse(); // Sabse naya sabse upar
+            }
+            
+            renderTransactions("All");
+        });
+
+        // Filter Logic
+        function filterData(type) {
+            // Update Active Tab UI
+            let tabs = document.querySelectorAll('.filter-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            renderTransactions(type);
+        }
+
+        // Display Logic
+        function renderTransactions(filterType) {
+            let container = document.getElementById('transactions-container');
+            let html = "";
+
+            let filteredList = allTransactions;
+
+            if(filterType !== "All") {
+                filteredList = allTransactions.filter(txn => txn.type.includes(filterType));
+            }
+
+            if(filteredList.length === 0) {
+                container.innerHTML = `<div class="no-data">No records found for ${filterType}.</div>`;
+                return;
+            }
+
+            filteredList.forEach(txn => {
+                // Logic to decide colors based on transaction type
+                let isIncome = !txn.type.includes('Withdrawal') && !txn.type.includes('Bought') && !txn.type.includes('Deduction');
+                let amtColorClass = isIncome ? "amt-in" : "amt-out";
+                let sign = isIncome ? "+" : "-";
+
+                let statusClass = "status-success";
+                if(txn.status === "Pending") statusClass = "status-pending";
+                if(txn.status === "Failed" || txn.status === "Rejected") statusClass = "status-failed";
+
+                let utrHTML = txn.utr ? `<div class="txn-utr">UTR: ${txn.utr}</div>` : "";
+
+                html += `
+                <div class="txn-card">
+                    <div class="txn-left">
+                        <div class="txn-title">${txn.type}</div>
+                        <div class="txn-date">${txn.date}</div>
+                        ${utrHTML}
+                    </div>
+                    <div class="txn-right">
+                        <div class="txn-amt ${amtColorClass}">${sign}₹${txn.amount.toLocaleString('en-IN')}</div>
+                        <div class="status ${statusClass}">${txn.status}</div>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
     </script>
 </body>
 </html>
