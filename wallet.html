@@ -3,84 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Wallet - Withdraw</title>
+    <title>LNT Job - Withdraw Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             background: #090e17; 
             background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px;
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
         .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        .history-btn { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #00e6ff; }
+        .history-btn { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #00ff88; }
 
         .wallet-card {
             background: linear-gradient(135deg, #152238 0%, #1f365c 100%);
-            padding: 30px 20px; border-radius: 15px; border: 1px solid #00e6ff;
-            text-align: center; margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1);
+            padding: 30px 20px; border-radius: 16px; border: 1px solid #00e6ff;
+            text-align: center; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.15);
+            position: relative; overflow: hidden;
         }
-        .balance-label { color: #8898aa; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; }
-        .balance-amount { color: #00ff88; font-size: 40px; font-weight: 900; letter-spacing: 1px; }
+        
+        .bal-label { color: #8898aa; font-size: 13px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .bal-amount { color: #00ff88; font-size: 40px; font-weight: 900; letter-spacing: 1px; }
 
-        .form-box { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; }
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; color: #cbd5e1; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
+        .form-box { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
         .input-group input { 
             width: 100%; padding: 15px; background: #090e17; border: 1px solid #2d4a77; 
-            border-radius: 8px; color: #fff; font-size: 18px; outline: none; font-weight: bold;
+            border-radius: 8px; color: #fff; font-size: 18px; outline: none; font-weight: bold; transition: 0.3s;
         }
-        .input-group input:focus { border-color: #00e6ff; }
+        .input-group input:focus { border-color: #00e6ff; box-shadow: 0 0 10px rgba(0, 230, 255, 0.2); }
 
-        .schedule-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 13px; color: #8898aa; background: #090e17; border-radius: 8px; overflow: hidden; }
-        .schedule-table th, .schedule-table td { padding: 12px; border: 1px solid #1f365c; text-align: center; }
-        .schedule-table th { background: #152238; color: #00e6ff; font-weight: 900; }
-        .active-row { color: #00ff88 !important; background: rgba(0, 255, 136, 0.1); font-weight: bold; border: 2px solid #00ff88; }
+        .schedule-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 12px; color: #8898aa; background: #090e17; border-radius: 8px; overflow: hidden; border: 1px solid #1f365c; }
+        .schedule-table th, .schedule-table td { padding: 10px; border-bottom: 1px solid #1f365c; text-align: center; }
+        .schedule-table th { background: #152238; color: #00e6ff; font-weight: 900; text-transform: uppercase; }
+        .active-row { color: #00ff88 !important; background: rgba(0, 255, 136, 0.1); font-weight: bold; border-left: 3px solid #00ff88; border-right: 3px solid #00ff88; }
 
         .btn-withdraw { 
             width: 100%; padding: 16px; border-radius: 8px; border: none; 
             background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px;
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.3);
         }
         .btn-withdraw:active { transform: scale(0.98); }
+
+        .bank-status { background: rgba(255, 77, 77, 0.1); border: 1px dashed #ff4d4d; padding: 10px; border-radius: 8px; color: #ff4d4d; font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; }
+        .bank-status a { color: #ff4d4d; text-decoration: underline; }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
     <div style="max-width: 500px; margin: 0 auto;">
+        
         <div class="header">
             <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <h2 style="font-size: 18px; text-transform: uppercase; color: #fff;">Wallet</h2>
-            <a href="history.html" class="history-btn">📜 History</a>
+            <h2 style="font-size: 18px; text-transform: uppercase; color: #fff;">Withdraw</h2>
+            <a href="history.html" class="history-btn">📜 Records</a>
         </div>
 
         <div class="wallet-card">
-            <p class="balance-label">Available Balance</p>
-            <p class="balance-amount" id="display-balance">₹0</p>
+            <div class="bal-label">Available Balance</div>
+            <div class="bal-amount" id="display-balance">₹0</div>
+        </div>
+
+        <div id="bank-warning" class="bank-status">
+            ⚠️ Bank Account not linked! <a href="bank.html">Click here to bind</a> before withdrawal.
         </div>
 
         <div class="form-box">
             <div class="input-group">
-                <label>Withdrawal Amount</label>
-                <input type="number" id="withdraw-amount" placeholder="Min ₹200">
+                <label>Withdrawal Amount (₹)</label>
+                <input type="number" id="withdraw-amount" placeholder="Minimum ₹200">
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <p style="color: #ffaa00; font-size: 13px; font-weight: bold; margin-bottom: 10px;">📅 VIP Withdrawal Schedule:</p>
+            <div class="input-group">
+                <label>Login Password</label>
+                <input type="password" id="withdraw-pass" placeholder="Enter your password">
+            </div>
+
+            <div style="margin-top: 20px;">
+                <p style="color: #ffaa00; font-size: 12px; font-weight: bold; margin-bottom: 8px;">📅 VIP Withdrawal Schedule:</p>
                 <table class="schedule-table">
-                    <tr><th>VIP Level</th><th>Dates</th></tr>
-                    <tr id="row-G13"><td>G1, G2, G3</td><td>1 - 10</td></tr>
-                    <tr id="row-G46"><td>G4, G5, G6</td><td>11 - 20</td></tr>
-                    <tr id="row-G78"><td>G7, G8</td><td>21 - 28</td></tr>
+                    <tr><th>VIP Level</th><th>Allowed Dates</th></tr>
+                    <tr id="row-G13"><td>G1, G2, G3</td><td>1st - 10th</td></tr>
+                    <tr id="row-G46"><td>G4, G5, G6</td><td>11th - 20th</td></tr>
+                    <tr id="row-G78"><td>G7, G8</td><td>21st - 28th</td></tr>
                 </table>
             </div>
 
-            <button class="btn-withdraw" id="withdraw-btn" onclick="checkAndWithdraw()">Withdraw Now</button>
+            <button class="btn-withdraw" id="withdraw-btn" onclick="checkAndWithdraw()">SUBMIT WITHDRAWAL</button>
         </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="deposit.html" class="nav-item">
+            <div class="nav-icon">💳</div>
+            Recharge
+        </a>
+        <a href="wallet.html" class="nav-item active">
+            <div class="nav-icon">🏦</div>
+            Withdraw
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
     </div>
 
     <script>
@@ -97,21 +137,40 @@
         if (!userPhone) window.location.href = "login.html";
 
         let userData = null;
+        let bankBound = false;
 
-        // Fetch Live Balance
+        // Fetch Live Balance & Bank Data
         db.ref('users/' + userPhone).on('value', (snap) => {
             userData = snap.val();
-            if (userData) {
-                document.getElementById('display-balance').innerText = "₹" + (userData.balance || 0);
+            if(userData) {
+                document.getElementById('display-balance').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+                
+                // Check if bank is bound
+                if(userData.bankDetails && userData.bankDetails.account) {
+                    bankBound = true;
+                    document.getElementById('bank-warning').style.display = 'none';
+                } else {
+                    bankBound = false;
+                    document.getElementById('bank-warning').style.display = 'block';
+                }
+
                 highlightActiveRow();
             }
         });
 
         function checkAndWithdraw() {
             let amountField = document.getElementById('withdraw-amount');
+            let passField = document.getElementById('withdraw-pass');
             let amount = parseInt(amountField.value);
+            let password = passField.value;
             let btn = document.getElementById('withdraw-btn');
             
+            if(!bankBound) {
+                alert("❌ Please bind your Bank Account first!");
+                window.location.href = "bank.html";
+                return;
+            }
+
             let today = new Date();
             let date = today.getDate();
             let userLevel = userData.level || "G1";
@@ -119,77 +178,41 @@
             let canWithdraw = false;
             let ruleMsg = "";
 
-            // VIP Logic
+            // VIP Date Logic
             if (["G1", "G2", "G3"].includes(userLevel)) {
                 if (date >= 1 && date <= 10) canWithdraw = true;
-                ruleMsg = "1 se 10";
+                ruleMsg = "1 se 10 tareekh";
             } else if (["G4", "G5", "G6"].includes(userLevel)) {
                 if (date >= 11 && date <= 20) canWithdraw = true;
-                ruleMsg = "11 se 20";
+                ruleMsg = "11 se 20 tareekh";
             } else if (["G7", "G8"].includes(userLevel)) {
                 if (date >= 21 && date <= 28) canWithdraw = true;
-                ruleMsg = "21 se 28";
+                ruleMsg = "21 se 28 tareekh";
             }
 
             // Validations
             if (!canWithdraw) {
-                alert(`❌ Abhi Aapka Samay Nahi Aaya Hai!\n\nAapka VIP Level: ${userLevel}\nTumhara withdrawal ka samay: Mahine ki ${ruleMsg} tareek tak hai.\n\nAaj ki tareek: ${date} hai.\n\nKripya apne samay par hi withdrawal lagayein.`);
+                alert(`❌ Withdrawal Locked!\n\nYour VIP Level is: ${userLevel}\nYou can only withdraw from ${ruleMsg} of the month.\n\nToday is date: ${date}. Please wait for your slot.`);
                 return;
             }
 
             if (!amount || amount < 200) {
-                alert("Kam se kam ₹200 ka withdrawal laga sakte hain.");
+                alert("Minimum withdrawal amount is ₹200.");
                 return;
             }
 
             if (amount > userData.balance) {
-                alert("Aapke wallet mein itna balance nahi hai!");
+                alert("Insufficient wallet balance!");
                 return;
             }
 
-            // Disable button to prevent double click
+            if (password !== userData.password) {
+                alert("❌ Incorrect Login Password!");
+                return;
+            }
+
+            // Processing Withdrawal
             btn.disabled = true;
-            btn.innerText = "Processing...";
+            btn.innerText = "PROCESSING...";
 
-            let txnDate = new Date().toLocaleString();
-
-            // 1. Balance Cut Karna
-            let newBalance = userData.balance - amount;
-            db.ref('users/' + userPhone).update({ balance: newBalance }).then(() => {
-                
-                // 2. Admin ke paas request bhejna
-                db.ref('withdrawRequests').push({
-                    phone: userPhone,
-                    amount: amount,
-                    status: 'Pending',
-                    date: txnDate
-                });
-
-                // 3. User ki History me add karna
-                db.ref('users/' + userPhone + '/transactions').push({
-                    type: 'Withdrawal',
-                    amount: amount,
-                    status: 'Pending',
-                    date: txnDate
-                }).then(() => {
-                    alert(`✅ Request Sent!\nAapka ₹${amount} ka withdrawal review ke liye bhej diya gaya hai.`);
-                    amountField.value = "";
-                    btn.disabled = false;
-                    btn.innerText = "Withdraw Now";
-                });
-            });
-        }
-
-        function highlightActiveRow() {
-            let d = new Date().getDate();
-            document.getElementById('row-G13').classList.remove('active-row');
-            document.getElementById('row-G46').classList.remove('active-row');
-            document.getElementById('row-G78').classList.remove('active-row');
-
-            if (d >= 1 && d <= 10) document.getElementById('row-G13').classList.add('active-row');
-            if (d >= 11 && d <= 20) document.getElementById('row-G46').classList.add('active-row');
-            if (d >= 21 && d <= 28) document.getElementById('row-G78').classList.add('active-row');
-        }
-    </script>
-</body>
-</html>
+            let txnDate =
