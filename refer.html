@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Invite & Earn</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
+        }
+
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        
+        /* Customer Service Button */
+        .cs-btn { background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #00ff88; display: flex; align-items: center; gap: 5px; }
+
+        .invite-banner {
+            background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%);
+            padding: 30px 20px; border-radius: 15px; text-align: center; margin-bottom: 25px;
+            color: #000; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.3);
+        }
+        .invite-banner h2 { font-size: 24px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+        .invite-banner p { font-size: 14px; font-weight: bold; }
+
+        .share-box { background: #152238; padding: 20px; border-radius: 12px; border: 1px dashed #00e6ff; text-align: center; margin-bottom: 25px; }
+        .share-box h3 { color: #cbd5e1; font-size: 14px; margin-bottom: 15px; text-transform: uppercase; }
+        
+        .link-display { background: #090e17; padding: 15px; border-radius: 8px; border: 1px solid #2d4a77; color: #00ff88; font-size: 13px; word-break: break-all; margin-bottom: 15px; font-weight: bold; }
+        
+        .btn-copy { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #00e6ff; color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-copy:active { transform: scale(0.95); }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; text-align: center; }
+        .stat-card p { color: #8898aa; font-size: 12px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .stat-card h3 { color: #fff; font-size: 22px; }
+
+        .salary-link { display: block; text-align: center; background: #1f365c; color: #00e6ff; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: bold; border: 1px solid #2d4a77; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 style="font-size: 18px; text-transform: uppercase; color: #fff;">Team</h2>
+            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="cs-btn">🎧 Support</a>
+        </div>
+
+        <div class="invite-banner">
+            <h2>Build Your Team</h2>
+            <p>Invite friends and earn lifetime commission on their VIP Jobs!</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>Total Team Size</p>
+                <h3 id="team-size">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Team Commission</p>
+                <h3 style="color: #00ff88;">₹<span id="team-income">0</span></h3>
+            </div>
+        </div>
+
+        <div class="share-box">
+            <h3>Your Exclusive Referral Link</h3>
+            <div class="link-display" id="ref-link">Loading link...</div>
+            <button class="btn-copy" onclick="copyLink()">📋 Copy Invite Link</button>
+        </div>
+
+        <a href="salary.html" class="salary-link">📊 View Position Salary Schedule ➡</a>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">🏠 Home</a>
+        <a href="job.html" class="nav-item">🚀 Jobs</a>
+        <a href="refer.html" class="nav-item active">🔗 Team</a>
+        <a href="profile.html" class="nav-item">👤 Profile</a>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        // Generate Referral Link automatically
+        const baseURL = "https://vipbharat.github.io/kalyan-casino-game/";
+        const myReferralLink = baseURL + "?ref=" + userPhone;
+        document.getElementById('ref-link').innerText = myReferralLink;
+
+        function copyLink() {
+            navigator.clipboard.writeText(myReferralLink).then(() => {
+                alert("✅ Referral Link Copied!\nShare it on WhatsApp and Telegram to build your team.");
+            });
+        }
+
+        // Fetch live team size
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            let userData = snap.val();
+            if(userData) {
+                document.getElementById('team-size').innerText = userData.teamSize || 0;
+                document.getElementById('team-income').innerText = userData.teamIncome || 0;
+            }
+        });
+    </script>
+</body>
+</html>
