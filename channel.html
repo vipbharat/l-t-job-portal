@@ -3,181 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Channel - LNT</title>
+    <title>LNT Job - Customer Support</title>
     <style>
-        /* Telegram Exact Dark Theme */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        
-        body { background-color: #0e1621; height: 100vh; display: flex; flex-direction: column; color: #ffffff; }
-
-        .tg-header {
-            background-color: #17212b; padding: 10px 15px; display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 100;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        .header-left { display: flex; align-items: center; text-decoration: none; }
-        .back-btn { padding: 5px; margin-right: 5px; display: flex; align-items: center; }
-        .back-btn svg { width: 24px; height: 24px; fill: #8a9ba8; }
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
 
-        .profile-pic { width: 42px; height: 42px; border-radius: 50%; background: #2b5278; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 16px; margin-right: 12px; }
-        
-        .channel-info h2 { color: #ffffff; font-size: 17px; font-weight: 600; margin-bottom: 2px; }
-        .channel-info p { color: #7f91a4; font-size: 13.5px; transition: all 0.3s; }
-
-        .header-right { display: flex; gap: 20px; align-items: center; }
-        .header-right svg { width: 22px; height: 22px; fill: #8a9ba8; }
-
-        .chat-container {
-            flex: 1; background-color: #0e1621;
-            background-image: radial-gradient(circle at center, rgba(255,255,255,0.015) 0, transparent 2px);
-            background-size: 20px 20px; padding: 15px 10px; overflow-y: auto; display: flex; flex-direction: column; padding-bottom: 80px; 
+        .support-banner {
+            background: linear-gradient(135deg, #152238 0%, #1f365c 100%);
+            padding: 30px 20px; border-radius: 16px; border: 1px dashed #00e6ff;
+            text-align: center; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.1);
         }
+        .support-banner h2 { color: #00ff88; font-size: 22px; margin-bottom: 10px; text-transform: uppercase; }
+        .support-banner p { color: #8898aa; font-size: 14px; font-weight: bold; }
 
-        .date-pill { background-color: rgba(23, 33, 43, 0.8); color: #7f91a4; font-size: 13px; padding: 4px 12px; border-radius: 12px; align-self: center; margin: 10px 0 15px 0; font-weight: 500; }
-
-        .msg-row { display: flex; margin-bottom: 15px; }
+        /* Support Cards */
+        .support-grid { display: flex; flex-direction: column; gap: 15px; }
         
-        .msg-bubble { background-color: #182533; max-width: 90%; padding: 10px 12px 6px 12px; border-radius: 12px; border-top-left-radius: 4px; position: relative; }
-        .msg-img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
-        .msg-text { font-size: 15px; line-height: 1.45; color: #ffffff; word-wrap: break-word; }
-        .msg-text b { font-weight: 600; }
-
-        .reactions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; margin-bottom: 15px; }
-        .reaction-pill {
-            background-color: #1e2c3a; border: 1px solid #243443; border-radius: 16px; padding: 4px 8px; display: flex; align-items: center; gap: 5px;
-            font-size: 13px; font-weight: 600; color: #ffffff; cursor: pointer; transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+        .support-card {
+            background: #0f172a; border: 1px solid #2d4a77; border-radius: 12px; padding: 20px;
+            display: flex; align-items: center; gap: 15px; text-decoration: none; transition: 0.3s;
         }
-        .reaction-pill.active { background-color: #2b5278; border-color: #3a6a96; }
+        .support-card:hover { border-color: #00e6ff; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
+        
+        .icon-box {
+            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #fff;
+        }
+        .icon-tg { background: linear-gradient(135deg, #0088cc 0%, #00aaff 100%); }
+        .icon-wa { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
 
-        .msg-meta { display: flex; align-items: center; gap: 5px; float: right; margin-top: -15px; color: #687c93; font-size: 12px; }
-        .msg-meta svg { width: 14px; height: 14px; fill: #687c93; }
+        .support-info { flex: 1; }
+        .support-title { color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .support-desc { color: #8898aa; font-size: 12px; }
 
-        .bottom-bar { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 600px; display: flex; align-items: center; justify-content: space-between; gap: 10px; z-index: 1000; }
-        .circle-btn { background-color: #1c242d; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
-        .circle-btn svg { width: 24px; height: 24px; fill: #8a9ba8; }
-        .mute-btn-pill { flex: 1; background-color: #1c242d; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center; color: #8a9ba8; font-size: 16px; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
+        .btn-go { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border: 1px solid #00e6ff; padding: 6px 15px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+
+        /* Timing Box */
+        .timing-box { margin-top: 30px; background: #152238; padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid #ffaa00; }
+        .timing-box p { color: #cbd5e1; font-size: 13px; font-weight: bold; }
+        .timing-box span { color: #ffaa00; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="tg-header">
-        <a href="dashboard.html" class="header-left">
-            <div class="back-btn">
-                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
-            </div>
-            <div class="profile-pic">LNT</div>
-            <div class="channel-info">
-                <h2>LNT Official Channel</h2>
-                <p id="sub-counter">40,312 subscribers</p>
-            </div>
-        </a>
-        <div class="header-right">
-            <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-        </div>
-    </div>
-
-    <div class="chat-container">
-        <div class="date-pill">March 14</div>
-
-        <div class="msg-row">
-            <div class="msg-bubble">
-                <div class="msg-text">🌺 <b>MEGA VIP OFFER!</b> 🌿<br><br>Deposit ₹5000 today and get an instant 15% cashback in your wallet! Offer valid for the next 2 hours only. Don't miss out on G4 level! 🌻</div>
-                
-                <div class="reactions">
-                    <div class="reaction-pill active">🔥 158</div>
-                    <div class="reaction-pill">👍 142</div>
-                    <div class="reaction-pill">🤩 90</div>
-                    <div class="reaction-pill">❤️ 69</div>
-                    <div class="reaction-pill">🎉 27</div>
-                </div>
-
-                <div class="msg-meta">
-                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
-                    <span class="view-counter">9214</span> &nbsp; 14:30
-                </div>
-            </div>
+    <div style="max-width: 500px; margin: 0 auto;">
+        
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">Help Center</h2>
         </div>
 
-        <div class="date-pill">Today</div>
-
-        <div class="msg-row">
-            <div class="msg-bubble">
-                <img src="https://via.placeholder.com/400x200/0e1621/00ff88?text=Payout+Proof+₹42,000" class="msg-img" alt="Proof">
-                <div class="msg-text">🌸 <b>Withdrawal Success!</b> 🍀<br><br>Congratulations to User ending with <b>****9982</b> for successfully withdrawing ₹42,000 directly to their bank account from the G3 Job level.<br><br>Keep earning and building your team! 🌹</div>
-                
-                <div class="reactions">
-                    <div class="reaction-pill">🤑 214</div>
-                    <div class="reaction-pill active">👍 189</div>
-                    <div class="reaction-pill">🔥 105</div>
-                    <div class="reaction-pill">👏 88</div>
-                </div>
-
-                <div class="msg-meta">
-                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
-                    <span class="view-counter">12450</span> &nbsp; 09:15
-                </div>
-            </div>
+        <div class="support-banner">
+            <h2>Need Assistance?</h2>
+            <p>Our VIP Support Team is always ready to help you with recharges, withdrawals, and account issues.</p>
         </div>
-    </div>
 
-    <div class="bottom-bar">
-        <div class="circle-btn">
-            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-        </div>
-        <div class="mute-btn-pill">Mute</div>
-        <div class="circle-btn">
-            <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76 12 7.4l1 1.36L15.38 12 17 10.83 14.92 8H20v6z"></path></svg>
-        </div>
-    </div>
-
-    <script>
-        // Mute Button Logic
-        document.querySelector('.mute-btn-pill').addEventListener('click', function() {
-            if(this.innerText === "Mute") {
-                this.innerText = "Unmute";
-                this.style.color = "#ffffff";
-            } else {
-                this.innerText = "Mute";
-                this.style.color = "#8a9ba8";
-            }
-        });
-
-        // 1. MASTERMIND TRICK: Live Subscriber Growth
-        let subCount = 40312;
-        setInterval(() => {
-            // Har 4 se 8 second mein 1-3 subscriber badhenge
-            let randomGrow = Math.floor(Math.random() * 3) + 1;
-            subCount += randomGrow;
+        <div class="support-grid">
             
-            // Format number with comma (e.g., 40,315)
-            document.getElementById('sub-counter').innerText = subCount.toLocaleString('en-IN') + " subscribers";
-        }, 5000); // Har 5 second mein check karega
+            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="support-card">
+                <div class="icon-box icon-tg">📢</div>
+                <div class="support-info">
+                    <div class="support-title">Official Telegram Channel</div>
+                    <div class="support-desc">Get latest updates, bonus codes & offers</div>
+                </div>
+                <div class="btn-go">JOIN</div>
+            </a>
 
-        // 2. MASTERMIND TRICK: Live Views Growth
-        setInterval(() => {
-            document.querySelectorAll('.view-counter').forEach(viewSpan => {
-                let currentViews = parseInt(viewSpan.innerText);
-                let randomViewGrow = Math.floor(Math.random() * 5) + 1;
-                viewSpan.innerText = currentViews + randomViewGrow;
-            });
-        }, 3000); // Har 3 second mein views badhenge
+            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="support-card">
+                <div class="icon-box icon-tg">🎧</div>
+                <div class="support-info">
+                    <div class="support-title">24/7 Live Support (TG)</div>
+                    <div class="support-desc">Message us for fast problem resolution</div>
+                </div>
+                <div class="btn-go">CHAT</div>
+            </a>
 
-        // 3. AUTO-REACTION LOGIC
-        setInterval(() => {
-            let pills = document.querySelectorAll('.reaction-pill');
-            if(pills.length > 0) {
-                let randomPill = pills[Math.floor(Math.random() * pills.length)];
-                let textParts = randomPill.innerText.trim().split(' ');
-                let emoji = textParts[0];
-                let count = parseInt(textParts[1]);
-                
-                count++;
-                randomPill.innerText = emoji + " " + count;
-                
-                randomPill.style.transform = "scale(1.15)";
-                setTimeout(() => { randomPill.style.transform = "scale(1)"; }, 200);
-            }
-        }, 4000);
-    </script>
+            <a href="#" class="support-card" onclick="alert('WhatsApp support is coming soon! Please use Telegram for now.')">
+                <div class="icon-box icon-wa">💬</div>
+                <div class="support-info">
+                    <div class="support-title">WhatsApp VIP Manager</div>
+                    <div class="support-desc">Exclusive support for Level G3+ members</div>
+                </div>
+                <div class="btn-go">CHAT</div>
+            </a>
+
+        </div>
+
+        <div class="timing-box">
+            <p>⏰ <span>Support Timings:</span> 10:00 AM to 10:00 PM (Monday - Sunday)</p>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="channel.html" class="nav-item active">
+            <div class="nav-icon">🎧</div>
+            Support
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
+    </div>
+
 </body>
 </html>
