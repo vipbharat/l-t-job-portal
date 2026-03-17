@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Deposit / Recharge</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
+        }
+
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .history-btn { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; border: 1px solid #00ff88; }
+
+        .info-card { background: #152238; padding: 20px; border-radius: 12px; border: 1px solid #2d4a77; margin-bottom: 25px; text-align: center; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.05); }
+        .info-card h3 { color: #00e6ff; font-size: 18px; margin-bottom: 10px; text-transform: uppercase; font-weight: 900; }
+        .upi-box { background: #090e17; padding: 15px; border-radius: 8px; border: 1px dashed #00e6ff; font-size: 20px; font-weight: bold; color: #00ff88; letter-spacing: 1px; margin-bottom: 15px; word-break: break-all; }
+        
+        .btn-copy { background: #00e6ff; color: #000; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 14px; transition: 0.3s; }
+        .btn-copy:active { transform: scale(0.95); }
+
+        .form-card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
+        .input-group input { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #2d4a77; background: #090e17; color: #fff; font-size: 16px; outline: none; transition: 0.3s; font-weight: bold; }
+        .input-group input:focus { border-color: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+
+        .amt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .amt-btn { background: #152238; border: 1px solid #2d4a77; color: #8898aa; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .amt-btn.active { background: rgba(0, 230, 255, 0.1); border-color: #00e6ff; color: #00e6ff; }
+
+        .btn-submit { width: 100%; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #00ff88 0%, #00b359 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { background: #2d4a77; color: #8898aa; cursor: not-allowed; }
+
+        .warning-text { color: #ffaa00; font-size: 12px; margin-top: 15px; font-weight: bold; line-height: 1.5; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 style="font-size: 18px; text-transform: uppercase; color: #fff;">Deposit</h2>
+            <a href="history.html" class="history-btn">📜 History</a>
+        </div>
+
+        <div class="info-card">
+            <h3>Company UPI ID</h3>
+            <p style="color: #8898aa; font-size: 12px; margin-bottom: 10px;">Pay exactly the amount you want to recharge to this UPI ID.</p>
+            
+            <div class="upi-box" id="admin-upi">admin_payment@ybl</div>
+            
+            <button class="btn-copy" onclick="copyUPI()">📋 Copy UPI ID</button>
+        </div>
+
+        <div class="form-card">
+            <div class="input-group">
+                <label>Select or Enter Amount (₹)</label>
+                <div class="amt-grid">
+                    <button class="amt-btn" onclick="setAmt(499)">₹499</button>
+                    <button class="amt-btn" onclick="setAmt(1450)">₹1,450</button>
+                    <button class="amt-btn" onclick="setAmt(4200)">₹4,200</button>
+                </div>
+                <input type="number" id="dep-amount" placeholder="Min ₹300">
+            </div>
+
+            <div class="input-group">
+                <label>12-Digit UTR / Reference Number</label>
+                <input type="number" id="dep-utr" placeholder="e.g. 301234567890">
+            </div>
+
+            <button class="btn-submit" id="submit-btn" onclick="submitDeposit()">SUBMIT PAYMENT</button>
+            
+            <p class="warning-text">⚠️ Note: Do not submit fake UTR numbers. Your account will be permanently blocked if verification fails.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        function copyUPI() {
+            let upiText = document.getElementById('admin-upi').innerText;
+            navigator.clipboard.writeText(upiText).then(() => {
+                alert("✅ UPI ID Copied! Now open PhonePe/GPay/Paytm and make the payment.");
+            });
+        }
+
+        function setAmt(val) {
+            document.getElementById('dep-amount').value = val;
+            let btns = document.querySelectorAll('.amt-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function submitDeposit() {
+            let amt = document.getElementById('dep-amount').value;
+            let utr = document.getElementById('dep-utr').value.trim();
+            let btn = document.getElementById('submit-btn');
+
+            if(!amt || amt < 300) {
+                alert("Minimum deposit amount is ₹300.");
+                return;
+            }
+            if(utr.length !== 12) {
+                alert("Please enter a valid 12-Digit UTR / Reference number from your payment app.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "VERIFYING...";
+
+            let txnDate = new Date().toLocaleString();
+
+            // 1. Send Request to Admin
+            db.ref('depositRequests').push({
+                phone: userPhone,
+                amount: parseInt(amt),
+                utr: utr,
+                status: 'Pending',
+                date: txnDate
+            }).then(() => {
+                // 2. Add to User's Personal History
+                db.ref('users/' + userPhone + '/transactions').push({
+                    type: 'Deposit (Pending)',
+                    amount: parseInt(amt),
+                    status: 'Pending',
+                    date: txnDate,
+                    utr: utr
+                }).then(() => {
+                    alert("✅ Payment Request Submitted!\n\nYour UTR has been sent for verification. Balance will be added to your wallet within 5-10 minutes.");
+                    window.location.href = "history.html"; // Seedha history page par bhej do
+                });
+            }).catch((error) => {
+                alert("Error submitting request. Please check your internet connection.");
+                btn.disabled = false;
+                btn.innerText = "SUBMIT PAYMENT";
+            });
+        }
+    </script>
+</body>
+</html>
