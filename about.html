@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Company Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
+        }
+
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+
+        .hero-banner {
+            background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%);
+            padding: 40px 20px; border-radius: 16px; text-align: center; margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.2); position: relative; overflow: hidden;
+        }
+        .hero-icon { font-size: 50px; margin-bottom: 10px; }
+        .hero-title { color: #000; font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .hero-sub { color: #152238; font-size: 14px; font-weight: bold; }
+
+        .content-box { background: #0f172a; padding: 25px; border-radius: 12px; border: 1px solid #1f365c; margin-bottom: 25px; line-height: 1.6; }
+        .section-title { color: #00e6ff; font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; border-left: 3px solid #00ff88; padding-left: 10px; }
+        .text-desc { color: #cbd5e1; font-size: 14px; margin-bottom: 20px; text-align: justify; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #152238; border: 1px dashed #2d4a77; padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-card h3 { color: #00ff88; font-size: 22px; margin-bottom: 5px; }
+        .stat-card p { color: #8898aa; font-size: 11px; text-transform: uppercase; font-weight: bold; }
+
+        .cert-box { background: #152238; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #00e6ff; }
+        .cert-box p { color: #8898aa; font-size: 12px; font-weight: bold; margin-bottom: 10px; }
+        .cert-badge { display: inline-block; background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 8px 15px; border-radius: 6px; font-weight: 900; letter-spacing: 1px; border: 1px solid #00ff88; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">Company Profile</h2>
+        </div>
+
+        <div class="hero-banner">
+            <div class="hero-icon">🏢</div>
+            <h1 class="hero-title">LNT Group</h1>
+            <p class="hero-sub">Leading the Future of Digital Marketing & App Optimization</p>
+        </div>
+
+        <div class="content-box">
+            <div class="section-title">Who We Are</div>
+            <p class="text-desc">
+                LNT Group is a global leader in app optimization, digital advertising, and task-based affiliate marketing. Established to bridge the gap between application developers and real users, we provide high-quality data testing through our VIP Job Portal.
+            </p>
+
+            <div class="section-title">Our Mission</div>
+            <p class="text-desc">
+                Our mission is to help individuals earn a stable daily income using their smartphones. By completing simple daily tasks, our VIP members contribute to global app rankings and share in the company's daily advertising revenue.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>1.2M+</h3>
+                    <p>Global Members</p>
+                </div>
+                <div class="stat-card">
+                    <h3>500+</h3>
+                    <p>Partner Apps</p>
+                </div>
+                <div class="stat-card">
+                    <h3>24/7</h3>
+                    <p>VIP Support</p>
+                </div>
+                <div class="stat-card">
+                    <h3>100%</h3>
+                    <p>Secure Payouts</p>
+                </div>
+            </div>
+
+            <div class="cert-box">
+                <p>Officially Registered & Verified</p>
+                <div class="cert-badge">✅ ISO 9001:2015 CERTIFIED</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="refer.html" class="nav-item">
+            <div class="nav-icon">🔗</div>
+            Team
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
+    </div>
+
+</body>
+</html>
