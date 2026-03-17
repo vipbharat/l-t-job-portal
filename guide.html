@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Beginner's Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
+        }
+
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+
+        .guide-banner {
+            background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%);
+            padding: 30px 20px; border-radius: 16px; text-align: center; margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.2); position: relative; overflow: hidden;
+        }
+        .guide-icon { font-size: 45px; margin-bottom: 10px; }
+        .guide-title { color: #000; font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .guide-sub { color: #152238; font-size: 14px; font-weight: bold; }
+
+        .step-card {
+            background: #0f172a; border: 1px solid #1f365c; border-radius: 12px;
+            padding: 20px; margin-bottom: 15px; position: relative;
+        }
+        .step-number {
+            position: absolute; top: -10px; left: 15px; background: #00e6ff; color: #000;
+            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: 900; font-size: 16px; border: 2px solid #090e17;
+        }
+
+        .step-title { color: #00ff88; font-size: 16px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; margin-top: 5px; }
+        .step-desc { color: #cbd5e1; font-size: 13px; line-height: 1.5; font-weight: bold; }
+        .step-desc span { color: #ffaa00; }
+
+        .note-box { background: rgba(255, 77, 77, 0.1); border-left: 4px solid #ff4d4d; padding: 15px; border-radius: 8px; margin-top: 25px; }
+        .note-box p { color: #ff4d4d; font-size: 12px; font-weight: bold; line-height: 1.5; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">How To Earn</h2>
+        </div>
+
+        <div class="guide-banner">
+            <div class="guide-icon">📖</div>
+            <h1 class="guide-title">Platform Rules</h1>
+            <p class="guide-sub">Learn how to maximize your daily profits!</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-title">Recharge & Upgrade</div>
+            <div class="step-desc">
+                To start earning, go to the <span>Deposit</span> page and add funds. Then, visit the <span>Jobs</span> section and Unlock a VIP Level (e.g., G2, G3) to activate your daily tasks.
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-title">Complete Daily Tasks</div>
+            <div class="step-desc">
+                Log in every day and go to the <span>Work Station</span>. Click on the Submit Task button to instantly receive your daily VIP income in your wallet. <span>Missed tasks cannot be recovered.</span>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-title">Withdrawal Rules</div>
+            <div class="step-desc">
+                Minimum withdrawal is <span>₹200</span>. Please note the withdrawal dates based on your VIP level: <br>
+                • G1-G3: <span>1st to 10th</span> of the month.<br>
+                • G4-G6: <span>11th to 20th</span> of the month.<br>
+                • G7-G8: <span>21st to 28th</span> of the month.
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-title">Build Your Team</div>
+            <div class="step-desc">
+                Share your link from the <span>Team</span> page. When your friends join and upgrade their VIP levels, you earn a lifetime direct commission added straight to your balance!
+            </div>
+        </div>
+
+        <div class="note-box">
+            <p>⚠️ Strict Warning: Do not create multiple fake accounts on the same device. Our system tracks IP addresses, and cheating will result in a permanent ban and loss of funds.</p>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="refer.html" class="nav-item">
+            <div class="nav-icon">🔗</div>
+            Team
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
+    </div>
+
+</body>
+</html>
