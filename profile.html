@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - User Profile</title>
+    <title>LNT Job - My Profile</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
@@ -14,40 +14,49 @@
             min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; border-bottom: 1px solid #1f365c; margin-bottom: 20px; }
-        .top-bar h2 { color: #00e6ff; font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        /* Top Profile Banner */
+        .profile-banner {
+            background: linear-gradient(135deg, #152238 0%, #1f365c 100%);
+            padding: 30px 20px; border-radius: 16px; border: 1px solid #00e6ff;
+            text-align: center; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.1);
+            position: relative; overflow: hidden;
+        }
+
+        .avatar { 
+            width: 70px; height: 70px; background: linear-gradient(135deg, #007bff, #00e6ff); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 35px; margin: 0 auto 10px auto; border: 3px solid #090e17;
+        }
+
+        .user-phone { font-size: 20px; font-weight: 900; margin-bottom: 5px; letter-spacing: 1px; }
+        .vip-badge { display: inline-block; background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid #00ff88; margin-bottom: 15px; }
         
-        .logout-btn { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; transition: 0.3s; }
-        .logout-btn:hover { background: #ff4d4d; color: #fff; }
+        .bal-row { display: flex; justify-content: space-around; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px dashed #2d4a77; }
+        .bal-box p { color: #8898aa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .bal-box h3 { color: #00e6ff; font-size: 18px; }
 
-        .profile-card { background: #152238; padding: 20px; border-radius: 12px; border: 1px solid #2d4a77; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.05); }
-        .avatar { width: 60px; height: 60px; background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #000; }
-        .user-details h3 { color: #fff; font-size: 18px; margin-bottom: 5px; text-transform: uppercase; font-weight: 900; }
-        .user-details p { color: #8898aa; font-size: 14px; font-weight: bold; }
-
-        .wallet-sync { background: linear-gradient(135deg, #0f172a 0%, #1a2a44 100%); padding: 20px; border-radius: 12px; border: 1px dashed #00e6ff; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .wallet-sync div p { color: #8898aa; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
-        .wallet-sync div h2 { color: #00ff88; font-size: 26px; font-weight: 900; letter-spacing: 1px;}
-        .btn-withdraw { background: #00e6ff; color: #000; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; transition: 0.3s; }
-        .btn-withdraw:hover { box-shadow: 0 0 15px rgba(0, 230, 255, 0.5); }
-
-        .section-title { color: #cbd5e1; font-size: 16px; margin-bottom: 15px; border-left: 4px solid #00e6ff; padding-left: 10px; text-transform: uppercase; font-weight: bold; }
-        .form-card { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1f365c; }
+        /* Menu List */
+        .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
         
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; color: #a0aec0; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2d4a77; background: #152238; color: #fff; font-size: 15px; outline: none; transition: 0.3s; font-weight: bold;}
-        .input-group input:focus { border-color: #00e6ff; box-shadow: 0 0 10px rgba(0, 230, 255, 0.2); }
+        .menu-item {
+            background: #0f172a; border: 1px solid #1f365c; border-radius: 12px; padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between; text-decoration: none; transition: 0.3s;
+        }
+        .menu-item:hover { border-color: #00e6ff; background: #152238; transform: translateX(5px); }
         
-        /* Locked Input Style */
-        .input-group input.locked { background: #090e17; color: #8898aa; border-color: #1f365c; cursor: not-allowed; opacity: 0.7; }
+        .menu-left { display: flex; align-items: center; gap: 15px; }
+        .menu-icon { font-size: 20px; }
+        .menu-text { color: #cbd5e1; font-size: 14px; font-weight: bold; text-transform: uppercase; }
+        .menu-arrow { color: #8898aa; font-size: 14px; }
 
-        .btn-save { width: 100%; padding: 14px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
-        .btn-save:hover { box-shadow: 0 5px 15px rgba(0, 230, 255, 0.4); transform: translateY(-2px); }
-        
-        /* Locked Button Style */
-        .btn-save.locked-btn { background: #1f365c; color: #8898aa; box-shadow: none; cursor: not-allowed; transform: none; border: 1px solid #2d4a77; }
+        .btn-logout { 
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ff4d4d; 
+            background: rgba(255, 77, 77, 0.1); color: #ff4d4d; font-weight: 900; font-size: 15px; 
+            cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-logout:active { transform: scale(0.98); background: #ff4d4d; color: #fff; }
 
+        /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
         .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
@@ -58,50 +67,55 @@
 
     <div style="max-width: 500px; margin: 0 auto;">
         
-        <div class="top-bar">
-            <h2>MY PROFILE</h2>
-            <button onclick="logout()" class="logout-btn">LOGOUT</button>
-        </div>
-
-        <div class="profile-card">
-            <div class="avatar">👨‍💼</div>
-            <div class="user-details">
-                <h3 id="user-display-name">LNT Member</h3>
-                <p id="user-phone">Loading...</p>
-            </div>
-        </div>
-
-        <div class="wallet-sync">
-            <div>
-                <p>Available Balance</p>
-                <h2 id="profile-balance">₹0.00</h2>
-            </div>
-            <a href="wallet.html" class="btn-withdraw">Withdraw ➡</a>
-        </div>
-
-        <h3 class="section-title">Bind Bank Account</h3>
-        <div class="form-card">
-            <p id="warning-text" style="color: #ffaa00; font-size: 12px; margin-bottom: 15px; font-weight: bold;">* Details can only be entered once. It will be permanently locked for security.</p>
+        <div class="profile-banner">
+            <div class="avatar">👤</div>
+            <div class="user-phone" id="user-display">Loading...</div>
+            <div class="vip-badge" id="level-display">G1</div>
             
-            <div class="input-group">
-                <label>Actual Name (As per Bank)</label>
-                <input type="text" id="bank-name" placeholder="Enter Full Name">
+            <div class="bal-row">
+                <div class="bal-box">
+                    <p>Wallet Balance</p>
+                    <h3 id="balance-display" style="color:#00ff88;">₹0</h3>
+                </div>
+                <div class="bal-box">
+                    <p>Today's Income</p>
+                    <h3 id="today-income">₹0</h3>
+                </div>
             </div>
-            <div class="input-group">
-                <label>Bank Account Number</label>
-                <input type="number" id="bank-acc" placeholder="Enter Account Number">
-            </div>
-            <div class="input-group">
-                <label>IFSC Code</label>
-                <input type="text" id="bank-ifsc" placeholder="e.g. SBIN0001234">
-            </div>
-            <div class="input-group">
-                <label>UPI ID (Optional)</label>
-                <input type="text" id="bank-upi" placeholder="e.g. 9876543210@ybl">
-            </div>
-
-            <button class="btn-save" id="save-btn" onclick="saveBankDetails()">SAVE & LOCK DETAILS</button>
         </div>
+
+        <div class="menu-list">
+            <a href="bank.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">🏦</span><span class="menu-text">Bind Bank Card</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+            <a href="history.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">📜</span><span class="menu-text">Financial History</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+            <a href="team.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">👥</span><span class="menu-text">My Team Data</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+            <a href="reset.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">🛡️</span><span class="menu-text">Security Center</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+            <a href="download.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">📥</span><span class="menu-text">Download App</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+            <a href="about.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">🏢</span><span class="menu-text">About Company</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+            <a href="channel.html" class="menu-item">
+                <div class="menu-left"><span class="menu-icon">🎧</span><span class="menu-text">Help Center</span></div>
+                <span class="menu-arrow">➡</span>
+            </a>
+        </div>
+
+        <button class="btn-logout" onclick="logoutUser()">Log Out Securely</button>
 
     </div>
 
@@ -133,99 +147,35 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. Security Check
+        // Check Login
         const userPhone = localStorage.getItem('loggedInUser');
-        if (!userPhone) window.location.href = "login.html";
+        if (!userPhone) window.location.href = "index.html";
 
-        document.getElementById('user-phone').innerText = "+91 " + userPhone.substring(0,2) + "******" + userPhone.substring(8,10);
+        // Mask phone number (e.g., 98****4321)
+        let maskedPhone = userPhone.substring(0, 2) + "******" + userPhone.substring(8, 10);
+        document.getElementById('user-display').innerText = "+91 " + maskedPhone;
 
-        let userData = null;
-
-        // 2. Fetch Live Data & Lock Logic
+        // Fetch Live Data
         db.ref('users/' + userPhone).on('value', (snap) => {
-            userData = snap.val();
-            if (userData) {
-                // Update Balance
-                document.getElementById('profile-balance').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+            let userData = snap.val();
+            if(userData) {
+                document.getElementById('balance-display').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+                document.getElementById('level-display').innerText = "VIP " + (userData.level || "G1");
                 
-                // Agar Bank Details pehle se Firebase me hain toh usko LOCK kar do
-                if(userData.bankDetails) {
-                    let bName = document.getElementById('bank-name');
-                    let bAcc = document.getElementById('bank-acc');
-                    let bIfsc = document.getElementById('bank-ifsc');
-                    let bUpi = document.getElementById('bank-upi');
-                    let sBtn = document.getElementById('save-btn');
-                    let wText = document.getElementById('warning-text');
-
-                    // Set values
-                    bName.value = userData.bankDetails.name || "";
-                    bAcc.value = userData.bankDetails.account || "";
-                    bIfsc.value = userData.bankDetails.ifsc || "";
-                    bUpi.value = userData.bankDetails.upi || "Not Provided";
-                    
-                    // Update Name in Profile Card
-                    if(userData.bankDetails.name) {
-                        document.getElementById('user-display-name').innerText = userData.bankDetails.name;
-                    }
-
-                    // LOCK The Inputs (Make them Read-Only and change style)
-                    bName.readOnly = true; bName.classList.add('locked');
-                    bAcc.readOnly = true; bAcc.classList.add('locked');
-                    bIfsc.readOnly = true; bIfsc.classList.add('locked');
-                    bUpi.readOnly = true; bUpi.classList.add('locked');
-
-                    // Disable Save Button
-                    sBtn.innerText = "DETAILS LOCKED 🔒";
-                    sBtn.disabled = true;
-                    sBtn.classList.add('locked-btn');
-
-                    // Change Warning text to Success text
-                    wText.innerText = "✅ Your bank details are securely locked. Contact support to change.";
-                    wText.style.color = "#00ff88";
+                // Agar aaj task kiya hai toh income dikhao
+                let today = new Date().toLocaleDateString();
+                if(userData.lastTaskDate === today) {
+                    // Ye levelRewards job.html wale jaisa hona chahiye
+                    let rewards = { "G1": 15, "G2": 50, "G3": 150, "G4": 450, "G5": 850, "G6": 2000, "G7": 4000, "G8": 8000 };
+                    document.getElementById('today-income').innerText = "+₹" + (rewards[userData.level || "G1"]);
                 }
             }
         });
 
-        // 3. Save Bank Details to Firebase (First Time Only)
-        function saveBankDetails() {
-            let name = document.getElementById('bank-name').value;
-            let acc = document.getElementById('bank-acc').value;
-            let ifsc = document.getElementById('bank-ifsc').value;
-            let upi = document.getElementById('bank-upi').value;
-
-            if(name === "" || acc === "" || ifsc === "") {
-                alert("❌ Required Error\nPlease fill Name, Account Number and IFSC Code.");
-                return;
-            }
-
-            let confirmLock = confirm("Warning: Please check your details carefully!\nOnce saved, your details will be PERMANENTLY LOCKED and you cannot change them later.\n\nDo you want to continue?");
-            if(!confirmLock) return;
-
-            let btn = document.getElementById('save-btn');
-            btn.disabled = true;
-            btn.innerText = "LOCKING...";
-
-            // Update details securely in Firebase (Admin panel ke paas chali jayegi)
-            db.ref('users/' + userPhone + '/bankDetails').set({
-                name: name,
-                account: acc,
-                ifsc: ifsc,
-                upi: upi
-            }).then(() => {
-                alert("✅ Success!\nYour Bank Details have been saved and securely locked.");
-                // Note: Upar wala db.ref('.on') function apne aap page ko lock state me daal dega
-            }).catch((error) => {
-                alert("Error saving details. Please try again.");
-                btn.disabled = false;
-                btn.innerText = "SAVE & LOCK DETAILS";
-            });
-        }
-
-        // 4. Secure Logout Function
-        function logout() {
-            if(confirm("Are you sure you want to log out from LNT?")) {
+        function logoutUser() {
+            if(confirm("Are you sure you want to log out?")) {
                 localStorage.removeItem('loggedInUser');
-                window.location.href = "login.html"; 
+                window.location.href = "index.html";
             }
         }
     </script>
