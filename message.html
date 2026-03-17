@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Message Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
+        }
+
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+        .clear-btn { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; transition: 0.3s; }
+        .tab-btn.active { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border-color: #00e6ff; }
+
+        /* Message List */
+        .msg-list { display: flex; flex-direction: column; gap: 15px; }
+
+        .msg-card {
+            background: #152238; border: 1px solid #1f365c; border-left: 4px solid #00e6ff;
+            border-radius: 12px; padding: 15px 20px; position: relative; transition: 0.3s;
+        }
+        .msg-card:hover { border-color: #00e6ff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
+        
+        .msg-card.unread::after {
+            content: ''; position: absolute; top: 15px; right: 15px;
+            width: 10px; height: 10px; background: #ff4d4d; border-radius: 50%;
+            box-shadow: 0 0 10px #ff4d4d;
+        }
+
+        .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .msg-title { color: #fff; font-size: 15px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .msg-date { color: #8898aa; font-size: 11px; font-weight: bold; }
+        
+        .msg-body { color: #cbd5e1; font-size: 13px; line-height: 1.5; font-weight: bold; }
+        .msg-body span { color: #00ff88; } /* Highlight for money/bonuses */
+
+        .no-msg { text-align: center; color: #8898aa; font-size: 14px; margin-top: 40px; font-style: italic; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+        
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">Inbox</h2>
+            <button class="clear-btn" onclick="clearMessages()">Clear All</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('system')">System Notice</button>
+            <button class="tab-btn" onclick="switchTab('personal')">Personal Inbox</button>
+        </div>
+
+        <div class="msg-list" id="msg-container">
+            <div class="no-msg">Loading messages...</div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="message.html" class="nav-item active">
+            <div class="nav-icon">🔔</div>
+            Inbox
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
+    </div>
+
+    <script>
+        // Fake Messages Data (Isko bhi Firebase se link kiya ja sakta hai future mein)
+        const messagesData = {
+            system: [
+                {
+                    title: "🎁 Welcome Bonus Credited!",
+                    date: "Today, 10:30 AM",
+                    body: "Welcome to LNT Job VIP Portal. A bonus of <span>1 FREE SPIN</span> has been successfully credited to your account. Go to the Spin page to try your luck!",
+                    unread: true
+                },
+                {
+                    title: "📢 System Upgrade Notice",
+                    date: "Yesterday, 08:00 PM",
+                    body: "We have upgraded our servers for faster withdrawals and smoother VIP Jobs. Please update your app if you face any issues."
+                }
+            ],
+            personal: [
+                {
+                    title: "✅ Withdrawal Successful",
+                    date: "15/03/2026, 02:15 PM",
+                    body: "Your withdrawal request of <span>₹5,000</span> has been approved and transferred to your bound bank account.",
+                    unread: false
+                },
+                {
+                    title: "💎 VIP Upgrade Successful",
+                    date: "14/03/2026, 11:00 AM",
+                    body: "Congratulations! You are now a <span>VIP Level G2</span> member. Your daily earning limit has been increased."
+                }
+            ]
+        };
+
+        function switchTab(tabName) {
+            let tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            renderMessages(tabName);
+        }
+
+        function renderMessages(tabName) {
+            let container = document.getElementById('msg-container');
+            let msgs = messagesData[tabName];
+            let html = "";
+
+            if(msgs.length === 0) {
+                container.innerHTML = `<div class="no-msg">No messages found in ${tabName}.</div>`;
+                return;
+            }
+
+            msgs.forEach(msg => {
+                let unreadClass = msg.unread ? "unread" : "";
+                html += `
+                <div class="msg-card ${unreadClass}" onclick="markRead(this)">
+                    <div class="msg-header">
+                        <div class="msg-title">${msg.title}</div>
+                        <div class="msg-date">${msg.date}</div>
+                    </div>
+                    <div class="msg-body">${msg.body}</div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function markRead(element) {
+            element.classList.remove('unread');
+        }
+
+        function clearMessages() {
+            if(confirm("Are you sure you want to delete all messages?")) {
+                document.getElementById('msg-container').innerHTML = `<div class="no-msg">All messages cleared. Inbox is empty.</div>`;
+            }
+        }
+
+        // Initialize first tab
+        setTimeout(() => renderMessages('system'), 500);
+    </script>
+</body>
+</html>
