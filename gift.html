@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Gift Code Redemption</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .header { width: 100%; max-width: 400px; display: flex; align-items: center; margin-bottom: 25px; position: absolute; top: 20px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+
+        .gift-card {
+            background: #152238; width: 100%; max-width: 400px;
+            padding: 40px 20px; border-radius: 16px; border: 1px dashed #ffaa00;
+            box-shadow: 0 10px 30px rgba(255, 170, 0, 0.15);
+            text-align: center; margin-top: 50px; position: relative;
+        }
+
+        .icon-gift { font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 170, 0, 0.6); animation: float 2s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+        .page-title { color: #fff; font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .page-sub { color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 25px; }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group input { 
+            width: 100%; padding: 15px; background: #090e17; border: 2px solid #2d4a77; 
+            border-radius: 8px; color: #ffaa00; font-size: 18px; outline: none; transition: 0.3s; 
+            font-weight: 900; text-align: center; letter-spacing: 2px; text-transform: uppercase;
+        }
+        .input-group input:focus { border-color: #ffaa00; box-shadow: 0 0 15px rgba(255, 170, 0, 0.3); }
+
+        .btn-redeem { 
+            width: 100%; padding: 16px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #ffaa00 0%, #ff7700 100%); 
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 170, 0, 0.3);
+        }
+        .btn-redeem:active { transform: scale(0.95); }
+
+        .tg-box { background: #0f172a; border: 1px solid #1f365c; padding: 15px; border-radius: 8px; margin-top: 25px; }
+        .tg-box p { color: #cbd5e1; font-size: 12px; margin-bottom: 10px; font-weight: bold; }
+        .tg-link { display: inline-block; background: #0088cc; color: #fff; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; }
+
+        #status-msg { font-size: 14px; margin-bottom: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">⬅ Back</a>
+    </div>
+
+    <div class="gift-card">
+        <div class="icon-gift">🎁</div>
+        <h2 class="page-title">Redeem Gift Code</h2>
+        <p class="page-sub">Enter the promo code to get free bonus</p>
+
+        <div id="status-msg"></div>
+
+        <div class="input-group">
+            <input type="text" id="gift-code" placeholder="ENTER CODE HERE">
+        </div>
+
+        <button class="btn-redeem" id="redeem-btn" onclick="redeemCode()">CLAIM REWARD</button>
+
+        <div class="tg-box">
+            <p>💡 Want free gift codes every day? Join our official Telegram channel now!</p>
+            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="tg-link">✈️ Join Telegram</a>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        function showStatus(type, msg) {
+            let box = document.getElementById('status-msg');
+            box.style.display = 'block';
+            if(type === 'error') {
+                box.style.background = 'rgba(255, 77, 77, 0.1)';
+                box.style.color = '#ff4d4d';
+                box.style.border = '1px solid #ff4d4d';
+                box.innerText = "❌ " + msg;
+            } else {
+                box.style.background = 'rgba(0, 255, 136, 0.1)';
+                box.style.color = '#00ff88';
+                box.style.border = '1px solid #00ff88';
+                box.innerText = "✅ " + msg;
+            }
+        }
+
+        function redeemCode() {
+            let codeInput = document.getElementById('gift-code').value.trim().toUpperCase();
+            let btn = document.getElementById('redeem-btn');
+
+            if(codeInput === "") {
+                showStatus('error', "Please enter a gift code.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "CHECKING...";
+
+            // Check if code exists in Firebase 'giftCodes' node
+            db.ref('giftCodes/' + codeInput).once('value').then((snap) => {
+                let codeData = snap.val();
+
+                if(!codeData) {
+                    showStatus('error', "Invalid or Expired Code!");
+                    btn.disabled = false;
+                    btn.innerText = "CLAIM REWARD";
+                    return;
+                }
+
+                // Check if user already used this specific code
+                db.ref('users/' + userPhone + '/usedCodes/' + codeInput).once('value').then((usedSnap) => {
+                    if(usedSnap.exists()) {
+                        showStatus('error', "You have already claimed this code!");
+                        btn.disabled = false;
+                        btn.innerText = "CLAIM REWARD";
+                        return;
+                    }
+
+                    // Check if code usage limit is reached
+                    if(codeData.usesLeft <= 0) {
+                        showStatus('error', "This code is fully claimed by others!");
+                        btn.disabled = false;
+                        btn.innerText = "CLAIM REWARD";
+                        return;
+                    }
+
+                    // --- SUCCESS LOGIC ---
+                    let rewardAmt = codeData.amount;
+                    
+                    // 1. Add balance to user
+                    db.ref('users/' + userPhone).once('value').then((uSnap) => {
+                        let currentBal = uSnap.val().balance || 0;
+                        db.ref('users/' + userPhone).update({ balance: currentBal + rewardAmt });
+                    });
+
+                    // 2. Mark code as used for this user
+                    db.ref('users/' + userPhone + '/usedCodes/' + codeInput).set(true);
+
+                    // 3. Add to user history
+                    let txnDate = new Date().toLocaleString();
+                    db.ref('users/' + userPhone + '/transactions').push({
+                        type: 'Gift Code Reward',
+                        amount: rewardAmt,
+                        status: 'Success',
+                        date: txnDate
+                    });
+
+                    // 4. Decrease code limit in master database
+                    db.ref('giftCodes/' + codeInput).update({ usesLeft: codeData.usesLeft - 1 });
+
+                    showStatus('success', `Congratulations! ₹${rewardAmt} added to your wallet!`);
+                    btn.innerText = "REWARD CLAIMED";
+                    btn.style.background = "linear-gradient(90deg, #00ff88 0%, #00b359 100%)";
+                    document.getElementById('gift-code').value = "";
+                });
+            }).catch(err => {
+                showStatus('error', "Network error. Try again.");
+                btn.disabled = false;
+                btn.innerText = "CLAIM REWARD";
+            });
+        }
+    </script>
+</body>
+</html>
