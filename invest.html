@@ -3,88 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT - Upgrade VIP</title>
+    <title>LNT Job - Confirm Investment</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             background: #090e17; 
             background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px;
+            min-height: 100vh; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .header { width: 100%; max-width: 400px; display: flex; align-items: center; margin-bottom: 25px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+
+        .invoice-card {
+            background: #152238; width: 100%; max-width: 400px;
+            padding: 30px 20px; border-radius: 16px; border: 1px solid #00e6ff;
+            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.15);
+            text-align: center; position: relative; overflow: hidden;
+        }
+
+        .icon-top { font-size: 40px; margin-bottom: 10px; }
+        .plan-name { color: #8898aa; font-size: 16px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .plan-price { color: #00ff88; font-size: 40px; font-weight: 900; margin-bottom: 20px; letter-spacing: 1px; }
+
+        .details-box { background: #090e17; padding: 15px; border-radius: 8px; border: 1px dashed #2d4a77; text-align: left; margin-bottom: 25px; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .detail-row:last-child { margin-bottom: 0; }
+        .d-label { color: #8898aa; font-weight: bold; }
+        .d-value { color: #fff; font-weight: bold; }
+
+        .wallet-bal { color: #cbd5e1; font-size: 13px; margin-bottom: 15px; font-weight: bold; }
+        .wallet-bal span { color: #00e6ff; font-size: 16px; }
+
+        .btn-confirm { 
+            width: 100%; padding: 16px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-confirm:active { transform: scale(0.98); }
+        .btn-disabled { background: #2d4a77; color: #8898aa; cursor: not-allowed; }
+
+        .btn-recharge {
+            display: none; width: 100%; padding: 16px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #ffaa00 0%, #ff7700 100%); 
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; text-decoration: none;
+        }
         
-        .bal-box { background: rgba(0, 255, 136, 0.1); border: 1px solid #00ff88; padding: 10px 15px; border-radius: 8px; font-weight: bold; color: #00ff88; }
-
-        .vip-card {
-            background: #152238; border: 1px solid #2d4a77; border-radius: 12px; padding: 20px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .vip-card:hover { border-color: #00e6ff; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
-        
-        .vip-info h3 { color: #00e6ff; font-size: 22px; margin-bottom: 5px; }
-        .vip-price { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
-        .vip-gift { font-size: 12px; color: #ffaa00; font-weight: bold; background: rgba(255, 170, 0, 0.1); padding: 3px 8px; border-radius: 4px; display: inline-block; }
-
-        .btn-buy {
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
-            color: #000; border: none; padding: 10px 20px; border-radius: 8px;
-            font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase;
-        }
-        .btn-buy:active { transform: scale(0.95); }
-        .btn-buy:disabled { background: #555; color: #888; cursor: not-allowed; }
+        #error-msg { color: #ff4d4d; font-size: 13px; margin-top: 15px; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
 
-    <div style="max-width: 500px; margin: 0 auto;">
-        <div class="header">
-            <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <div class="bal-box" id="user-bal">Bal: ₹0</div>
+    <div class="header">
+        <a href="vip.html" class="back-btn">⬅ Back</a>
+        <h2 class="page-title">Order Confirmation</h2>
+    </div>
+
+    <div class="invoice-card">
+        <div class="icon-top">💎</div>
+        <div class="plan-name" id="display-plan">Loading Plan...</div>
+        <div class="plan-price" id="display-price">₹0</div>
+
+        <div class="details-box">
+            <div class="detail-row">
+                <span class="d-label">Status</span>
+                <span class="d-value" style="color:#ffaa00;">Pending Payment</span>
+            </div>
+            <div class="detail-row">
+                <span class="d-label">Validity</span>
+                <span class="d-value">Lifetime</span>
+            </div>
+            <div class="detail-row">
+                <span class="d-label">Daily Income</span>
+                <span class="d-value" style="color:#00ff88;">Unlocks VIP Tasks</span>
+            </div>
         </div>
 
-        <h2 style="margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid #00e6ff; display: inline-block;">Premium VIP Plans</h2>
+        <div class="wallet-bal">Available Balance: <span id="display-bal">₹0</span></div>
 
-        <div id="plans-container">
-            <div class="vip-card">
-                <div class="vip-info">
-                    <h3>Level G2</h3>
-                    <div class="vip-price">₹1,450</div>
-                    <div class="vip-gift">🎁 Get 1 FREE G2 Spin!</div>
-                </div>
-                <button class="btn-buy" onclick="buyPlan('G2', 1450)">BUY NOW</button>
-            </div>
-
-            <div class="vip-card">
-                <div class="vip-info">
-                    <h3>Level G3</h3>
-                    <div class="vip-price">₹4,200</div>
-                    <div class="vip-gift">🎁 Get 1 FREE G3 Spin!</div>
-                </div>
-                <button class="btn-buy" onclick="buyPlan('G3', 4200)">BUY NOW</button>
-            </div>
-            
-            <div class="vip-card">
-                <div class="vip-info">
-                    <h3>Level G4</h3>
-                    <div class="vip-price">₹12,000</div>
-                    <div class="vip-gift">🎁 Get 1 FREE G4 Spin!</div>
-                </div>
-                <button class="btn-buy" onclick="buyPlan('G4', 12000)">BUY NOW</button>
-            </div>
-            
-            <div class="vip-card">
-                <div class="vip-info">
-                    <h3>Level G5</h3>
-                    <div class="vip-price">₹22,000</div>
-                    <div class="vip-gift">🎁 Get 1 FREE G5 Spin!</div>
-                </div>
-                <button class="btn-buy" onclick="buyPlan('G5', 22000)">BUY NOW</button>
-            </div>
-        </div>
+        <button class="btn-confirm" id="buy-btn" onclick="processUpgrade()">CONFIRM UPGRADE</button>
+        <a href="deposit.html" class="btn-recharge" id="recharge-btn">RECHARGE NOW 💳</a>
+        
+        <p id="error-msg">Insufficient Balance! Please recharge.</p>
     </div>
 
     <script>
@@ -99,54 +102,86 @@
         const userPhone = localStorage.getItem('loggedInUser');
         if (!userPhone) window.location.href = "login.html";
 
-        let userData = null;
+        // URL se data nikalna (e.g., invest.html?job=G2&price=1450)
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobLevel = urlParams.get('job');
+        const jobPrice = parseInt(urlParams.get('price'));
 
-        // Live Balance Fetch karna
+        if(!jobLevel || !jobPrice) {
+            alert("Invalid Request! Going back to jobs.");
+            window.location.href = "vip.html";
+        }
+
+        document.getElementById('display-plan').innerText = "VIP LEVEL " + jobLevel;
+        document.getElementById('display-price').innerText = "₹" + jobPrice.toLocaleString('en-IN');
+
+        let userBalance = 0;
+        let currentUserLevel = "G1";
+
+        // Fetch Live Balance
         db.ref('users/' + userPhone).on('value', (snap) => {
-            userData = snap.val();
-            if (userData) {
-                document.getElementById('user-bal').innerText = "Bal: ₹" + (userData.balance || 0);
+            let userData = snap.val();
+            if(userData) {
+                userBalance = userData.balance || 0;
+                currentUserLevel = userData.level || "G1";
+                document.getElementById('display-bal').innerText = "₹" + userBalance.toLocaleString('en-IN');
+                
+                checkBalance();
             }
         });
 
-        function buyPlan(planLevel, price) {
-            if (!userData) return;
+        function checkBalance() {
+            let btn = document.getElementById('buy-btn');
+            let rechargeBtn = document.getElementById('recharge-btn');
+            let errorMsg = document.getElementById('error-msg');
 
-            let currentBal = userData.balance || 0;
-
-            if (currentBal < price) {
-                alert(`❌ Aapke paas ₹${price} nahi hain!\nKripya pehle recharge (Deposit) karein.`);
-                window.location.href = "deposit.html"; // Recharge page par bhej do
+            // Agar user pehle se wahi level pe hai
+            if(currentUserLevel === jobLevel) {
+                btn.innerText = "ALREADY OWNED ✅";
+                btn.classList.add('btn-disabled');
+                btn.disabled = true;
                 return;
             }
 
-            let confirmBuy = confirm(`Kya aap sach mein ${planLevel} plan ₹${price} mein khareedna chahte hain?\n\nIski kharid par aapko 1 FREE ${planLevel} SPIN milega!`);
-            if (!confirmBuy) return;
+            // Agar paise kam hain
+            if(userBalance < jobPrice) {
+                btn.style.display = 'none';
+                rechargeBtn.style.display = 'block';
+                errorMsg.style.display = 'block';
+            } else {
+                btn.style.display = 'block';
+                rechargeBtn.style.display = 'none';
+                errorMsg.style.display = 'none';
+                btn.disabled = false;
+            }
+        }
 
-            // 1. Balance cut karna aur Level update karna
-            let newBalance = currentBal - price;
-            
-            // 2. Us level ka 1 Spin add karna
-            let currentSpins = (userData.spins && userData.spins[planLevel]) ? userData.spins[planLevel] : 0;
-            let newSpinCount = currentSpins + 1;
+        function processUpgrade() {
+            let btn = document.getElementById('buy-btn');
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
 
-            let updates = {};
-            updates['users/' + userPhone + '/balance'] = newBalance;
-            updates['users/' + userPhone + '/level'] = planLevel; // VIP Level Update
-            updates['users/' + userPhone + '/spins/' + planLevel] = newSpinCount; // Spin Add
+            if(userBalance >= jobPrice) {
+                let newBalance = userBalance - jobPrice;
+                let txnDate = new Date().toLocaleString();
 
-            db.ref().update(updates).then(() => {
-                // 3. History me "Plan Buy" ki entry daalna (Red color / Kharcha)
-                db.ref('users/' + userPhone + '/transactions').push({
-                    type: `Bought VIP ${planLevel}`,
-                    amount: price,
-                    status: 'Success',
-                    date: new Date().toLocaleString()
+                // 1. Deduct balance and update level
+                db.ref('users/' + userPhone).update({
+                    balance: newBalance,
+                    level: jobLevel
                 }).then(() => {
-                    alert(`✅ Badhai Ho!\n\nAap ab VIP ${planLevel} ban gaye hain!\n🎁 Aapko 1 FREE ${planLevel} SPIN mila hai. Abhi jakar ghumayein!`);
-                    window.location.href = "spin.html"; // Seedha Spin page par bhej do
+                    // 2. Add to transaction history
+                    db.ref('users/' + userPhone + '/transactions').push({
+                        type: 'Bought VIP ' + jobLevel,
+                        amount: jobPrice,
+                        status: 'Success',
+                        date: txnDate
+                    }).then(() => {
+                        alert(`✅ Congratulations!\n\nYou have successfully upgraded to VIP ${jobLevel}.\nYour daily earnings will now increase!`);
+                        window.location.href = "dashboard.html";
+                    });
                 });
-            });
+            }
         }
     </script>
 </body>
