@@ -3,142 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Dashboard</title>
+    <title>LNT Job - Daily VIP Tasks</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             background: #090e17; 
             background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px;
+            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        /* Header Section */
-        .header { display: flex; justify-content: space-between; align-items: center; background: #152238; padding: 15px 20px; border-radius: 12px; border: 1px solid #1f365c; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 200, 255, 0.05); }
-        .logo-text { color: #00e6ff; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
-        .wallet-info { text-align: right; }
-        .wallet-info p { color: #8898aa; font-size: 12px; text-transform: uppercase; }
-        .wallet-info h3 { color: #fff; font-size: 18px; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+        .vip-badge { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 14px; }
 
-        .page-title { color: #cbd5e1; font-size: 18px; margin-bottom: 15px; border-left: 4px solid #00e6ff; padding-left: 10px; }
-
-        /* Job Cards Grid */
-        .job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; max-width: 800px; margin: 0 auto; }
-
-        .job-card {
-            background: #0f172a; border: 1px solid #2d4a77; border-radius: 12px; padding: 20px 15px;
-            text-align: center; transition: 0.3s; position: relative; overflow: hidden;
+        .task-card {
+            background: #152238; border: 1px solid #00e6ff; border-radius: 12px;
+            padding: 30px 20px; text-align: center; margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 230, 255, 0.1); position: relative; overflow: hidden;
         }
-        .job-card:hover { border-color: #00e6ff; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.15); transform: translateY(-5px); }
         
-        /* Card Content */
-        .job-name { color: #8898aa; font-size: 16px; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; }
-        .job-price { color: #00e6ff; font-size: 24px; font-weight: 900; margin-bottom: 15px; }
-        
-        /* Action Button */
-        .apply-btn {
-            width: 100%; padding: 10px; border-radius: 6px; border: none;
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%);
-            color: #000; font-weight: bold; font-size: 14px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s;
-        }
-        .apply-btn:hover { box-shadow: 0 0 10px rgba(0, 230, 255, 0.5); color: #fff; }
+        .task-img { font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 230, 255, 0.5); }
+        .task-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 5px; text-transform: uppercase; }
+        .task-reward { font-size: 32px; font-weight: 900; color: #00ff88; margin-bottom: 25px; letter-spacing: 1px; }
 
-        /* Navigation Bar (Bottom) */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; }
-        .nav-item { color: #8898aa; text-decoration: none; font-size: 14px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .btn-submit { 
+            width: 100%; max-width: 300px; padding: 16px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-submit:active { transform: scale(0.95); }
+        .btn-disabled { background: #2d4a77; color: #8898aa; cursor: not-allowed; box-shadow: none; }
+
+        .info-box { background: #0f172a; padding: 15px; border-radius: 8px; border: 1px dashed #2d4a77; text-align: center; }
+        .info-box p { color: #8898aa; font-size: 13px; line-height: 1.5; font-weight: bold; }
+        .info-box span { color: #00e6ff; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
+        .nav-icon { font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo-text">LNT JOB</div>
-        <div class="wallet-info">
-            <p>My Balance</p>
-            <h3 id="user-balance">₹0.00</h3>
-        </div>
-    </div>
-
-    <div style="max-width: 800px; margin: 0 auto;">
-        <h2 class="page-title">Available Tasks / Jobs</h2>
+    <div style="max-width: 500px; margin: 0 auto;">
         
-        <div class="job-grid">
-            
-            <div class="job-card">
-                <div class="job-name">Level G1</div>
-                <div class="job-price">₹499</div>
-                <button class="apply-btn" onclick="applyJob('G1', 499)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G2</div>
-                <div class="job-price">₹1,450</div>
-                <button class="apply-btn" onclick="applyJob('G2', 1450)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G3</div>
-                <div class="job-price">₹4,200</div>
-                <button class="apply-btn" onclick="applyJob('G3', 4200)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G4</div>
-                <div class="job-price">₹12,000</div>
-                <button class="apply-btn" onclick="applyJob('G4', 12000)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G5</div>
-                <div class="job-price">₹22,000</div>
-                <button class="apply-btn" onclick="applyJob('G5', 22000)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G6</div>
-                <div class="job-price">₹4,00,000</div>
-                <button class="apply-btn" onclick="applyJob('G6', 400000)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G7</div>
-                <div class="job-price">₹7,50,000</div>
-                <button class="apply-btn" onclick="applyJob('G7', 750000)">Unlock</button>
-            </div>
-
-            <div class="job-card">
-                <div class="job-name">Level G8</div>
-                <div class="job-price">₹14,00,000</div>
-                <button class="apply-btn" onclick="applyJob('G8', 1400000)">Unlock</button>
-            </div>
-
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">Work Station</h2>
+            <div class="vip-badge" id="user-level">G1</div>
         </div>
+
+        <div class="task-card">
+            <div class="task-img">📱</div>
+            <div class="task-title">Daily App Optimization Task</div>
+            <div class="task-reward" id="reward-amount">₹0</div>
+
+            <button class="btn-submit btn-disabled" id="task-btn" onclick="submitTask()" disabled>LOADING TASK...</button>
+        </div>
+
+        <div class="info-box">
+            <p>Your daily income depends on your VIP Level.<br>Upgrade to <span>Level G2 or higher</span> in the VIP section to earn more everyday!</p>
+            <br>
+            <a href="vip.html" style="color: #00ff88; font-size: 14px; font-weight: bold; text-decoration: none;">💎 View VIP Plans</a>
+        </div>
+
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item active">🏠 Home</a>
-        <a href="wallet.html" class="nav-item">💼 Wallet</a>
-        <a href="#" class="nav-item">👤 Profile</a>
+        <a href="dashboard.html" class="nav-item">
+            <div class="nav-icon">🏠</div>
+            Home
+        </a>
+        <a href="job.html" class="nav-item active">
+            <div class="nav-icon">🚀</div>
+            Jobs
+        </a>
+        <a href="refer.html" class="nav-item">
+            <div class="nav-icon">🔗</div>
+            Team
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profile
+        </a>
     </div>
 
     <script>
-        // Dummy balance for testing (Real app will get this from Firebase)
-        let currentBalance = 0; 
-        document.getElementById('user-balance').innerText = "₹" + currentBalance;
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        function applyJob(jobName, price) {
-            if(currentBalance >= price) {
-                alert("Congratulations! You have successfully unlocked Job " + jobName + ".");
-                // Yahan se balance katega
-                currentBalance -= price;
-                document.getElementById('user-balance').innerText = "₹" + currentBalance;
-            } else {
-                let shortcut = confirm("Insufficient Balance! You need ₹" + price + " to unlock " + jobName + ".\n\nDo you want to Deposit now?");
-                if(shortcut) {
-                    // Agar paise kam hain, toh user ko seedha wallet wale page par bhej dega
-                    window.location.href = "wallet.html";
-                }
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        // Admin Rewards Setting (Daily Income based on Level)
+        const levelRewards = {
+            "G1": 15,
+            "G2": 50,
+            "G3": 150,
+            "G4": 450,
+            "G5": 850,
+            "G6": 2000,
+            "G7": 4000,
+            "G8": 8000
+        };
+
+        let userData = null;
+        let todayDate = new Date().toLocaleDateString(); // Get current date (e.g., 17/03/2026)
+        let currentLevel = "G1";
+        let dailyReward = 15;
+
+        // Fetch User Data
+        db.ref('users/' + userPhone).on('value', (snap) => {
+            userData = snap.val();
+            if(userData) {
+                currentLevel = userData.level || "G1";
+                dailyReward = levelRewards[currentLevel] || 15;
+
+                document.getElementById('user-level').innerText = currentLevel;
+                document.getElementById('reward-amount').innerText = "₹" + dailyReward;
+
+                checkTaskStatus();
             }
+        });
+
+        function checkTaskStatus() {
+            let btn = document.getElementById('task-btn');
+            
+            // Check if user already completed the task today
+            if(userData.lastTaskDate === todayDate) {
+                btn.innerText = "TASK COMPLETED ✅";
+                btn.classList.add('btn-disabled');
+                btn.disabled = true;
+                document.querySelector('.task-img').innerText = "🎉";
+            } else {
+                btn.innerText = "START WORK & CLAIM";
+                btn.classList.remove('btn-disabled');
+                btn.disabled = false;
+                document.querySelector('.task-img').innerText = "📱";
+            }
+        }
+
+        function submitTask() {
+            let btn = document.getElementById('task-btn');
+            btn.innerText = "PROCESSING...";
+            btn.disabled = true;
+
+            // Simulate a fake loading time (2 seconds) to make it feel like real work
+            setTimeout(() => {
+                let newBalance = (userData.balance || 0) + dailyReward;
+                let txnDateStr = new Date().toLocaleString();
+
+                // 1. Update Balance and Date in Firebase
+                db.ref('users/' + userPhone).update({
+                    balance: newBalance,
+                    lastTaskDate: todayDate
+                }).then(() => {
+                    // 2. Add to History
+                    db.ref('users/' + userPhone + '/transactions').push({
+                        type: 'Daily Task Income (' + currentLevel + ')',
+                        amount: dailyReward,
+                        status: 'Success',
+                        date: txnDateStr
+                    }).then(() => {
+                        alert(`✅ Task Successful!\n\n₹${dailyReward} has been added to your wallet.\nCome back tomorrow for your next task!`);
+                        checkTaskStatus(); // Update UI to "Completed"
+                    });
+                });
+            }, 2000);
         }
     </script>
 </body>
