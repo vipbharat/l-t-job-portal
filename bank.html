@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNT Job - Bind Bank Account</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: #090e17; 
+            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .header { width: 100%; max-width: 400px; display: flex; align-items: center; margin-bottom: 25px; position: absolute; top: 20px; }
+        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+
+        .bank-card {
+            background: #152238; width: 100%; max-width: 400px;
+            padding: 30px 20px; border-radius: 16px; border: 1px solid #00ff88;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.1);
+            text-align: center; margin-top: 50px;
+        }
+
+        .icon-bank { font-size: 50px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 255, 136, 0.5); }
+        .page-title { color: #fff; font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .page-sub { color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 25px; }
+
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; color: #cbd5e1; font-size: 12px; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .input-group input { 
+            width: 100%; padding: 12px; background: #090e17; border: 1px solid #2d4a77; 
+            border-radius: 8px; color: #fff; font-size: 15px; outline: none; transition: 0.3s; font-weight: bold;
+        }
+        .input-group input:focus { border-color: #00ff88; box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+
+        .btn-save { 
+            width: 100%; padding: 15px; border-radius: 8px; border: none; 
+            background: linear-gradient(90deg, #00ff88 0%, #00b359 100%); 
+            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 15px;
+        }
+        .btn-save:active { transform: scale(0.98); }
+
+        .info-note { background: rgba(255, 170, 0, 0.1); border-left: 3px solid #ffaa00; padding: 10px; border-radius: 6px; margin-top: 20px; text-align: left; }
+        .info-note p { color: #ffaa00; font-size: 11px; font-weight: bold; line-height: 1.4; }
+
+        #status-msg { font-size: 13px; margin-bottom: 15px; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="profile.html" class="back-btn">⬅ Back</a>
+    </div>
+
+    <div class="bank-card">
+        <div class="icon-bank">🏦</div>
+        <h2 class="page-title">Bind Bank Account</h2>
+        <p class="page-sub">Enter details for receiving withdrawals</p>
+
+        <p id="status-msg"></p>
+
+        <div class="input-group">
+            <label>Actual Name</label>
+            <input type="text" id="acc-name" placeholder="Name on Bank Account">
+        </div>
+
+        <div class="input-group">
+            <label>Bank Name</label>
+            <input type="text" id="bank-name" placeholder="e.g. State Bank of India">
+        </div>
+
+        <div class="input-group">
+            <label>Account Number</label>
+            <input type="number" id="acc-num" placeholder="Enter Account Number">
+        </div>
+
+        <div class="input-group">
+            <label>IFSC Code</label>
+            <input type="text" id="ifsc-code" placeholder="Enter Bank IFSC Code" style="text-transform: uppercase;">
+        </div>
+
+        <button class="btn-save" id="save-btn" onclick="saveBankDetails()">SAVE DETAILS</button>
+
+        <div class="info-note">
+            <p>⚠️ Please ensure all details are 100% correct. If you enter the wrong account number or IFSC, your withdrawal will fail and funds may be lost.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
+            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const userPhone = localStorage.getItem('loggedInUser');
+        if (!userPhone) window.location.href = "login.html";
+
+        // Fetch existing bank details if already added
+        db.ref('users/' + userPhone + '/bankDetails').once('value').then((snap) => {
+            let bankData = snap.val();
+            if(bankData) {
+                document.getElementById('acc-name').value = bankData.name || "";
+                document.getElementById('bank-name').value = bankData.bank || "";
+                document.getElementById('acc-num').value = bankData.account || "";
+                document.getElementById('ifsc-code').value = bankData.ifsc || "";
+                
+                let btn = document.getElementById('save-btn');
+                btn.innerText = "UPDATE DETAILS";
+                btn.style.background = "linear-gradient(90deg, #007bff 0%, #00e6ff 100%)";
+            }
+        });
+
+        function showMessage(type, msg) {
+            let msgBox = document.getElementById('status-msg');
+            msgBox.style.display = 'block';
+            if(type === 'error') {
+                msgBox.style.color = '#ff4d4d';
+                msgBox.innerText = "❌ " + msg;
+            } else {
+                msgBox.style.color = '#00ff88';
+                msgBox.innerText = "✅ " + msg;
+            }
+        }
+
+        function saveBankDetails() {
+            let name = document.getElementById('acc-name').value.trim();
+            let bank = document.getElementById('bank-name').value.trim();
+            let acc = document.getElementById('acc-num').value.trim();
+            let ifsc = document.getElementById('ifsc-code').value.trim().toUpperCase();
+            let btn = document.getElementById('save-btn');
+
+            if(!name || !bank || !acc || !ifsc) {
+                showMessage('error', "All fields are required!");
+                return;
+            }
+            if(ifsc.length < 11) {
+                showMessage('error', "Invalid IFSC Code!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "SAVING...";
+
+            // Save to Firebase
+            db.ref('users/' + userPhone + '/bankDetails').set({
+                name: name,
+                bank: bank,
+                account: acc,
+                ifsc: ifsc
+            }).then(() => {
+                showMessage('success', "Bank details saved successfully!");
+                btn.innerText = "UPDATE DETAILS";
+                btn.style.background = "linear-gradient(90deg, #007bff 0%, #00e6ff 100%)";
+                btn.disabled = false;
+                
+                // Redirect back to profile after 1.5 seconds
+                setTimeout(() => {
+                    window.location.href = "profile.html";
+                }, 1500);
+            }).catch((error) => {
+                showMessage('error', "Network error! Try again.");
+                btn.disabled = false;
+                btn.innerText = "SAVE DETAILS";
+            });
+        }
+    </script>
+</body>
+</html>
