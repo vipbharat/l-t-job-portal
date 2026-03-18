@@ -3,33 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Confirm Investment</title>
+    <title>L&T Job - Confirm Investment</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { 
-            background: #090e17; 
-            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: #050914; background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%); min-height: 100vh; color: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
         .header { width: 100%; max-width: 400px; display: flex; align-items: center; margin-bottom: 25px; }
-        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
-        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+        .back-btn { background: #0f172a; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900;}
 
-        .invoice-card {
-            background: #152238; width: 100%; max-width: 400px;
-            padding: 30px 20px; border-radius: 16px; border: 1px solid #00e6ff;
-            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.15);
-            text-align: center; position: relative; overflow: hidden;
-        }
+        .invoice-card { background: #0f172a; width: 100%; max-width: 400px; padding: 30px 20px; border-radius: 16px; border: 1px solid #00e6ff; box-shadow: 0 10px 30px rgba(0, 230, 255, 0.15); text-align: center; }
 
         .icon-top { font-size: 40px; margin-bottom: 10px; }
         .plan-name { color: #8898aa; font-size: 16px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .plan-price { color: #00ff88; font-size: 40px; font-weight: 900; margin-bottom: 20px; letter-spacing: 1px; }
+        .plan-price { color: #00ff88; font-size: 35px; font-weight: 900; margin-bottom: 20px; }
 
-        .details-box { background: #090e17; padding: 15px; border-radius: 8px; border: 1px dashed #2d4a77; text-align: left; margin-bottom: 25px; }
+        .details-box { background: #050914; padding: 15px; border-radius: 8px; border: 1px dashed #2d4a77; text-align: left; margin-bottom: 25px; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
         .detail-row:last-child { margin-bottom: 0; }
         .d-label { color: #8898aa; font-weight: bold; }
@@ -38,19 +29,9 @@
         .wallet-bal { color: #cbd5e1; font-size: 13px; margin-bottom: 15px; font-weight: bold; }
         .wallet-bal span { color: #00e6ff; font-size: 16px; }
 
-        .btn-confirm { 
-            width: 100%; padding: 16px; border-radius: 8px; border: none; 
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
-        }
+        .btn-confirm { width: 100%; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn-confirm:active { transform: scale(0.98); }
-        .btn-disabled { background: #2d4a77; color: #8898aa; cursor: not-allowed; }
-
-        .btn-recharge {
-            display: none; width: 100%; padding: 16px; border-radius: 8px; border: none; 
-            background: linear-gradient(90deg, #ffaa00 0%, #ff7700 100%); 
-            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; text-decoration: none;
-        }
+        .btn-recharge { display: none; width: 100%; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #ffaa00 0%, #ff7700 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; text-decoration: none; }
         
         #error-msg { color: #ff4d4d; font-size: 13px; margin-top: 15px; font-weight: bold; display: none; }
     </style>
@@ -63,69 +44,77 @@
     </div>
 
     <div class="invoice-card">
-        <div class="icon-top">💎</div>
+        <div class="icon-top">💼</div>
         <div class="plan-name" id="display-plan">Loading Plan...</div>
         <div class="plan-price" id="display-price">₹0</div>
 
         <div class="details-box">
             <div class="detail-row">
-                <span class="d-label">Status</span>
-                <span class="d-value" style="color:#ffaa00;">Pending Payment</span>
-            </div>
-            <div class="detail-row">
-                <span class="d-label">Validity</span>
-                <span class="d-value">Lifetime</span>
+                <span class="d-label">Duration</span>
+                <span class="d-value" id="display-days">0 Days</span>
             </div>
             <div class="detail-row">
                 <span class="d-label">Daily Income</span>
-                <span class="d-value" style="color:#00ff88;">Unlocks VIP Tasks</span>
+                <span class="d-value" style="color:#00ff88;" id="display-daily">₹0</span>
+            </div>
+            <div class="detail-row">
+                <span class="d-label">Total Return</span>
+                <span class="d-value" style="color:#ffaa00;" id="display-total">₹0</span>
             </div>
         </div>
 
         <div class="wallet-bal">Available Balance: <span id="display-bal">₹0</span></div>
 
-        <button class="btn-confirm" id="buy-btn" onclick="processUpgrade()">CONFIRM UPGRADE</button>
+        <button class="btn-confirm" id="buy-btn" onclick="processUpgrade()">CONFIRM INVESTMENT</button>
         <a href="deposit.html" class="btn-recharge" id="recharge-btn">RECHARGE NOW 💳</a>
         
         <p id="error-msg">Insufficient Balance! Please recharge.</p>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
-            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM", databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         const userPhone = localStorage.getItem('loggedInUser');
-        if (!userPhone) window.location.href = "login.html";
+        if (!userPhone) window.location.href = "index.html";
 
-        // URL se data nikalna (e.g., invest.html?job=G2&price=1450)
+        // URL se data nikalna (job, price, days)
         const urlParams = new URLSearchParams(window.location.search);
         const jobLevel = urlParams.get('job');
         const jobPrice = parseInt(urlParams.get('price'));
+        const jobDays = parseInt(urlParams.get('days'));
 
-        if(!jobLevel || !jobPrice) {
-            alert("Invalid Request! Going back to jobs.");
+        if(!jobLevel || !jobPrice || !jobDays) {
+            alert("Invalid Request! Going back to projects.");
             window.location.href = "vip.html";
         }
 
-        document.getElementById('display-plan').innerText = "VIP LEVEL " + jobLevel;
+        // --- Smart Calculation Magic ---
+        let profitPercent = 0;
+        if(jobDays === 10) profitPercent = 20;
+        else if(jobDays === 30) profitPercent = 70;
+        else if(jobDays === 45) profitPercent = 120;
+        else if(jobDays === 60) profitPercent = 150;
+
+        let profitAmt = (jobPrice * profitPercent) / 100;
+        let finalTotalReturn = jobPrice + profitAmt;
+        let finalDailyIncome = Math.round(finalTotalReturn / jobDays);
+
+        // Display Details
+        document.getElementById('display-plan').innerText = "Project " + jobLevel;
         document.getElementById('display-price').innerText = "₹" + jobPrice.toLocaleString('en-IN');
+        document.getElementById('display-days').innerText = jobDays + " Days";
+        document.getElementById('display-daily').innerText = "₹" + finalDailyIncome;
+        document.getElementById('display-total').innerText = "₹" + finalTotalReturn.toLocaleString('en-IN');
 
         let userBalance = 0;
-        let currentUserLevel = "G1";
 
-        // Fetch Live Balance
         db.ref('users/' + userPhone).on('value', (snap) => {
             let userData = snap.val();
             if(userData) {
                 userBalance = userData.balance || 0;
-                currentUserLevel = userData.level || "G1";
                 document.getElementById('display-bal').innerText = "₹" + userBalance.toLocaleString('en-IN');
-                
                 checkBalance();
             }
         });
@@ -135,15 +124,6 @@
             let rechargeBtn = document.getElementById('recharge-btn');
             let errorMsg = document.getElementById('error-msg');
 
-            // Agar user pehle se wahi level pe hai
-            if(currentUserLevel === jobLevel) {
-                btn.innerText = "ALREADY OWNED ✅";
-                btn.classList.add('btn-disabled');
-                btn.disabled = true;
-                return;
-            }
-
-            // Agar paise kam hain
             if(userBalance < jobPrice) {
                 btn.style.display = 'none';
                 rechargeBtn.style.display = 'block';
@@ -163,22 +143,25 @@
 
             if(userBalance >= jobPrice) {
                 let newBalance = userBalance - jobPrice;
-                let txnDate = new Date().toLocaleString();
+                let txnDate = new Date().toISOString(); // Save exact exact time
 
-                // 1. Deduct balance and update level
+                // 1. Update Balance AND Naya Plan Set Karo
                 db.ref('users/' + userPhone).update({
                     balance: newBalance,
-                    level: jobLevel
+                    level: jobLevel,
+                    planDays: jobDays,               // Kitne din ka liya
+                    dailyIncome: finalDailyIncome,   // Roj ka kitna aayega
+                    planStartDate: txnDate,          // Aaj ki date
+                    lastTaskDate: "none"             // Task reset
                 }).then(() => {
-                    // 2. Add to transaction history
                     db.ref('users/' + userPhone + '/transactions').push({
-                        type: 'Bought VIP ' + jobLevel,
+                        type: `Invested in ${jobLevel} (${jobDays} Days)`,
                         amount: jobPrice,
                         status: 'Success',
-                        date: txnDate
+                        date: new Date().toLocaleString()
                     }).then(() => {
-                        alert(`✅ Congratulations!\n\nYou have successfully upgraded to VIP ${jobLevel}.\nYour daily earnings will now increase!`);
-                        window.location.href = "dashboard.html";
+                        alert(`✅ Investment Successful!\n\nYou will earn ₹${finalDailyIncome} daily for ${jobDays} days.`);
+                        window.location.href = "job.html"; // Seedha job par bhejo taaki aaj ka paisa le sake
                     });
                 });
             }
