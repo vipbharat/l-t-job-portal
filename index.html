@@ -3,70 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT VIP Portal - Login</title>
+    <title>L&T Job Portal - Login</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { 
-            background: #090e17; 
-            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #fff; padding: 20px;
+            background: #050914; 
+            background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%);
+            min-height: 100vh; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
         }
 
-        .auth-box {
-            background: #152238; width: 100%; max-width: 400px;
-            padding: 40px 25px; border-radius: 16px;
-            border: 1px solid #1f365c;
-            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.1);
-            text-align: center;
+        .auth-card {
+            background: #0f172a; width: 100%; max-width: 400px;
+            padding: 30px 20px; border-radius: 16px; border: 1px solid #1f365c;
+            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.1); text-align: center;
         }
 
-        .logo-text { color: #00e6ff; font-size: 28px; font-weight: 900; letter-spacing: 2px; margin-bottom: 5px; text-transform: uppercase; }
-        .sub-text { color: #8898aa; font-size: 14px; margin-bottom: 30px; font-weight: bold; }
+        .logo-box { font-size: 50px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 230, 255, 0.5); }
+        .app-title { font-size: 24px; font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .app-sub { color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 25px; }
 
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; color: #cbd5e1; font-size: 13px; margin-bottom: 8px; font-weight: bold; }
-        .input-group input { 
-            width: 100%; padding: 14px; background: #090e17; border: 1px solid #2d4a77; 
-            border-radius: 8px; color: #fff; font-size: 16px; outline: none; transition: 0.3s;
-        }
-        .input-group input:focus { border-color: #00e6ff; box-shadow: 0 0 10px rgba(0, 230, 255, 0.2); }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border-color: #00e6ff; }
 
-        .btn-auth { 
-            width: 100%; padding: 15px; border-radius: 8px; border: none; 
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px;
-        }
-        .btn-auth:active { transform: scale(0.98); }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group input { width: 100%; padding: 14px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; font-size: 16px; outline: none; }
+        .input-group input:focus { border-color: #00e6ff; }
 
-        .toggle-text { margin-top: 20px; color: #8898aa; font-size: 14px; }
-        .toggle-text span { color: #00ff88; font-weight: bold; cursor: pointer; text-decoration: underline; }
-        
-        #error-msg { color: #ff4d4d; font-size: 13px; margin-bottom: 15px; font-weight: bold; display: none; }
+        .btn-submit { width: 100%; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-submit:active { transform: scale(0.98); }
+
+        #status-msg { font-size: 13px; margin-bottom: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 6px; }
     </style>
 </head>
 <body>
 
-    <div class="auth-box">
-        <h1 class="logo-text">LNT PORTAL</h1>
-        <p class="sub-text" id="form-subtitle">Login to your VIP account</p>
+    <div class="auth-card">
+        <div class="logo-box">🏢</div>
+        <div class="app-title">L&T Job Portal</div>
+        <div class="app-sub">Welcome to the future of digital earnings</div>
 
-        <p id="error-msg">Error message goes here</p>
+        <div id="status-msg"></div>
 
-        <div class="input-group">
-            <label>Phone Number</label>
-            <input type="number" id="phone" placeholder="Enter 10 digit number">
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-login" onclick="switchForm('login')">LOGIN</button>
+            <button class="tab-btn" id="tab-register" onclick="switchForm('register')">REGISTER</button>
         </div>
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Enter password">
+        <div id="login-form">
+            <div class="input-group">
+                <input type="number" id="log-phone" placeholder="Phone Number (10 digits)">
+            </div>
+            <div class="input-group">
+                <input type="password" id="log-pass" placeholder="Login Password">
+            </div>
+            <button class="btn-submit" onclick="loginUser()">LOGIN NOW</button>
         </div>
 
-        <button class="btn-auth" id="auth-btn" onclick="handleAuth()">LOGIN NOW</button>
-
-        <p class="toggle-text" id="toggle-hint">Don't have an account? <span onclick="toggleMode()">Register Here</span></p>
+        <div id="register-form" style="display: none;">
+            <div class="input-group">
+                <input type="number" id="reg-phone" placeholder="Mobile Number">
+            </div>
+            <div class="input-group">
+                <input type="password" id="reg-pass" placeholder="Create Password">
+            </div>
+            <div class="input-group">
+                <input type="text" id="reg-invite" placeholder="Invite Code (Optional)">
+            </div>
+            <button class="btn-submit" onclick="registerUser()">CREATE ACCOUNT</button>
+        </div>
     </div>
 
     <script>
@@ -78,99 +85,81 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Agar user pehle se login hai, toh seedha andar bhej do
-        if(localStorage.getItem('loggedInUser')) {
+        // Agar pehle se login hai, direct dashboard pe bhejo
+        if (localStorage.getItem('loggedInUser')) {
             window.location.href = "dashboard.html";
         }
 
-        let isLoginMode = true;
-
-        function toggleMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('error-msg').style.display = 'none';
-            document.getElementById('phone').value = "";
-            document.getElementById('password').value = "";
-
-            if(isLoginMode) {
-                document.getElementById('form-subtitle').innerText = "Login to your VIP account";
-                document.getElementById('auth-btn').innerText = "LOGIN NOW";
-                document.getElementById('toggle-hint').innerHTML = 'Don\'t have an account? <span onclick="toggleMode()">Register Here</span>';
+        function switchForm(type) {
+            document.getElementById('status-msg').style.display = 'none';
+            if (type === 'login') {
+                document.getElementById('login-form').style.display = 'block';
+                document.getElementById('register-form').style.display = 'none';
+                document.getElementById('tab-login').classList.add('active');
+                document.getElementById('tab-register').classList.remove('active');
             } else {
-                document.getElementById('form-subtitle').innerText = "Create a new VIP account";
-                document.getElementById('auth-btn').innerText = "REGISTER NOW";
-                document.getElementById('toggle-hint').innerHTML = 'Already have an account? <span onclick="toggleMode()">Login Here</span>';
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('register-form').style.display = 'block';
+                document.getElementById('tab-login').classList.remove('active');
+                document.getElementById('tab-register').classList.add('active');
             }
         }
 
-        function showError(msg) {
-            let errBox = document.getElementById('error-msg');
-            errBox.innerText = "❌ " + msg;
-            errBox.style.display = 'block';
+        function showMsg(type, text) {
+            let box = document.getElementById('status-msg');
+            box.style.display = 'block';
+            if (type === 'error') {
+                box.style.background = 'rgba(255, 77, 77, 0.1)'; box.style.color = '#ff4d4d'; box.innerText = "❌ " + text;
+            } else {
+                box.style.background = 'rgba(0, 255, 136, 0.1)'; box.style.color = '#00ff88'; box.innerText = "✅ " + text;
+            }
         }
 
-        function handleAuth() {
-            let phone = document.getElementById('phone').value.trim();
-            let pass = document.getElementById('password').value.trim();
-            let btn = document.getElementById('auth-btn');
+        function registerUser() {
+            let phone = document.getElementById('reg-phone').value.trim();
+            let pass = document.getElementById('reg-pass').value.trim();
 
-            if(phone.length !== 10) {
-                showError("Please enter a valid 10-digit phone number.");
-                return;
-            }
-            if(pass.length < 4) {
-                showError("Password must be at least 4 characters long.");
-                return;
-            }
+            if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit phone number.');
+            if (pass.length < 4) return showMsg('error', 'Password must be at least 4 characters.');
 
-            btn.disabled = true;
-            btn.innerText = "PLEASE WAIT...";
-            document.getElementById('error-msg').style.display = 'none';
-
-            let userRef = db.ref('users/' + phone);
-
-            if(isLoginMode) {
-                // --- LOGIN LOGIC ---
-                userRef.once('value').then((snap) => {
-                    let userData = snap.val();
-                    if(userData && userData.password === pass) {
-                        // Login Success
-                        localStorage.setItem('loggedInUser', phone);
-                        window.location.href = "dashboard.html"; // Seedha dashboard par bhej do
-                    } else {
-                        showError("Incorrect phone number or password!");
-                        btn.disabled = false;
-                        btn.innerText = "LOGIN NOW";
-                    }
-                }).catch((error) => {
-                    showError("Network error. Try again.");
-                    btn.disabled = false;
-                    btn.innerText = "LOGIN NOW";
-                });
-
-            } else {
-                // --- REGISTER LOGIC ---
-                userRef.once('value').then((snap) => {
-                    if(snap.exists()) {
-                        showError("This number is already registered! Please login.");
-                        btn.disabled = false;
-                        btn.innerText = "REGISTER NOW";
-                    } else {
-                        // Create New User (Sath me 1 Free Spin Bonus!)
-                        userRef.set({
-                            password: pass,
-                            balance: 0,
-                            level: "G1",
-                            teamSize: 0,
-                            spins: { "G1": 1 }, // Welcome Bonus
-                            joinDate: new Date().toLocaleString()
-                        }).then(() => {
-                            alert("✅ Account Created Successfully!\nYou got 1 FREE Spin as Welcome Bonus!");
+            // Check if user exists
+            db.ref('users/' + phone).once('value').then(snap => {
+                if (snap.exists()) {
+                    showMsg('error', 'Account already exists! Please Login.');
+                } else {
+                    // Create new user with Default Values
+                    db.ref('users/' + phone).set({
+                        password: pass,
+                        balance: 0,
+                        level: "G1",
+                        spins: { welcomeSpin: 1 }, // 1 Free Spin
+                        joinDate: new Date().toLocaleDateString()
+                    }).then(() => {
+                        showMsg('success', 'Account created! Logging in...');
+                        setTimeout(() => {
                             localStorage.setItem('loggedInUser', phone);
                             window.location.href = "dashboard.html";
-                        });
-                    }
-                });
-            }
+                        }, 1500);
+                    });
+                }
+            });
+        }
+
+        function loginUser() {
+            let phone = document.getElementById('log-phone').value.trim();
+            let pass = document.getElementById('log-pass').value.trim();
+
+            if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number.');
+
+            db.ref('users/' + phone).once('value').then(snap => {
+                if (snap.exists() && snap.val().password === pass) {
+                    showMsg('success', 'Login Successful!');
+                    localStorage.setItem('loggedInUser', phone);
+                    setTimeout(() => window.location.href = "dashboard.html", 1000);
+                } else {
+                    showMsg('error', 'Incorrect Phone Number or Password!');
+                }
+            }).catch(() => showMsg('error', 'Network Error!'));
         }
     </script>
 </body>
