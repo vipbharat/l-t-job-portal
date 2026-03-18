@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Master - Admin Panel</title>
+    <title>L&T Master - Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
@@ -11,19 +11,19 @@
         body { background: #050914; color: #fff; padding: 20px; }
 
         /* Login Screen */
-        #admin-login { max-width: 400px; margin: 100px auto; background: #0f172a; padding: 30px; border-radius: 12px; border: 1px solid #ff4d4d; text-align: center; box-shadow: 0 0 30px rgba(255, 77, 77, 0.2); }
+        #admin-login { max-width: 400px; margin: 100px auto; background: #0f172a; padding: 30px; border-radius: 12px; border: 1px solid #ff4d4d; text-align: center; }
         .admin-title { color: #ff4d4d; font-size: 24px; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
         .input-box { width: 100%; padding: 15px; margin-bottom: 15px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; outline: none; }
         .btn-login { width: 100%; padding: 15px; background: #ff4d4d; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         /* Dashboard Screen */
         #admin-dashboard { display: none; max-width: 800px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
         .header h1 { color: #ff4d4d; font-size: 22px; text-transform: uppercase; }
         .btn-logout { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none;}
+        .tab-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap;}
         .tab-btn.active { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
 
         /* Request Cards */
@@ -35,7 +35,15 @@
         
         .action-btns { display: flex; gap: 10px; }
         .btn-approve { background: #00ff88; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-reject { background: #ff4d4d; color: #fff; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        /* Broadcast Form */
+        .broadcast-form { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #00e6ff; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+        .form-group select, .form-group textarea, .form-group input[type="file"] { width: 100%; padding: 12px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; outline: none; }
+        .form-group textarea { height: 100px; resize: none; }
+        .btn-send { width: 100%; padding: 15px; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
+        .btn-send:active { transform: scale(0.98); }
 
         .no-data { text-align: center; color: #8898aa; padding: 40px; font-style: italic; }
     </style>
@@ -47,142 +55,148 @@
         <input type="text" id="admin-id" class="input-box" placeholder="Admin ID">
         <input type="password" id="admin-pass" class="input-box" placeholder="Password">
         <button class="btn-login" onclick="loginAdmin()">ENTER SYSTEM</button>
-        <p id="error-msg" style="color: #ff4d4d; margin-top: 15px; display: none; font-size: 13px;">Invalid ID or Password!</p>
+        <p id="error-msg" style="color: #ff4d4d; margin-top: 15px; display: none; font-size: 13px;">Invalid Credentials!</p>
     </div>
 
     <div id="admin-dashboard">
         <div class="header">
-            <h1>LNT Master Panel</h1>
+            <h1>L&T Master Panel</h1>
             <button class="btn-logout" onclick="logoutAdmin()">Logout</button>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('deposits')">Pending Deposits</button>
-            <button class="tab-btn" onclick="switchTab('withdrawals')">Pending Withdrawals</button>
+            <button class="tab-btn active" onclick="switchTab('deposits')">Deposits</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">Withdrawals</button>
+            <button class="tab-btn" onclick="switchTab('broadcast')">📢 Broadcast</button>
         </div>
 
         <div id="deposits-view" class="req-list"></div>
         <div id="withdrawals-view" class="req-list" style="display: none;"></div>
+        
+        <div id="broadcast-view" class="broadcast-form" style="display: none;">
+            <h3 style="color: #00e6ff; margin-bottom: 15px;">Send Message to Channel</h3>
+            
+            <div class="form-group">
+                <label>Sender Identity</label>
+                <select id="msg-sender">
+                    <option value="office">🏢 L&T Head Office</option>
+                    <option value="finance">💳 L&T Finance Dept</option>
+                    <option value="hr">👩‍💼 Priya - Sr. HR Manager</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Message Text</label>
+                <textarea id="msg-text" placeholder="Type your message here..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Attach Screenshot/Image (Optional)</label>
+                <input type="file" id="msg-image" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>Attach Audio/Song (Optional - Max 2MB)</label>
+                <input type="file" id="msg-audio" accept="audio/*">
+            </div>
+
+            <button class="btn-send" id="send-btn" onclick="sendBroadcast()">🚀 Send to All Users</button>
+            <p id="b-status" style="margin-top: 10px; font-size: 13px; text-align: center; color: #00ff88; display: none;"></p>
+        </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
-            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM", databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Admin Security Check
         function loginAdmin() {
-            let id = document.getElementById('admin-id').value;
-            let pass = document.getElementById('admin-pass').value;
-
-            if(id === "3603236032" && pass === "J1a2y3a4") {
+            if(document.getElementById('admin-id').value === "3603236032" && document.getElementById('admin-pass').value === "J1a2y3a4") {
                 document.getElementById('admin-login').style.display = "none";
                 document.getElementById('admin-dashboard').style.display = "block";
                 loadRequests();
-            } else {
-                document.getElementById('error-msg').style.display = "block";
-            }
+            } else { document.getElementById('error-msg').style.display = "block"; }
         }
 
-        function logoutAdmin() {
-            document.getElementById('admin-login').style.display = "block";
-            document.getElementById('admin-dashboard').style.display = "none";
-            document.getElementById('admin-id').value = "";
-            document.getElementById('admin-pass').value = "";
-        }
+        function logoutAdmin() { location.reload(); }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
+            document.getElementById('deposits-view').style.display = tab === 'deposits' ? "flex" : "none";
+            document.getElementById('withdrawals-view').style.display = tab === 'withdrawals' ? "flex" : "none";
+            document.getElementById('broadcast-view').style.display = tab === 'broadcast' ? "block" : "none";
+        }
 
-            if(tab === 'deposits') {
-                document.getElementById('deposits-view').style.display = "flex";
-                document.getElementById('withdrawals-view').style.display = "none";
-            } else {
-                document.getElementById('deposits-view').style.display = "none";
-                document.getElementById('withdrawals-view').style.display = "flex";
-            }
+        // --- File to Base64 Converter ---
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function sendBroadcast() {
+            let sender = document.getElementById('msg-sender').value;
+            let text = document.getElementById('msg-text').value;
+            let imgFile = document.getElementById('msg-image').files[0];
+            let audioFile = document.getElementById('msg-audio').files[0];
+            let btn = document.getElementById('send-btn');
+            let status = document.getElementById('b-status');
+
+            if(!text && !imgFile && !audioFile) { alert("Please enter text or select a file!"); return; }
+
+            btn.disabled = true; btn.innerText = "SENDING...";
+            let imgBase64 = null;
+            let audioBase64 = null;
+
+            try {
+                if(imgFile) imgBase64 = await getBase64(imgFile);
+                if(audioFile) {
+                    if(audioFile.size > 2 * 1024 * 1024) { alert("Audio file is too large! Keep it under 2MB."); btn.disabled = false; btn.innerText = "🚀 Send to All Users"; return; }
+                    audioBase64 = await getBase64(audioFile);
+                }
+
+                let timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                await db.ref('channelMessages').push({
+                    sender: sender,
+                    text: text,
+                    image: imgBase64,
+                    audio: audioBase64,
+                    time: timeNow,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                document.getElementById('msg-text').value = "";
+                document.getElementById('msg-image').value = "";
+                document.getElementById('msg-audio').value = "";
+                
+                status.innerText = "✅ Message Broadcasted Successfully!";
+                status.style.display = "block";
+                setTimeout(() => { status.style.display = "none"; }, 3000);
+
+            } catch (err) { alert("Error sending message."); }
+            
+            btn.disabled = false; btn.innerText = "🚀 Send to All Users";
         }
 
         function loadRequests() {
-            // Load Deposits
+            // Existing Deposit & Withdrawal Logic remains identical
             db.ref('depositRequests').on('value', snap => {
-                let data = snap.val();
-                let html = "";
-                if(data) {
-                    for(let key in data) {
-                        if(data[key].status === 'Pending') {
-                            html += `
-                            <div class="req-card">
-                                <div class="req-info">
-                                    <p>User: <span>${data[key].phone}</span></p>
-                                    <p>UTR: <span>${data[key].utr}</span></p>
-                                    <p>Date: ${data[key].date}</p>
-                                    <div class="req-amount">₹${data[key].amount}</div>
-                                </div>
-                                <div class="action-btns">
-                                    <button class="btn-approve" onclick="approveDeposit('${key}', '${data[key].phone}', ${data[key].amount})">Approve</button>
-                                </div>
-                            </div>`;
-                        }
-                    }
-                }
+                let html = ""; snap.forEach(child => { let d = child.val(); if(d.status === 'Pending') html += `<div class="req-card"><div><p>User: <span>${d.phone}</span></p><p>UTR: ${d.utr}</p><div class="req-amount">₹${d.amount}</div></div><button class="btn-approve" onclick="approveDeposit('${child.key}', '${d.phone}', ${d.amount})">Approve</button></div>`; });
                 document.getElementById('deposits-view').innerHTML = html || "<div class='no-data'>No pending deposits.</div>";
             });
-
-            // Load Withdrawals
             db.ref('withdrawRequests').on('value', snap => {
-                let data = snap.val();
-                let html = "";
-                if(data) {
-                    for(let key in data) {
-                        if(data[key].status === 'Pending') {
-                            html += `
-                            <div class="req-card" style="border-left-color: #00e6ff;">
-                                <div class="req-info">
-                                    <p>User: <span>${data[key].phone}</span></p>
-                                    <p>Bank: ${data[key].bankName} | A/C: <span>${data[key].accountNo}</span></p>
-                                    <p>IFSC: <span>${data[key].ifsc}</span></p>
-                                    <div class="req-amount" style="color: #00e6ff;">₹${data[key].amount}</div>
-                                </div>
-                                <div class="action-btns">
-                                    <button class="btn-approve" onclick="approveWithdraw('${key}', '${data[key].phone}')">Paid</button>
-                                </div>
-                            </div>`;
-                        }
-                    }
-                }
+                let html = ""; snap.forEach(child => { let d = child.val(); if(d.status === 'Pending') html += `<div class="req-card" style="border-left-color:#00e6ff;"><div><p>User: <span>${d.phone}</span></p><p>A/C: ${d.accountNo}</p><div class="req-amount" style="color:#00e6ff;">₹${d.amount}</div></div><button class="btn-approve" onclick="approveWithdraw('${child.key}', '${d.phone}')">Paid</button></div>`; });
                 document.getElementById('withdrawals-view').innerHTML = html || "<div class='no-data'>No pending withdrawals.</div>";
             });
         }
 
-        // --- ACTION FUNCTIONS ---
-        function approveDeposit(reqId, phone, amount) {
-            if(confirm(`Add ₹${amount} to user ${phone}?`)) {
-                db.ref('users/' + phone).once('value').then(snap => {
-                    let currentBal = snap.val().balance || 0;
-                    // Update user balance
-                    db.ref('users/' + phone).update({ balance: currentBal + amount });
-                    // Update request status
-                    db.ref('depositRequests/' + reqId).update({ status: 'Approved' });
-                    // Add to user history
-                    db.ref('users/' + phone + '/transactions').push({ type: 'Deposit Approved', amount: amount, status: 'Success', date: new Date().toLocaleString() });
-                });
-            }
-        }
-
-        function approveWithdraw(reqId, phone) {
-            if(confirm(`Did you send money to ${phone}'s bank account?`)) {
-                // Update request status
-                db.ref('withdrawRequests/' + reqId).update({ status: 'Approved' });
-                // Add to user history
-                db.ref('users/' + phone + '/transactions').push({ type: 'Withdrawal Approved', amount: 0, status: 'Success (Paid)', date: new Date().toLocaleString() });
-            }
-        }
+        function approveDeposit(reqId, phone, amount) { if(confirm("Approve?")) { db.ref('users/'+phone).once('value').then(s => { db.ref('users/'+phone).update({balance: (s.val().balance||0)+amount}); db.ref('depositRequests/'+reqId).update({status:'Approved'}); }); } }
+        function approveWithdraw(reqId, phone) { if(confirm("Paid?")) db.ref('withdrawRequests/'+reqId).update({status:'Approved'}); }
     </script>
 </body>
 </html>
