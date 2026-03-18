@@ -3,65 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - VIP Plans</title>
+    <title>L&T Job - VIP Projects</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { 
-            background: #090e17; 
-            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
+            background: #050914; 
+            background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%);
             min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
-        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .back-btn { background: #0f172a; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
         .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
-        .current-level { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border: 1px solid #00e6ff; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; }
+        .current-level { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border: 1px solid #00e6ff; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; text-transform: uppercase; }
 
         .vip-banner {
-            background: linear-gradient(135deg, #ffaa00 0%, #ff7700 100%);
-            padding: 25px 20px; border-radius: 16px; text-align: center; margin-bottom: 25px;
-            color: #000; box-shadow: 0 10px 20px rgba(255, 170, 0, 0.2);
+            background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%);
+            padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px;
+            color: #000; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.2);
         }
-        .vip-banner h2 { font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
-        .vip-banner p { font-size: 13px; font-weight: bold; }
+        .vip-banner h2 { font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .vip-banner p { font-size: 12px; font-weight: bold; }
 
         /* VIP Cards Grid */
-        .vip-list { display: flex; flex-direction: column; gap: 15px; }
+        .vip-list { display: flex; flex-direction: column; gap: 18px; }
 
         .vip-card {
-            background: #152238; border: 1px solid #1f365c; border-radius: 12px;
-            padding: 20px; display: flex; flex-direction: column; position: relative;
-            transition: 0.3s; overflow: hidden;
+            background: #0f172a; border: 1px solid #1f365c; border-radius: 12px;
+            padding: 20px; display: flex; flex-direction: column; position: relative; transition: 0.3s;
         }
         .vip-card:hover { border-color: #00e6ff; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
         
         /* Highlight border for higher levels */
         .card-premium { border-color: #ffaa00; }
 
-        .vip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .vip-title { font-size: 20px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .profit-badge { position: absolute; top: -12px; right: 15px; background: #ffaa00; color: #000; padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 12px; border: 2px solid #050914; box-shadow: 0 2px 10px rgba(255, 170, 0, 0.4); }
+
+        .vip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; margin-top: 5px; }
+        .vip-title { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
         .vip-price { font-size: 20px; font-weight: 900; color: #00ff88; }
 
-        .vip-details { display: flex; justify-content: space-between; margin-bottom: 15px; background: #090e17; padding: 10px; border-radius: 8px; border: 1px dashed #2d4a77; }
-        .detail-box { text-align: center; width: 50%; }
-        .detail-box:first-child { border-right: 1px solid #1f365c; }
+        .vip-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .detail-box { background: #050914; padding: 12px; border-radius: 8px; border: 1px dashed #2d4a77; text-align: center; }
+        
         .d-label { color: #8898aa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .d-val { color: #fff; font-size: 16px; font-weight: bold; }
+        .d-val { color: #fff; font-size: 15px; font-weight: bold; }
 
         .btn-unlock { 
             width: 100%; padding: 14px; border-radius: 8px; border: none; 
             background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            color: #000; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 5px;
         }
         .btn-unlock:active { transform: scale(0.98); }
         
         .btn-owned { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; cursor: default; }
-        .btn-locked { background: #2d4a77; color: #8898aa; cursor: not-allowed; }
+        .btn-locked { background: #1f365c; color: #8898aa; cursor: not-allowed; }
 
         /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
         .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
         .nav-icon { font-size: 20px; }
@@ -73,17 +74,17 @@
         
         <div class="header">
             <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <h2 class="page-title">VIP Privileges</h2>
-            <div class="current-level" id="user-level-badge">VIP G1</div>
+            <h2 class="page-title">Project Plans</h2>
+            <div class="current-level" id="user-level-badge">Project G1</div>
         </div>
 
         <div class="vip-banner">
-            <h2>Upgrade Your Rank</h2>
-            <p>Higher VIP level = Higher daily income & benefits!</p>
+            <h2>Invest & Earn Daily</h2>
+            <p>Select a project below to start your fixed income.</p>
         </div>
 
         <div class="vip-list" id="vip-container">
-            <div style="text-align: center; color: #8898aa;">Loading VIP Plans...</div>
+            <div style="text-align: center; color: #8898aa;">Loading Projects...</div>
         </div>
 
     </div>
@@ -98,8 +99,8 @@
             Jobs
         </a>
         <a href="vip.html" class="nav-item active">
-            <div class="nav-icon">💎</div>
-            VIP Plans
+            <div class="nav-icon">💼</div>
+            Projects
         </a>
         <a href="profile.html" class="nav-item">
             <div class="nav-icon">👤</div>
@@ -117,18 +118,18 @@
         const db = firebase.database();
 
         const userPhone = localStorage.getItem('loggedInUser');
-        if (!userPhone) window.location.href = "login.html";
+        if (!userPhone) window.location.href = "index.html";
 
-        // Admin Set VIP Plans
+        // Admin Fixed 8 Levels Data
         const vipPlans = [
-            { level: "G1", price: 0, daily: 15, validity: "Lifetime", icon: "🥉" },
-            { level: "G2", price: 1450, daily: 50, validity: "Lifetime", icon: "🥈" },
-            { level: "G3", price: 4200, daily: 150, validity: "Lifetime", icon: "🥇" },
-            { level: "G4", price: 12000, daily: 450, validity: "Lifetime", icon: "🏅" },
-            { level: "G5", price: 25000, daily: 850, validity: "Lifetime", icon: "💎" },
-            { level: "G6", price: 50000, daily: 2000, validity: "Lifetime", icon: "👑" },
-            { level: "G7", price: 100000, daily: 4000, validity: "Lifetime", icon: "🔥" },
-            { level: "G8", price: 200000, daily: 8000, validity: "Lifetime", icon: "🚀" }
+            { level: "G1", price: 500, days: 10, profit: 20, icon: "🥉" },
+            { level: "G2", price: 1500, days: 10, profit: 20, icon: "🥉" },
+            { level: "G3", price: 3000, days: 30, profit: 70, icon: "🥈" },
+            { level: "G4", price: 6000, days: 30, profit: 70, icon: "🥈" },
+            { level: "G5", price: 10000, days: 45, profit: 120, icon: "🥇" },
+            { level: "G6", price: 20000, days: 45, profit: 120, icon: "🥇" },
+            { level: "G7", price: 50000, days: 60, profit: 150, icon: "💎" },
+            { level: "G8", price: 100000, days: 60, profit: 150, icon: "💎" }
         ];
 
         let currentUserLevel = "G1";
@@ -138,7 +139,7 @@
             let userData = snap.val();
             if(userData) {
                 currentUserLevel = userData.level || "G1";
-                document.getElementById('user-level-badge').innerText = "VIP " + currentUserLevel;
+                document.getElementById('user-level-badge').innerText = "Level " + currentUserLevel;
                 renderVIPPlans();
             }
         });
@@ -146,44 +147,48 @@
         function renderVIPPlans() {
             let container = document.getElementById('vip-container');
             let html = "";
-
-            // User ka current level number nikalna (e.g. "G3" -> 3) taaki pata chale chote plan lock karne hain
             let userLevelNum = parseInt(currentUserLevel.replace("G", ""));
 
             vipPlans.forEach(plan => {
                 let planLevelNum = parseInt(plan.level.replace("G", ""));
-                
-                let btnHTML = "";
-                let premiumClass = planLevelNum >= 4 ? "card-premium" : ""; // G4 and above have orange border
+                let premiumClass = planLevelNum >= 5 ? "card-premium" : ""; 
 
+                // --- Calculation Logic ---
+                let profitAmt = (plan.price * plan.profit) / 100;
+                let totalReturn = plan.price + profitAmt;
+                let dailyIncome = Math.round(totalReturn / plan.days); 
+                
+                // --- Button Logic ---
+                let btnHTML = "";
                 if(plan.level === currentUserLevel) {
-                    // Agar user yahi plan use kar raha hai
-                    btnHTML = `<button class="btn-unlock btn-owned">CURRENT PLAN ✅</button>`;
-                } 
-                else if(planLevelNum < userLevelNum) {
-                    // Agar user bade plan par hai, toh chote plan locked dikhenge
+                    btnHTML = `<button class="btn-unlock btn-owned">CURRENT PROJECT ✅</button>`;
+                } else if(planLevelNum < userLevelNum) {
                     btnHTML = `<button class="btn-unlock btn-locked" disabled>LOCKED 🔒</button>`;
-                } 
-                else {
-                    // Upgrade available
+                } else {
                     btnHTML = `<button class="btn-unlock" onclick="buyPlan('${plan.level}', ${plan.price})">UNLOCK FOR ₹${plan.price.toLocaleString('en-IN')}</button>`;
                 }
 
                 html += `
                 <div class="vip-card ${premiumClass}">
+                    <div class="profit-badge">+${plan.profit}% PROFIT</div>
+                    
                     <div class="vip-header">
-                        <div class="vip-title">${plan.icon} VIP ${plan.level}</div>
+                        <div class="vip-title">${plan.icon} Project ${plan.level}</div>
                         <div class="vip-price">₹${plan.price.toLocaleString('en-IN')}</div>
                     </div>
                     
                     <div class="vip-details">
                         <div class="detail-box">
                             <div class="d-label">Daily Income</div>
-                            <div class="d-val" style="color:#00ff88;">₹${plan.daily}</div>
+                            <div class="d-val" style="color:#00e6ff;">₹${dailyIncome}</div>
                         </div>
                         <div class="detail-box">
                             <div class="d-label">Validity</div>
-                            <div class="d-val">${plan.validity}</div>
+                            <div class="d-val">${plan.days} Days</div>
+                        </div>
+                        <div class="detail-box" style="grid-column: span 2; background: rgba(0, 255, 136, 0.1); border-color: #00ff88;">
+                            <div class="d-label" style="color: #00ff88;">Total Return (After ${plan.days} Days)</div>
+                            <div class="d-val" style="color: #00ff88; font-size: 18px;">₹${totalReturn.toLocaleString('en-IN')}</div>
                         </div>
                     </div>
                     
@@ -195,7 +200,6 @@
         }
 
         function buyPlan(level, price) {
-            // Seedha invest.html par bhej do jahan payment confirm hogi
             window.location.href = `invest.html?job=${level}&price=${price}`;
         }
     </script>
