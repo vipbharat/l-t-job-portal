@@ -8,34 +8,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { 
-            background: #050914; 
-            background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
-        }
+        body { background: #050914; background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%); min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px; }
 
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
         .back-btn { background: #0f172a; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
         .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
         .vip-badge { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 14px; text-transform: uppercase; }
 
-        .task-card {
-            background: #0f172a; border: 1px solid #00e6ff; border-radius: 12px;
-            padding: 30px 20px; text-align: center; margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(0, 230, 255, 0.1); position: relative; overflow: hidden;
-        }
-        
+        .task-card { background: #0f172a; border: 1px solid #00e6ff; border-radius: 12px; padding: 30px 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.1); }
         .task-img { font-size: 60px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 230, 255, 0.5); }
         .task-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 5px; text-transform: uppercase; }
         .task-reward { font-size: 32px; font-weight: 900; color: #00ff88; margin-bottom: 10px; letter-spacing: 1px; }
         
         .days-left { color: #ffaa00; font-size: 12px; font-weight: bold; margin-bottom: 20px; background: rgba(255, 170, 0, 0.1); display: inline-block; padding: 4px 10px; border-radius: 4px; border: 1px dashed #ffaa00; }
 
-        .btn-submit { 
-            width: 100%; max-width: 300px; padding: 16px; border-radius: 8px; border: none; 
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s;
-        }
+        .btn-submit { width: 100%; max-width: 300px; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn-submit:active { transform: scale(0.95); }
         .btn-disabled { background: #2d4a77; color: #8898aa; cursor: not-allowed; box-shadow: none; }
         .btn-expired { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; cursor: not-allowed; }
@@ -53,126 +40,96 @@
 <body>
 
     <div style="max-width: 500px; margin: 0 auto;">
-        
         <div class="header">
             <a href="dashboard.html" class="back-btn">⬅ Back</a>
             <h2 class="page-title">Work Station</h2>
-            <div class="vip-badge" id="user-level">G1</div>
+            <div class="vip-badge" id="user-level">NO PLAN</div>
         </div>
 
         <div class="task-card">
             <div class="task-img">📱</div>
             <div class="task-title">Daily App Optimization Task</div>
             <div class="task-reward" id="reward-amount">₹0</div>
-            <div class="days-left" id="days-display">Checking validity...</div>
+            <div class="days-left" id="days-display">Waiting for investment...</div>
 
-            <button class="btn-submit btn-disabled" id="task-btn" onclick="submitTask()" disabled>LOADING TASK...</button>
+            <button class="btn-submit btn-disabled" id="task-btn" onclick="submitTask()" disabled>PLEASE BUY A PLAN</button>
         </div>
 
         <div class="info-box">
-            <p>Your daily income depends on your active Project Level.<br>When your plan expires, you must upgrade to <span>continue earning!</span></p>
+            <p>Your daily income depends on your active Project Level and Duration.<br>When your plan expires, you must upgrade to <span>continue earning!</span></p>
             <br>
-            <a href="vip.html" style="color: #00ff88; font-size: 14px; font-weight: bold; text-decoration: none;">💼 View New Projects</a>
+            <a href="vip.html" style="color: #00ff88; font-size: 14px; font-weight: bold; text-decoration: none;">💼 View Projects</a>
         </div>
-
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">
-            <div class="nav-icon">🏠</div>
-            Home
-        </a>
-        <a href="job.html" class="nav-item active">
-            <div class="nav-icon">🚀</div>
-            Jobs
-        </a>
-        <a href="vip.html" class="nav-item">
-            <div class="nav-icon">💼</div>
-            Projects
-        </a>
-        <a href="profile.html" class="nav-item">
-            <div class="nav-icon">👤</div>
-            Profile
-        </a>
+        <a href="dashboard.html" class="nav-item"><div class="nav-icon">🏠</div>Home</a>
+        <a href="job.html" class="nav-item active"><div class="nav-icon">🚀</div>Jobs</a>
+        <a href="vip.html" class="nav-item"><div class="nav-icon">💼</div>Projects</a>
+        <a href="profile.html" class="nav-item"><div class="nav-icon">👤</div>Profile</a>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
-            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM", databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         const userPhone = localStorage.getItem('loggedInUser');
         if (!userPhone) window.location.href = "index.html";
 
-        // Admin Rewards Data (Sem Kaam - Syncing exactly with the percentages)
-        const planData = {
-            "G1": { daily: 60, days: 10 },    // 500 + 20% = 600 / 10
-            "G2": { daily: 180, days: 10 },   // 1500 + 20% = 1800 / 10
-            "G3": { daily: 170, days: 30 },   // 3000 + 70% = 5100 / 30
-            "G4": { daily: 340, days: 30 },   // 6000 + 70% = 10200 / 30
-            "G5": { daily: 489, days: 45 },   // 10000 + 120% = 22000 / 45
-            "G6": { daily: 978, days: 45 },   // 20000 + 120% = 44000 / 45
-            "G7": { daily: 2083, days: 60 },  // 50000 + 150% = 125000 / 60
-            "G8": { daily: 4167, days: 60 }   // 100000 + 150% = 250000 / 60
-        };
-
         let userData = null;
         let todayDate = new Date().toLocaleDateString(); 
-        let currentLevel = "G1";
-        let dailyReward = 60;
-        let maxDays = 10;
         let isExpired = false;
+        let hasPlan = false;
 
-        // Fetch User Data
         db.ref('users/' + userPhone).on('value', (snap) => {
             userData = snap.val();
-            if(userData) {
-                currentLevel = userData.level || "G1";
+            if(userData && userData.planStartDate) {
+                hasPlan = true;
                 
-                // Get accurate details based on level
-                if(planData[currentLevel]) {
-                    dailyReward = planData[currentLevel].daily;
-                    maxDays = planData[currentLevel].days;
-                }
+                // Read from Firebase (Set by invest.html)
+                let currentLevel = userData.level;
+                let dailyReward = userData.dailyIncome || 0;
+                let maxDays = userData.planDays || 0;
 
                 document.getElementById('user-level').innerText = "Project " + currentLevel;
                 document.getElementById('reward-amount').innerText = "₹" + dailyReward;
 
-                // Smart Plan Tracking (Days Logic)
-                if(userData.lastPlanName !== currentLevel) {
-                    // Agar user ne naya plan liya hai, toh uska start date aaj ka set kar do
-                    db.ref('users/' + userPhone).update({
-                        lastPlanName: currentLevel,
-                        planStartDate: new Date().toISOString()
-                    });
-                    document.getElementById('days-display').innerText = `Day 1 of ${maxDays}`;
-                } else if(userData.planStartDate) {
-                    // Agar purana plan chal raha hai, toh din gino
-                    let start = new Date(userData.planStartDate);
-                    let now = new Date();
-                    let diffTime = Math.abs(now - start);
-                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                // Smart Plan Tracking (Date Difference)
+                let start = new Date(userData.planStartDate);
+                let now = new Date();
+                // Add 1 to include the purchase day as Day 1
+                let diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24)) + 1;
 
-                    if(diffDays > maxDays) {
-                        isExpired = true;
-                        document.getElementById('days-display').innerText = "PLAN EXPIRED!";
-                        document.getElementById('days-display').style.color = "#ff4d4d";
-                    } else {
-                        document.getElementById('days-display').innerText = `Day ${diffDays} of ${maxDays}`;
-                    }
+                if(diffDays > maxDays) {
+                    isExpired = true;
+                    document.getElementById('days-display').innerText = "PLAN EXPIRED!";
+                    document.getElementById('days-display').style.color = "#ff4d4d";
+                    document.getElementById('days-display').style.borderColor = "#ff4d4d";
+                    document.getElementById('days-display').style.background = "rgba(255, 77, 77, 0.1)";
+                } else {
+                    document.getElementById('days-display').innerText = `Day ${diffDays} of ${maxDays}`;
                 }
 
                 checkTaskStatus();
+            } else {
+                // Naya user jisne kuch nahi kharida
+                hasPlan = false;
+                document.getElementById('days-display').innerText = "NO ACTIVE PLAN";
+                document.getElementById('user-level').innerText = "FREE";
             }
         });
 
         function checkTaskStatus() {
             let btn = document.getElementById('task-btn');
             
+            if(!hasPlan) {
+                btn.innerText = "BUY A PROJECT FIRST";
+                btn.className = "btn-submit btn-disabled";
+                btn.disabled = true;
+                return;
+            }
+
             if(isExpired) {
                 btn.innerText = "PLAN EXPIRED ❌";
                 btn.className = "btn-submit btn-expired";
@@ -182,13 +139,12 @@
 
             if(userData.lastTaskDate === todayDate) {
                 btn.innerText = "TASK COMPLETED ✅";
-                btn.classList.add('btn-disabled');
+                btn.className = "btn-submit btn-disabled";
                 btn.disabled = true;
                 document.querySelector('.task-img').innerText = "🎉";
             } else {
                 btn.innerText = "START WORK & CLAIM";
-                btn.classList.remove('btn-disabled');
-                btn.classList.remove('btn-expired');
+                btn.className = "btn-submit";
                 btn.disabled = false;
                 document.querySelector('.task-img').innerText = "📱";
             }
@@ -200,17 +156,16 @@
             btn.disabled = true;
 
             setTimeout(() => {
+                let dailyReward = userData.dailyIncome || 0;
                 let newBalance = (userData.balance || 0) + dailyReward;
                 let txnDateStr = new Date().toLocaleString();
 
-                // Update Balance and Task Date
                 db.ref('users/' + userPhone).update({
                     balance: newBalance,
                     lastTaskDate: todayDate
                 }).then(() => {
-                    // Save to Transaction History
                     db.ref('users/' + userPhone + '/transactions').push({
-                        type: `Daily Income (${currentLevel})`,
+                        type: `Daily Income (Project ${userData.level})`,
                         amount: dailyReward,
                         status: 'Success',
                         date: txnDateStr
