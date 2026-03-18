@@ -38,7 +38,7 @@
         .btn-action { background: #00ff88; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-view { background: #00e6ff; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* Broadcast Form */
+        /* Forms */
         .broadcast-form { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #00e6ff; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
@@ -68,6 +68,11 @@
         .k-val.highlight { color: #00ff88; }
         .k-val.alert { color: #ff4d4d; }
 
+        /* Action Buttons Grid in Modal */
+        .action-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-add-money { flex: 1; padding: 10px; background: #00ff88; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-cut-money { flex: 1; padding: 10px; background: #ff4d4d; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
     </style>
 </head>
 <body>
@@ -90,8 +95,8 @@
             <button class="tab-btn active" onclick="switchTab('deposits')">💳 Deposits</button>
             <button class="tab-btn" onclick="switchTab('withdrawals')">🏦 Withdraws</button>
             <button class="tab-btn" onclick="switchTab('broadcast')">📢 Broadcast</button>
-            <button class="tab-btn" onclick="switchTab('players')">👥 Players (Kundli)</button>
-        </div>
+            <button class="tab-btn" onclick="switchTab('players')">👥 Players</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button> </div>
 
         <div id="deposits-view" class="req-list"></div>
         
@@ -109,9 +114,19 @@
                 <input type="number" id="search-phone" placeholder="Enter Mobile Number to search...">
                 <button onclick="renderUsers()">🔍 Search</button>
             </div>
-            <div id="users-list" class="req-list">
-                </div>
+            <div id="users-list" class="req-list"></div>
         </div>
+
+        <div id="settings-view" class="broadcast-form" style="display: none; border-color: #ffaa00;">
+            <h3 style="color: #ffaa00; margin-bottom: 15px;">Deposit UPI Setup</h3>
+            <p style="font-size: 12px; color: #8898aa; margin-bottom: 15px;">Set the UPI ID where players will send their deposit money.</p>
+            <div class="form-group">
+                <label>Admin UPI ID</label>
+                <input type="text" id="admin-upi-id" placeholder="e.g. 8878888590@ybl">
+            </div>
+            <button class="btn-send" style="background: #ffaa00;" onclick="saveUpiSettings()">💾 SAVE UPI ID</button>
+        </div>
+
     </div>
 
     <div id="kundli-modal" class="modal-overlay">
@@ -130,14 +145,15 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let allUsersData = {}; // Saare users ka data yahan aayega
+        let allUsersData = {}; 
 
         function loginAdmin() {
             if(document.getElementById('admin-id').value === "3603236032" && document.getElementById('admin-pass').value === "J1a2y3a4") {
                 document.getElementById('admin-login').style.display = "none";
                 document.getElementById('admin-dashboard').style.display = "block";
                 loadRequests();
-                loadUsers(); // Load all users secretly in background
+                loadUsers(); 
+                loadUpiSettings(); // Load UPI settings on login
             } else { document.getElementById('error-msg').style.display = "block"; }
         }
 
@@ -150,24 +166,44 @@
             document.getElementById('withdrawals-view').style.display = tab === 'withdrawals' ? "flex" : "none";
             document.getElementById('broadcast-view').style.display = tab === 'broadcast' ? "block" : "none";
             document.getElementById('players-view').style.display = tab === 'players' ? "block" : "none";
+            document.getElementById('settings-view').style.display = tab === 'settings' ? "block" : "none";
+        }
+
+        // --- NEW LOGIC: SAVE AND LOAD UPI SETTINGS ---
+        function saveUpiSettings() {
+            let upi = document.getElementById('admin-upi-id').value.trim();
+            if(upi === "") {
+                alert("Please enter a valid UPI ID!");
+                return;
+            }
+            db.ref('adminSettings/payment').set({ upiId: upi })
+              .then(() => alert("✅ UPI ID Saved Successfully! Players will now see this UPI on their deposit page."))
+              .catch(err => alert("Error: " + err.message));
+        }
+
+        function loadUpiSettings() {
+            db.ref('adminSettings/payment').once('value', snap => {
+                if(snap.exists() && snap.val().upiId) {
+                    document.getElementById('admin-upi-id').value = snap.val().upiId;
+                }
+            });
         }
 
         // --- FETCH ALL USERS ---
         function loadUsers() {
             db.ref('users').on('value', snap => {
                 allUsersData = snap.val() || {};
-                renderUsers(); // Update list if tab is open
+                renderUsers(); 
             });
         }
 
-        // --- SHOW USERS (With Search Logic) ---
+        // --- SHOW USERS ---
         function renderUsers() {
             let container = document.getElementById('users-list');
             let searchQuery = document.getElementById('search-phone').value.trim();
             let html = "";
 
             for(let phone in allUsersData) {
-                // Agar search box mein kuch likha hai, toh sirf matching number dikhao
                 if(searchQuery !== "" && !phone.includes(searchQuery)) continue;
 
                 let u = allUsersData[phone];
@@ -187,7 +223,7 @@
             container.innerHTML = html || "<div class='no-data'>No players found!</div>";
         }
 
-        // --- OPEN KUNDLI (Popup Details) ---
+        // --- OPEN KUNDLI (Popup Details with ADD/CUT BUTTONS) ---
         function openKundli(phone) {
             let u = allUsersData[phone];
             if(!u) return;
@@ -210,6 +246,12 @@
                 <div class="k-row"><span class="k-label">Plan Duration:</span><span class="k-val">${u.planDays ? u.planDays + " Days" : 'None'}</span></div>
                 <div class="k-row"><span class="k-label">Daily Income:</span><span class="k-val highlight">₹${u.dailyIncome || 0}</span></div>
                 <div class="k-row"><span class="k-label">Join Date:</span><span class="k-val">${u.joinDate || 'N/A'}</span></div>
+                
+                <div class="action-btns">
+                    <button class="btn-add-money" onclick="adjustBalance('${phone}', 'add')">➕ ADD MONEY</button>
+                    <button class="btn-cut-money" onclick="adjustBalance('${phone}', 'cut')">➖ CUT MONEY</button>
+                </div>
+
                 <div style="margin-top: 15px; background: #050914; padding: 10px; border-radius: 8px; border: 1px dashed #2d4a77;">
                     <span class="k-label" style="display:block; margin-bottom:5px; color:#00e6ff;">🏦 Bank Details:</span>
                     <div style="font-size: 13px; color: #cbd5e1; line-height: 1.6;">${bankHtml}</div>
@@ -221,6 +263,42 @@
         }
 
         function closeModal() { document.getElementById('kundli-modal').style.display = 'none'; }
+
+        // --- LOGIC: ADD & CUT BALANCE ---
+        function adjustBalance(phone, type) {
+            let actionText = type === 'add' ? 'ADD to' : 'CUT from';
+            let amount = prompt(`Enter amount to ${actionText} ${phone}:`);
+            
+            if (amount !== null && amount.trim() !== "" && !isNaN(amount)) {
+                let amt = parseFloat(amount);
+                if (amt <= 0) {
+                    alert("Please enter a valid amount greater than 0.");
+                    return;
+                }
+
+                let currentBal = parseFloat(allUsersData[phone].balance || 0);
+                let newBal = currentBal;
+
+                if (type === 'add') {
+                    newBal = currentBal + amt;
+                } else if (type === 'cut') {
+                    if (currentBal < amt) {
+                        alert("Error: User ke paas itna balance nahi hai!");
+                        return;
+                    }
+                    newBal = currentBal - amt;
+                }
+
+                if (confirm(`Confirm Action:\n${type === 'add' ? 'Add' : 'Cut'} ₹${amt}\nNew Balance will be: ₹${newBal}`)) {
+                    db.ref('users/' + phone).update({ balance: newBal })
+                      .then(() => {
+                          alert(`✅ Balance updated successfully!`);
+                          closeModal(); 
+                      })
+                      .catch(err => alert("Database Error: " + err.message));
+                }
+            }
+        }
 
         // --- OLD REQUEST LOGIC ---
         function loadRequests() {
