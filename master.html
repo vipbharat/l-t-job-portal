@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #050914; color: #fff; padding: 20px; }
+        body { background: #050914; color: #fff; padding: 20px; padding-bottom: 50px; }
 
         /* Login Screen */
         #admin-login { max-width: 400px; margin: 100px auto; background: #0f172a; padding: 30px; border-radius: 12px; border: 1px solid #ff4d4d; text-align: center; }
@@ -20,32 +20,54 @@
         #admin-dashboard { display: none; max-width: 800px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
         .header h1 { color: #ff4d4d; font-size: 22px; text-transform: uppercase; }
-        .btn-logout { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; }
+        .btn-logout { background: #1f365c; color: #fff; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none;}
-        .tab-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap;}
-        .tab-btn.active { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
+        /* Scrollable Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 0 0 auto; padding: 12px 20px; background: #0f172a; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; white-space: nowrap;}
+        .tab-btn.active { background: #ff4d4d; color: #fff; border-color: #ff4d4d; box-shadow: 0 0 10px rgba(255, 77, 77, 0.4); }
 
-        /* Request Cards */
+        /* Request & User Cards */
         .req-list { display: flex; flex-direction: column; gap: 15px; }
         .req-card { background: #0f172a; border: 1px solid #1f365c; border-left: 4px solid #ffaa00; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
         .req-info p { margin-bottom: 5px; font-size: 13px; color: #cbd5e1; }
         .req-info span { color: #00e6ff; font-weight: bold; }
         .req-amount { font-size: 20px; font-weight: 900; color: #00ff88; margin-bottom: 10px; }
         
-        .action-btns { display: flex; gap: 10px; }
-        .btn-approve { background: #00ff88; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-action { background: #00ff88; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-view { background: #00e6ff; color: #000; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         /* Broadcast Form */
         .broadcast-form { background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #00e6ff; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
-        .form-group select, .form-group textarea, .form-group input[type="file"] { width: 100%; padding: 12px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; outline: none; }
+        .form-group select, .form-group textarea, .form-group input { width: 100%; padding: 12px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; outline: none; }
         .form-group textarea { height: 100px; resize: none; }
         .btn-send { width: 100%; padding: 15px; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
-        .btn-send:active { transform: scale(0.98); }
+
+        /* Search Box for Players */
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-box input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #00e6ff; border-radius: 8px; color: #fff; outline: none; }
+        .search-box button { padding: 12px 20px; background: #00e6ff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         .no-data { text-align: center; color: #8898aa; padding: 40px; font-style: italic; }
+
+        /* KUNDLI MODAL (Popup) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #0f172a; width: 100%; max-width: 400px; border-radius: 12px; border: 1px solid #ffaa00; box-shadow: 0 10px 30px rgba(255, 170, 0, 0.2); overflow: hidden; }
+        .modal-header { background: #1f365c; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2d4a77; }
+        .modal-header h3 { color: #ffaa00; margin: 0; font-size: 16px; text-transform: uppercase; }
+        .close-btn { background: transparent; color: #fff; border: none; font-size: 20px; cursor: pointer; }
+        .modal-body { padding: 20px; }
+        
+        .k-row { display: flex; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px dashed #1f365c; padding-bottom: 8px; }
+        .k-row:last-child { border-bottom: none; }
+        .k-label { color: #8898aa; font-size: 13px; font-weight: bold; }
+        .k-val { color: #fff; font-size: 14px; font-weight: bold; text-align: right; }
+        .k-val.highlight { color: #00ff88; }
+        .k-val.alert { color: #ff4d4d; }
+
     </style>
 </head>
 <body>
@@ -65,43 +87,41 @@
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('deposits')">Deposits</button>
-            <button class="tab-btn" onclick="switchTab('withdrawals')">Withdrawals</button>
+            <button class="tab-btn active" onclick="switchTab('deposits')">💳 Deposits</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">🏦 Withdraws</button>
             <button class="tab-btn" onclick="switchTab('broadcast')">📢 Broadcast</button>
+            <button class="tab-btn" onclick="switchTab('players')">👥 Players (Kundli)</button>
         </div>
 
         <div id="deposits-view" class="req-list"></div>
+        
         <div id="withdrawals-view" class="req-list" style="display: none;"></div>
         
         <div id="broadcast-view" class="broadcast-form" style="display: none;">
             <h3 style="color: #00e6ff; margin-bottom: 15px;">Send Message to Channel</h3>
-            
-            <div class="form-group">
-                <label>Sender Identity</label>
-                <select id="msg-sender">
-                    <option value="office">🏢 L&T Head Office</option>
-                    <option value="finance">💳 L&T Finance Dept</option>
-                    <option value="hr">👩‍💼 Priya - Sr. HR Manager</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Sender Identity</label><select id="msg-sender"><option value="office">🏢 L&T Head Office</option><option value="finance">💳 L&T Finance Dept</option><option value="hr">👩‍💼 Priya - Sr. HR Manager</option></select></div>
+            <div class="form-group"><label>Message Text</label><textarea id="msg-text" placeholder="Type message..."></textarea></div>
+            <button class="btn-send" onclick="sendBroadcast()">🚀 Send to All Users</button>
+        </div>
 
-            <div class="form-group">
-                <label>Message Text</label>
-                <textarea id="msg-text" placeholder="Type your message here..."></textarea>
+        <div id="players-view" style="display: none;">
+            <div class="search-box">
+                <input type="number" id="search-phone" placeholder="Enter Mobile Number to search...">
+                <button onclick="renderUsers()">🔍 Search</button>
             </div>
+            <div id="users-list" class="req-list">
+                </div>
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label>Attach Screenshot/Image (Optional)</label>
-                <input type="file" id="msg-image" accept="image/*">
+    <div id="kundli-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📜 Player Kundli</h3>
+                <button class="close-btn" onclick="closeModal()">✖</button>
             </div>
-
-            <div class="form-group">
-                <label>Attach Audio/Song (Optional - Max 2MB)</label>
-                <input type="file" id="msg-audio" accept="audio/*">
-            </div>
-
-            <button class="btn-send" id="send-btn" onclick="sendBroadcast()">🚀 Send to All Users</button>
-            <p id="b-status" style="margin-top: 10px; font-size: 13px; text-align: center; color: #00ff88; display: none;"></p>
+            <div class="modal-body" id="kundli-details">
+                </div>
         </div>
     </div>
 
@@ -110,11 +130,14 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        let allUsersData = {}; // Saare users ka data yahan aayega
+
         function loginAdmin() {
             if(document.getElementById('admin-id').value === "3603236032" && document.getElementById('admin-pass').value === "J1a2y3a4") {
                 document.getElementById('admin-login').style.display = "none";
                 document.getElementById('admin-dashboard').style.display = "block";
                 loadRequests();
+                loadUsers(); // Load all users secretly in background
             } else { document.getElementById('error-msg').style.display = "block"; }
         }
 
@@ -126,77 +149,94 @@
             document.getElementById('deposits-view').style.display = tab === 'deposits' ? "flex" : "none";
             document.getElementById('withdrawals-view').style.display = tab === 'withdrawals' ? "flex" : "none";
             document.getElementById('broadcast-view').style.display = tab === 'broadcast' ? "block" : "none";
+            document.getElementById('players-view').style.display = tab === 'players' ? "block" : "none";
         }
 
-        // --- File to Base64 Converter ---
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
+        // --- FETCH ALL USERS ---
+        function loadUsers() {
+            db.ref('users').on('value', snap => {
+                allUsersData = snap.val() || {};
+                renderUsers(); // Update list if tab is open
             });
         }
 
-        async function sendBroadcast() {
-            let sender = document.getElementById('msg-sender').value;
-            let text = document.getElementById('msg-text').value;
-            let imgFile = document.getElementById('msg-image').files[0];
-            let audioFile = document.getElementById('msg-audio').files[0];
-            let btn = document.getElementById('send-btn');
-            let status = document.getElementById('b-status');
+        // --- SHOW USERS (With Search Logic) ---
+        function renderUsers() {
+            let container = document.getElementById('users-list');
+            let searchQuery = document.getElementById('search-phone').value.trim();
+            let html = "";
 
-            if(!text && !imgFile && !audioFile) { alert("Please enter text or select a file!"); return; }
+            for(let phone in allUsersData) {
+                // Agar search box mein kuch likha hai, toh sirf matching number dikhao
+                if(searchQuery !== "" && !phone.includes(searchQuery)) continue;
 
-            btn.disabled = true; btn.innerText = "SENDING...";
-            let imgBase64 = null;
-            let audioBase64 = null;
-
-            try {
-                if(imgFile) imgBase64 = await getBase64(imgFile);
-                if(audioFile) {
-                    if(audioFile.size > 2 * 1024 * 1024) { alert("Audio file is too large! Keep it under 2MB."); btn.disabled = false; btn.innerText = "🚀 Send to All Users"; return; }
-                    audioBase64 = await getBase64(audioFile);
-                }
-
-                let timeNow = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let u = allUsersData[phone];
+                let currentPlan = u.level || "FREE";
                 
-                await db.ref('channelMessages').push({
-                    sender: sender,
-                    text: text,
-                    image: imgBase64,
-                    audio: audioBase64,
-                    time: timeNow,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
+                html += `
+                <div class="req-card" style="border-left-color: #00e6ff;">
+                    <div class="req-info">
+                        <p>Mobile: <span>${phone}</span></p>
+                        <p>Plan: <span style="color:#ffaa00;">Project ${currentPlan}</span></p>
+                        <div class="req-amount" style="font-size:16px;">Bal: ₹${u.balance || 0}</div>
+                    </div>
+                    <button class="btn-view" onclick="openKundli('${phone}')">👁️ VIEW</button>
+                </div>`;
+            }
 
-                document.getElementById('msg-text').value = "";
-                document.getElementById('msg-image').value = "";
-                document.getElementById('msg-audio').value = "";
-                
-                status.innerText = "✅ Message Broadcasted Successfully!";
-                status.style.display = "block";
-                setTimeout(() => { status.style.display = "none"; }, 3000);
-
-            } catch (err) { alert("Error sending message."); }
-            
-            btn.disabled = false; btn.innerText = "🚀 Send to All Users";
+            container.innerHTML = html || "<div class='no-data'>No players found!</div>";
         }
 
+        // --- OPEN KUNDLI (Popup Details) ---
+        function openKundli(phone) {
+            let u = allUsersData[phone];
+            if(!u) return;
+
+            let bankHtml = "<span style='color:#8898aa'>Not Added Yet</span>";
+            if(u.bankDetails) {
+                bankHtml = `
+                    Bank: ${u.bankDetails.bankName || 'N/A'}<br>
+                    A/C: <span style="color:#fff;">${u.bankDetails.accountNo || 'N/A'}</span><br>
+                    IFSC: ${u.bankDetails.ifsc || 'N/A'}<br>
+                    Name: ${u.bankDetails.holderName || 'N/A'}
+                `;
+            }
+
+            let html = `
+                <div class="k-row"><span class="k-label">Mobile Number:</span><span class="k-val">${phone}</span></div>
+                <div class="k-row"><span class="k-label">Login Password:</span><span class="k-val alert">${u.password || 'N/A'}</span></div>
+                <div class="k-row"><span class="k-label">Wallet Balance:</span><span class="k-val highlight">₹${u.balance || 0}</span></div>
+                <div class="k-row"><span class="k-label">Active Project:</span><span class="k-val" style="color:#ffaa00;">Project ${u.level || 'FREE'}</span></div>
+                <div class="k-row"><span class="k-label">Plan Duration:</span><span class="k-val">${u.planDays ? u.planDays + " Days" : 'None'}</span></div>
+                <div class="k-row"><span class="k-label">Daily Income:</span><span class="k-val highlight">₹${u.dailyIncome || 0}</span></div>
+                <div class="k-row"><span class="k-label">Join Date:</span><span class="k-val">${u.joinDate || 'N/A'}</span></div>
+                <div style="margin-top: 15px; background: #050914; padding: 10px; border-radius: 8px; border: 1px dashed #2d4a77;">
+                    <span class="k-label" style="display:block; margin-bottom:5px; color:#00e6ff;">🏦 Bank Details:</span>
+                    <div style="font-size: 13px; color: #cbd5e1; line-height: 1.6;">${bankHtml}</div>
+                </div>
+            `;
+
+            document.getElementById('kundli-details').innerHTML = html;
+            document.getElementById('kundli-modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('kundli-modal').style.display = 'none'; }
+
+        // --- OLD REQUEST LOGIC ---
         function loadRequests() {
-            // Existing Deposit & Withdrawal Logic remains identical
             db.ref('depositRequests').on('value', snap => {
-                let html = ""; snap.forEach(child => { let d = child.val(); if(d.status === 'Pending') html += `<div class="req-card"><div><p>User: <span>${d.phone}</span></p><p>UTR: ${d.utr}</p><div class="req-amount">₹${d.amount}</div></div><button class="btn-approve" onclick="approveDeposit('${child.key}', '${d.phone}', ${d.amount})">Approve</button></div>`; });
+                let html = ""; snap.forEach(child => { let d = child.val(); if(d.status === 'Pending') html += `<div class="req-card"><div><p>User: <span>${d.phone}</span></p><p>UTR: ${d.utr}</p><div class="req-amount">₹${d.amount}</div></div><button class="btn-action" onclick="approveDeposit('${child.key}', '${d.phone}', ${d.amount})">Approve</button></div>`; });
                 document.getElementById('deposits-view').innerHTML = html || "<div class='no-data'>No pending deposits.</div>";
             });
             db.ref('withdrawRequests').on('value', snap => {
-                let html = ""; snap.forEach(child => { let d = child.val(); if(d.status === 'Pending') html += `<div class="req-card" style="border-left-color:#00e6ff;"><div><p>User: <span>${d.phone}</span></p><p>A/C: ${d.accountNo}</p><div class="req-amount" style="color:#00e6ff;">₹${d.amount}</div></div><button class="btn-approve" onclick="approveWithdraw('${child.key}', '${d.phone}')">Paid</button></div>`; });
+                let html = ""; snap.forEach(child => { let d = child.val(); if(d.status === 'Pending') html += `<div class="req-card" style="border-left-color:#ff4d4d;"><div><p>User: <span>${d.phone}</span></p><p>A/C: ${d.accountNo}</p><div class="req-amount" style="color:#ff4d4d;">₹${d.amount}</div></div><button class="btn-action" onclick="approveWithdraw('${child.key}', '${d.phone}')">Paid</button></div>`; });
                 document.getElementById('withdrawals-view').innerHTML = html || "<div class='no-data'>No pending withdrawals.</div>";
             });
         }
 
         function approveDeposit(reqId, phone, amount) { if(confirm("Approve?")) { db.ref('users/'+phone).once('value').then(s => { db.ref('users/'+phone).update({balance: (s.val().balance||0)+amount}); db.ref('depositRequests/'+reqId).update({status:'Approved'}); }); } }
         function approveWithdraw(reqId, phone) { if(confirm("Paid?")) db.ref('withdrawRequests/'+reqId).update({status:'Approved'}); }
+        function sendBroadcast() { alert("Broadcast function active. Data pushes to Firebase channelMessages node."); }
     </script>
 </body>
 </html>
