@@ -3,213 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Position Salary Schedule</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <title>L&T Job - Staff Salary</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: #050914; min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px; }
         
-        body {
-            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            padding-bottom: 60px;
-        }
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #0f172a; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
+        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900;}
 
-        .back-btn {
-            position: absolute; top: 15px; left: 15px;
-            background: #152238; color: #00e6ff; padding: 8px 15px; 
-            border-radius: 8px; text-decoration: none; 
-            font-weight: bold; border: 1px solid #2d4a77; z-index: 10;
-        }
+        .salary-banner { background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%); padding: 25px 20px; border-radius: 16px; text-align: center; margin-bottom: 25px; color: #000; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.2); }
+        .salary-banner h2 { font-size: 22px; font-weight: 900; text-transform: uppercase; }
 
-        .chart-container {
-            width: 100%;
-            max-width: 800px;
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 12px;
-            padding: 30px 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            margin-top: 40px;
-        }
-
-        /* User Progress Box */
-        .progress-box {
-            background: #152238;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 2px solid #00e6ff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        .progress-box p { font-size: 14px; color: #8898aa; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;}
-        .progress-box h2 { color: #00ff88; font-size: 28px; }
-
-        .main-title, .bottom-title {
-            color: #cc0000;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 1px 1px 0px #fff;
-        }
-
-        .main-title { font-size: 32px; margin-bottom: 20px; }
-        .bottom-title { font-size: 28px; margin-top: 25px; }
-
-        table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.4); border-radius: 8px; overflow: hidden; }
-        th, td { padding: 15px 5px; text-align: center; color: #000; font-size: 16px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1); }
-        th { font-weight: 900; font-size: 18px; background: rgba(0,0,0,0.1); }
-
-        /* Highlight classes for Achieved Levels */
-        .row-locked { background: transparent; }
-        .row-achieved { 
-            background: rgba(0, 255, 136, 0.3) !important; 
-            border: 2px solid #009955; 
-            color: #004d2b; 
-        }
-        .row-achieved td { color: #004d2b; font-weight: 900; }
-
-        .sub-text { display: block; font-size: 11px; color: #444; margin-top: 2px; }
-
-        @media (max-width: 600px) {
-            .main-title { font-size: 24px; }
-            .bottom-title { font-size: 22px; }
-            th { font-size: 13px; padding: 10px 2px; }
-            td { font-size: 13px; padding: 10px 2px; }
-            .sub-text { font-size: 9px; }
-            .chart-container { padding: 20px 10px; }
-        }
+        .salary-card { background: #0f172a; border: 1px solid #1f365c; border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .s-info h3 { color: #fff; font-size: 16px; margin-bottom: 5px; }
+        .s-info p { color: #8898aa; font-size: 12px; font-weight: bold; }
+        .s-info span { color: #00ff88; }
+        
+        .btn-claim { background: #2d4a77; color: #8898aa; padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: not-allowed; }
+        
+        .note { background: rgba(255, 170, 0, 0.1); border-left: 3px solid #ffaa00; padding: 10px; border-radius: 6px; color: #ffaa00; font-size: 11px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
-
-    <a href="refer.html" class="back-btn">⬅ Back</a>
-
-    <div class="chart-container">
-        
-        <div class="progress-box">
-            <p>Your Current Team Size</p>
-            <h2 id="live-team-size">0 Members</h2>
-            <p style="color:#00e6ff; font-size:12px; margin-top:5px;" id="next-goal">Loading next goal...</p>
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div class="header">
+            <a href="dashboard.html" class="back-btn">⬅ Back</a>
+            <h2 class="page-title">Staff Salary</h2>
         </div>
 
-        <h1 class="main-title">Position Salary Schedule</h1>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Position In Company</th>
-                    <th>Team Size</th>
-                    <th>Monthly Salary</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="tier-15">
-                    <td>Assistant</td>
-                    <td>15<span class="sub-text">(Direct)</span></td>
-                    <td>₹10,000</td>
-                </tr>
-                <tr id="tier-25">
-                    <td>Junior Team Leader</td>
-                    <td>25<span class="sub-text">(Direct)</span></td>
-                    <td>₹15,000</td>
-                </tr>
-                <tr id="tier-150">
-                    <td>Senior Team Lead</td>
-                    <td>150</td>
-                    <td>₹40,000</td>
-                </tr>
-                <tr id="tier-400">
-                    <td>Formal Supervisor</td>
-                    <td>400</td>
-                    <td>₹1,00,000</td>
-                </tr>
-                <tr id="tier-700">
-                    <td>Regional Manager</td>
-                    <td>700</td>
-                    <td>₹2,50,000</td>
-                </tr>
-                <tr id="tier-3000">
-                    <td>Director of Marketing</td>
-                    <td>3000</td>
-                    <td>₹8,00,000</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="salary-banner">
+            <h2>Monthly Fixed Income</h2>
+            <p style="font-weight: bold; font-size: 13px;">Build your team and get paid every day!</p>
+        </div>
 
-        <h2 class="bottom-title">Job Promotion Mechanism</h2>
+        <div class="salary-card">
+            <div class="s-info">
+                <h3>Junior Manager</h3>
+                <p>Requirement: <span>5 Valid VIP Members</span></p>
+                <p style="color:#00e6ff; margin-top:5px; font-size:14px;">Salary: ₹500 / Day</p>
+            </div>
+            <button class="btn-claim">LOCKED 🔒</button>
+        </div>
 
+        <div class="salary-card">
+            <div class="s-info">
+                <h3>Senior Manager</h3>
+                <p>Requirement: <span>15 Valid VIP Members</span></p>
+                <p style="color:#00e6ff; margin-top:5px; font-size:14px;">Salary: ₹2,000 / Day</p>
+            </div>
+            <button class="btn-claim">LOCKED 🔒</button>
+        </div>
+
+        <div class="salary-card">
+            <div class="s-info">
+                <h3>Regional Director</h3>
+                <p>Requirement: <span>35 Valid VIP Members</span></p>
+                <p style="color:#00e6ff; margin-top:5px; font-size:14px;">Salary: ₹6,000 / Day</p>
+            </div>
+            <button class="btn-claim">LOCKED 🔒</button>
+        </div>
+
+        <div class="note">
+            ⚠️ Note: A "Valid Member" is someone who has recharged and upgraded to VIP G2 or above. System automatically updates your salary status every night at 12:00 AM.
+        </div>
     </div>
-
-    <script>
-        // --- FIREBASE CONFIG ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
-            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // Get Current User
-        const userPhone = localStorage.getItem('loggedInUser');
-        if (!userPhone) window.location.href = "login.html";
-
-        // Fetch User's Live Team Size
-        db.ref('users/' + userPhone).on('value', (snap) => {
-            let userData = snap.val();
-            if (userData) {
-                // Maan lijiye aapke database me 'teamSize' naam se value save hoti hai
-                let teamSize = userData.teamSize || 0; 
-                
-                document.getElementById('live-team-size').innerText = teamSize + " Members";
-                updateTableHighlight(teamSize);
-            }
-        });
-
-        // Table Highlighting Logic
-        function updateTableHighlight(size) {
-            let nextGoalMsg = "Goal: Add 15 members to become Assistant!";
-            
-            // Remove old highlights
-            document.getElementById('tier-15').classList.remove('row-achieved');
-            document.getElementById('tier-25').classList.remove('row-achieved');
-            document.getElementById('tier-150').classList.remove('row-achieved');
-            document.getElementById('tier-400').classList.remove('row-achieved');
-            document.getElementById('tier-700').classList.remove('row-achieved');
-            document.getElementById('tier-3000').classList.remove('row-achieved');
-
-            // Apply new highlights and set next goal
-            if (size >= 3000) {
-                document.getElementById('tier-3000').classList.add('row-achieved');
-                nextGoalMsg = "Max Level Achieved! You are a Director! 👑";
-            } else if (size >= 700) {
-                document.getElementById('tier-700').classList.add('row-achieved');
-                nextGoalMsg = `Goal: Add ${3000 - size} more for Director of Marketing!`;
-            } else if (size >= 400) {
-                document.getElementById('tier-400').classList.add('row-achieved');
-                nextGoalMsg = `Goal: Add ${700 - size} more for Regional Manager!`;
-            } else if (size >= 150) {
-                document.getElementById('tier-150').classList.add('row-achieved');
-                nextGoalMsg = `Goal: Add ${400 - size} more for Formal Supervisor!`;
-            } else if (size >= 25) {
-                document.getElementById('tier-25').classList.add('row-achieved');
-                nextGoalMsg = `Goal: Add ${150 - size} more for Senior Team Lead!`;
-            } else if (size >= 15) {
-                document.getElementById('tier-15').classList.add('row-achieved');
-                nextGoalMsg = `Goal: Add ${25 - size} more for Junior Team Leader!`;
-            } else {
-                nextGoalMsg = `Goal: Add ${15 - size} more members for Assistant Level!`;
-            }
-
-            document.getElementById('next-goal').innerText = nextGoalMsg;
-        }
-    </script>
 </body>
 </html>
