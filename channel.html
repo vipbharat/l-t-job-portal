@@ -3,54 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LNT Job - Customer Support</title>
+    <title>L&T Job - Official Channel</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { 
-            background: #090e17; 
-            background-image: linear-gradient(135deg, #090e17 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: #050914; background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%); min-height: 100vh; color: #fff; padding-bottom: 80px; }
 
-        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
-        .back-btn { background: #152238; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px; }
-        .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
+        .tg-header { background: #1f365c; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-bottom: 1px solid #2d4a77; }
+        .back-btn { color: #00e6ff; text-decoration: none; font-size: 20px; font-weight: bold; }
+        .channel-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #0088cc, #00e6ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+        .channel-info { flex: 1; }
+        .channel-name { font-size: 16px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 5px; }
+        .verified-badge { color: #00e6ff; font-size: 14px; }
+        .subscriber-count { font-size: 12px; color: #8898aa; font-weight: bold; }
 
-        .support-banner {
-            background: linear-gradient(135deg, #152238 0%, #1f365c 100%);
-            padding: 30px 20px; border-radius: 16px; border: 1px dashed #00e6ff;
-            text-align: center; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0, 230, 255, 0.1);
-        }
-        .support-banner h2 { color: #00ff88; font-size: 22px; margin-bottom: 10px; text-transform: uppercase; }
-        .support-banner p { color: #8898aa; font-size: 14px; font-weight: bold; }
+        .chat-container { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .date-divider { text-align: center; margin: 10px 0; }
+        .date-divider span { background: rgba(255, 255, 255, 0.1); padding: 4px 10px; border-radius: 12px; font-size: 11px; color: #8898aa; font-weight: bold; }
 
-        /* Support Cards */
-        .support-grid { display: flex; flex-direction: column; gap: 15px; }
+        /* Dynamic Messages */
+        .msg-box { background: #0f172a; border: 1px solid #1f365c; padding: 12px 15px; border-radius: 12px; border-bottom-left-radius: 2px; max-width: 90%; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .msg-box.office { border-left: 3px solid #00e6ff; }
+        .msg-box.finance { border-left: 3px solid #00ff88; }
+        .msg-box.hr { border-left: 3px solid #ffaa00; }
         
-        .support-card {
-            background: #0f172a; border: 1px solid #2d4a77; border-radius: 12px; padding: 20px;
-            display: flex; align-items: center; gap: 15px; text-decoration: none; transition: 0.3s;
-        }
-        .support-card:hover { border-color: #00e6ff; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
+        .msg-title { font-size: 14px; font-weight: 900; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+        .office-color { color: #00e6ff; } .finance-color { color: #00ff88; } .hr-color { color: #ffaa00; }
+
+        .msg-text { font-size: 14px; color: #cbd5e1; line-height: 1.5; font-weight: 500; margin-bottom: 8px; white-space: pre-wrap; }
         
-        .icon-box {
-            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #fff;
-        }
-        .icon-tg { background: linear-gradient(135deg, #0088cc 0%, #00aaff 100%); }
-        .icon-wa { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
+        .msg-img { width: 100%; border-radius: 8px; margin-bottom: 10px; border: 1px solid #2d4a77; }
+        .msg-audio { width: 100%; margin-bottom: 10px; height: 35px; outline: none; }
 
-        .support-info { flex: 1; }
-        .support-title { color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-        .support-desc { color: #8898aa; font-size: 12px; }
+        /* Reactions & Time Area */
+        .msg-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px; }
+        .reactions { display: flex; gap: 6px; }
+        .react-pill { background: #1f365c; border: 1px solid #2d4a77; padding: 4px 8px; border-radius: 15px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 4px; transition: 0.2s; cursor: pointer; user-select: none; }
+        .react-pill:active { transform: scale(0.9); }
+        .react-pill.user-reacted { background: rgba(0, 230, 255, 0.15); border-color: #00e6ff; color: #fff; }
 
-        .btn-go { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border: 1px solid #00e6ff; padding: 6px 15px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .msg-meta { font-size: 10px; color: #8898aa; display: flex; align-items: center; gap: 5px; }
+        .tick-blue { color: #00e6ff; letter-spacing: -2px; font-weight: bold; }
 
-        /* Timing Box */
-        .timing-box { margin-top: 30px; background: #152238; padding: 15px; border-radius: 8px; text-align: center; border-left: 4px solid #ffaa00; }
-        .timing-box p { color: #cbd5e1; font-size: 13px; font-weight: bold; }
-        .timing-box span { color: #ffaa00; }
+        .join-area { background: #0f172a; padding: 20px; text-align: center; margin: 20px; border-radius: 12px; border: 1px dashed #2d4a77; }
+        .join-area p { color: #8898aa; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
+        .btn-join { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px; background: #0088cc; color: #fff; border-radius: 8px; font-size: 16px; font-weight: 900; text-decoration: none; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #152238; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
         .nav-icon { font-size: 20px; }
@@ -60,71 +60,114 @@
 
     <div style="max-width: 500px; margin: 0 auto;">
         
-        <div class="header">
-            <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <h2 class="page-title">Help Center</h2>
+        <div class="tg-header">
+            <a href="profile.html" class="back-btn">⬅</a>
+            <div class="channel-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff" style="margin-right: 2px; margin-top: 2px;">
+                    <path d="M2.06 10.63l4.38 1.57L18.42 4.9c.39-.24.75-.11.45.16l-9.7 8.75v4.5c0 .3.14.44.43.44.25 0 .5-.15.68-.38l2.25-2.18 4.69 3.46c.86.48 1.48.23 1.69-.79L22.9 3.25c.28-1.16-.43-1.7-1.25-1.39L2.06 9.61c-1.13.45-1.12 1.09-.01 1.42z"/>
+                </svg>
+            </div>
+            <div class="channel-info">
+                <div class="channel-name">L&T Official Group <span class="verified-badge">✔</span></div>
+                <div class="subscriber-count" id="live-subs">90,250 subscribers</div>
+            </div>
         </div>
 
-        <div class="support-banner">
-            <h2>Need Assistance?</h2>
-            <p>Our VIP Support Team is always ready to help you with recharges, withdrawals, and account issues.</p>
-        </div>
-
-        <div class="support-grid">
+        <div class="chat-container">
+            <div class="date-divider"><span>Today</span></div>
             
-            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="support-card">
-                <div class="icon-box icon-tg">📢</div>
-                <div class="support-info">
-                    <div class="support-title">Official Telegram Channel</div>
-                    <div class="support-desc">Get latest updates, bonus codes & offers</div>
-                </div>
-                <div class="btn-go">JOIN</div>
-            </a>
-
-            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="support-card">
-                <div class="icon-box icon-tg">🎧</div>
-                <div class="support-info">
-                    <div class="support-title">24/7 Live Support (TG)</div>
-                    <div class="support-desc">Message us for fast problem resolution</div>
-                </div>
-                <div class="btn-go">CHAT</div>
-            </a>
-
-            <a href="#" class="support-card" onclick="alert('WhatsApp support is coming soon! Please use Telegram for now.')">
-                <div class="icon-box icon-wa">💬</div>
-                <div class="support-info">
-                    <div class="support-title">WhatsApp VIP Manager</div>
-                    <div class="support-desc">Exclusive support for Level G3+ members</div>
-                </div>
-                <div class="btn-go">CHAT</div>
-            </a>
-
+            <div id="dynamic-chat">
+                <div style="text-align:center; color:#8898aa; font-size:12px;">Loading live updates...</div>
+            </div>
         </div>
 
-        <div class="timing-box">
-            <p>⏰ <span>Support Timings:</span> 10:00 AM to 10:00 PM (Monday - Sunday)</p>
+        <div class="join-area">
+            <p>Don't miss out on daily free codes, salary updates, and withdrawal proofs. Join our community of 90,000+ earners!</p>
+            <a href="https://t.me/Kalyan_vip_Customers_service" target="_blank" class="btn-join">✈️ JOIN TELEGRAM NOW</a>
         </div>
-
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">
-            <div class="nav-icon">🏠</div>
-            Home
-        </a>
-        <a href="job.html" class="nav-item">
-            <div class="nav-icon">🚀</div>
-            Jobs
-        </a>
-        <a href="channel.html" class="nav-item active">
-            <div class="nav-icon">🎧</div>
-            Support
-        </a>
-        <a href="profile.html" class="nav-item">
-            <div class="nav-icon">👤</div>
-            Profile
-        </a>
+        <a href="dashboard.html" class="nav-item"><div class="nav-icon">🏠</div>Home</a>
+        <a href="job.html" class="nav-item"><div class="nav-icon">🚀</div>Jobs</a>
+        <a href="vip.html" class="nav-item"><div class="nav-icon">💼</div>Projects</a>
+        <a href="profile.html" class="nav-item active"><div class="nav-icon">👤</div>Profile</a>
     </div>
 
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM", databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let chatBox = document.getElementById('dynamic-chat');
+
+        // Sender Info Mapping
+        const senderInfo = {
+            "office": { title: "🏢 L&T Head Office", colorClass: "office-color", boxClass: "office" },
+            "finance": { title: "💳 L&T Finance Dept", colorClass: "finance-color", boxClass: "finance" },
+            "hr": { title: "👩‍💼 Priya - Sr. HR Manager", colorClass: "hr-color", boxClass: "hr" }
+        };
+
+        // Listen for New Messages from Admin
+        db.ref('channelMessages').on('value', snap => {
+            let data = snap.val();
+            let html = "";
+            let msgCount = 0;
+
+            if(data) {
+                for(let key in data) {
+                    let msg = data[key];
+                    let sInfo = senderInfo[msg.sender] || senderInfo["office"];
+                    msgCount++;
+
+                    // Check if Image or Audio Exists
+                    let mediaHtml = "";
+                    if(msg.image) mediaHtml += `<img src="${msg.image}" class="msg-img" alt="Proof">`;
+                    if(msg.audio) mediaHtml += `<audio controls class="msg-audio" src="${msg.audio}"></audio>`;
+
+                    // Random Views & Likes logic per message ID
+                    let views = (Math.random() * (50 - 10) + 10).toFixed(1) + "k";
+                    let likeCount = Math.floor(Math.random() * 2000) + 500;
+                    let fireCount = Math.floor(Math.random() * 1000) + 200;
+
+                    html += `
+                    <div class="msg-box ${sInfo.boxClass}">
+                        <div class="msg-title ${sInfo.colorClass}">${sInfo.title} <span class="verified-badge">✔</span></div>
+                        
+                        ${mediaHtml}
+                        
+                        <div class="msg-text">${msg.text}</div>
+                        
+                        <div class="msg-bottom">
+                            <div class="reactions">
+                                <div class="react-pill" onclick="this.classList.toggle('user-reacted')">👍 <span>${likeCount}</span></div>
+                                <div class="react-pill" onclick="this.classList.toggle('user-reacted')">🔥 <span>${fireCount}</span></div>
+                            </div>
+                            <div class="msg-meta">
+                                <span>👁️ ${views}</span>
+                                <span class="tick-blue">✓✓</span>
+                                <span>${msg.time}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+                chatBox.innerHTML = html;
+                
+                // Auto Scroll to Bottom when new message arrives
+                window.scrollTo(0, document.body.scrollHeight);
+            } else {
+                chatBox.innerHTML = "<div style='text-align:center; color:#8898aa; font-size:12px;'>No messages yet.</div>";
+            }
+        });
+
+        // LIVE 90K+ SUBSCRIBERS JADOO 🪄
+        let subCount = 90250;
+        setInterval(() => {
+            if(Math.random() > 0.4) { 
+                subCount += Math.floor(Math.random() * 4);
+                document.getElementById('live-subs').innerText = subCount.toLocaleString('en-IN') + " subscribers";
+            }
+        }, 3000);
+    </script>
 </body>
 </html>
