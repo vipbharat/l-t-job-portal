@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L&T Job - VIP Projects</title>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <title>L&T Job - Select Project & Duration</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { 
@@ -14,55 +12,43 @@
             min-height: 100vh; color: #fff; padding: 20px; padding-bottom: 80px;
         }
 
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
-        .back-btn { background: #0f172a; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        .header { display: flex; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #1f365c; padding-bottom: 15px; }
+        .back-btn { background: #0f172a; border: 1px solid #2d4a77; color: #00e6ff; padding: 8px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 15px;}
         .page-title { font-size: 18px; text-transform: uppercase; color: #fff; font-weight: 900; letter-spacing: 1px;}
-        .current-level { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border: 1px solid #00e6ff; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; text-transform: uppercase; }
 
-        .vip-banner {
-            background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%);
-            padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px;
-            color: #000; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.2);
-        }
+        .vip-banner { background: linear-gradient(135deg, #007bff 0%, #00e6ff 100%); padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 25px; color: #000; box-shadow: 0 10px 20px rgba(0, 230, 255, 0.2); }
         .vip-banner h2 { font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
         .vip-banner p { font-size: 12px; font-weight: bold; }
 
         /* VIP Cards Grid */
-        .vip-list { display: flex; flex-direction: column; gap: 18px; }
+        .vip-list { display: flex; flex-direction: column; gap: 20px; }
 
-        .vip-card {
-            background: #0f172a; border: 1px solid #1f365c; border-radius: 12px;
-            padding: 20px; display: flex; flex-direction: column; position: relative; transition: 0.3s;
-        }
+        .vip-card { background: #0f172a; border: 1px solid #1f365c; border-radius: 12px; padding: 20px; position: relative; transition: 0.3s; }
         .vip-card:hover { border-color: #00e6ff; box-shadow: 0 5px 15px rgba(0, 230, 255, 0.1); }
         
-        /* Highlight border for higher levels */
-        .card-premium { border-color: #ffaa00; }
-
-        .profit-badge { position: absolute; top: -12px; right: 15px; background: #ffaa00; color: #000; padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 12px; border: 2px solid #050914; box-shadow: 0 2px 10px rgba(255, 170, 0, 0.4); }
-
-        .vip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; margin-top: 5px; }
-        .vip-title { font-size: 18px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .vip-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .vip-title { font-size: 18px; font-weight: 900; color: #fff; }
         .vip-price { font-size: 20px; font-weight: 900; color: #00ff88; }
+
+        /* Duration Selection Chips */
+        .duration-title { font-size: 11px; color: #8898aa; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; }
+        .duration-options { display: flex; gap: 8px; margin-bottom: 15px; }
+        .d-btn { 
+            flex: 1; padding: 8px 0; background: #050914; border: 1px solid #2d4a77; 
+            color: #8898aa; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .d-btn.active { background: #ffaa00; color: #000; border-color: #ffaa00; box-shadow: 0 0 10px rgba(255, 170, 0, 0.3); }
 
         .vip-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .detail-box { background: #050914; padding: 12px; border-radius: 8px; border: 1px dashed #2d4a77; text-align: center; }
-        
         .d-label { color: #8898aa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .d-val { color: #fff; font-size: 15px; font-weight: bold; }
+        .d-val { color: #fff; font-size: 16px; font-weight: bold; }
 
-        .btn-unlock { 
-            width: 100%; padding: 14px; border-radius: 8px; border: none; 
-            background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); 
-            color: #000; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 5px;
-        }
+        .btn-unlock { width: 100%; padding: 14px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn-unlock:active { transform: scale(0.98); }
-        
-        .btn-owned { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid #00ff88; cursor: default; }
-        .btn-locked { background: #1f365c; color: #8898aa; cursor: not-allowed; }
 
         /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid #1f365c; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #8898aa; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: #00e6ff; }
         .nav-icon { font-size: 20px; }
@@ -74,107 +60,79 @@
         
         <div class="header">
             <a href="dashboard.html" class="back-btn">⬅ Back</a>
-            <h2 class="page-title">Project Plans</h2>
-            <div class="current-level" id="user-level-badge">Project G1</div>
+            <h2 class="page-title">Select L&T Project</h2>
         </div>
 
         <div class="vip-banner">
-            <h2>Invest & Earn Daily</h2>
-            <p>Select a project below to start your fixed income.</p>
+            <h2>Custom Investments</h2>
+            <p>Choose your plan and select how many days you want to invest for!</p>
         </div>
 
         <div class="vip-list" id="vip-container">
-            <div style="text-align: center; color: #8898aa;">Loading Projects...</div>
-        </div>
+            </div>
 
     </div>
 
     <div class="bottom-nav">
-        <a href="dashboard.html" class="nav-item">
-            <div class="nav-icon">🏠</div>
-            Home
-        </a>
-        <a href="job.html" class="nav-item">
-            <div class="nav-icon">🚀</div>
-            Jobs
-        </a>
-        <a href="vip.html" class="nav-item active">
-            <div class="nav-icon">💼</div>
-            Projects
-        </a>
-        <a href="profile.html" class="nav-item">
-            <div class="nav-icon">👤</div>
-            Profile
-        </a>
+        <a href="dashboard.html" class="nav-item"><div class="nav-icon">🏠</div>Home</a>
+        <a href="job.html" class="nav-item"><div class="nav-icon">🚀</div>Jobs</a>
+        <a href="vip.html" class="nav-item active"><div class="nav-icon">💼</div>Projects</a>
+        <a href="profile.html" class="nav-item"><div class="nav-icon">👤</div>Profile</a>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
-            databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        const userPhone = localStorage.getItem('loggedInUser');
-        if (!userPhone) window.location.href = "index.html";
-
-        // Admin Fixed 8 Levels Data
-        const vipPlans = [
-            { level: "G1", price: 500, days: 10, profit: 20, icon: "🥉" },
-            { level: "G2", price: 1500, days: 10, profit: 20, icon: "🥉" },
-            { level: "G3", price: 3000, days: 30, profit: 70, icon: "🥈" },
-            { level: "G4", price: 6000, days: 30, profit: 70, icon: "🥈" },
-            { level: "G5", price: 10000, days: 45, profit: 120, icon: "🥇" },
-            { level: "G6", price: 20000, days: 45, profit: 120, icon: "🥇" },
-            { level: "G7", price: 50000, days: 60, profit: 150, icon: "💎" },
-            { level: "G8", price: 100000, days: 60, profit: 150, icon: "💎" }
+        // 8 Base Plans
+        const basePlans = [
+            { level: "G1", price: 500, icon: "🥉" },
+            { level: "G2", price: 1500, icon: "🥉" },
+            { level: "G3", price: 3000, icon: "🥈" },
+            { level: "G4", price: 6000, icon: "🥈" },
+            { level: "G5", price: 10000, icon: "🥇" },
+            { level: "G6", price: 20000, icon: "🥇" },
+            { level: "G7", price: 50000, icon: "💎" },
+            { level: "G8", price: 100000, icon: "💎" }
         ];
 
-        let currentUserLevel = "G1";
+        // 4 Types of Durations & Profits
+        const durations = [
+            { days: 10, profit: 20 },
+            { days: 30, profit: 70 },
+            { days: 45, profit: 120 },
+            { days: 60, profit: 150 }
+        ];
 
-        // Fetch User Data
-        db.ref('users/' + userPhone).on('value', (snap) => {
-            let userData = snap.val();
-            if(userData) {
-                currentUserLevel = userData.level || "G1";
-                document.getElementById('user-level-badge').innerText = "Level " + currentUserLevel;
-                renderVIPPlans();
-            }
-        });
+        // Store selected days for each plan (Default is 10 days)
+        let selectedOptions = {
+            "G1": 10, "G2": 10, "G3": 10, "G4": 10, 
+            "G5": 10, "G6": 10, "G7": 10, "G8": 10
+        };
 
-        function renderVIPPlans() {
+        function renderPlans() {
             let container = document.getElementById('vip-container');
             let html = "";
-            let userLevelNum = parseInt(currentUserLevel.replace("G", ""));
 
-            vipPlans.forEach(plan => {
-                let planLevelNum = parseInt(plan.level.replace("G", ""));
-                let premiumClass = planLevelNum >= 5 ? "card-premium" : ""; 
-
-                // --- Calculation Logic ---
-                let profitAmt = (plan.price * plan.profit) / 100;
-                let totalReturn = plan.price + profitAmt;
-                let dailyIncome = Math.round(totalReturn / plan.days); 
+            basePlans.forEach(plan => {
+                let currentDays = selectedOptions[plan.level];
+                let currentDurObj = durations.find(d => d.days === currentDays);
                 
-                // --- Button Logic ---
-                let btnHTML = "";
-                if(plan.level === currentUserLevel) {
-                    btnHTML = `<button class="btn-unlock btn-owned">CURRENT PROJECT ✅</button>`;
-                } else if(planLevelNum < userLevelNum) {
-                    btnHTML = `<button class="btn-unlock btn-locked" disabled>LOCKED 🔒</button>`;
-                } else {
-                    btnHTML = `<button class="btn-unlock" onclick="buyPlan('${plan.level}', ${plan.price})">UNLOCK FOR ₹${plan.price.toLocaleString('en-IN')}</button>`;
-                }
+                // Calculations
+                let profitAmt = (plan.price * currentDurObj.profit) / 100;
+                let totalReturn = plan.price + profitAmt;
+                let dailyIncome = Math.round(totalReturn / currentDurObj.days);
 
                 html += `
-                <div class="vip-card ${premiumClass}">
-                    <div class="profit-badge">+${plan.profit}% PROFIT</div>
-                    
+                <div class="vip-card" id="card-${plan.level}">
                     <div class="vip-header">
                         <div class="vip-title">${plan.icon} Project ${plan.level}</div>
                         <div class="vip-price">₹${plan.price.toLocaleString('en-IN')}</div>
+                    </div>
+
+                    <div class="duration-title">Select Investment Period:</div>
+                    <div class="duration-options">
+                        <button class="d-btn ${currentDays === 10 ? 'active' : ''}" onclick="changeDuration('${plan.level}', 10)">10 Days</button>
+                        <button class="d-btn ${currentDays === 30 ? 'active' : ''}" onclick="changeDuration('${plan.level}', 30)">30 Days</button>
+                        <button class="d-btn ${currentDays === 45 ? 'active' : ''}" onclick="changeDuration('${plan.level}', 45)">45 Days</button>
+                        <button class="d-btn ${currentDays === 60 ? 'active' : ''}" onclick="changeDuration('${plan.level}', 60)">60 Days</button>
                     </div>
                     
                     <div class="vip-details">
@@ -182,26 +140,32 @@
                             <div class="d-label">Daily Income</div>
                             <div class="d-val" style="color:#00e6ff;">₹${dailyIncome}</div>
                         </div>
-                        <div class="detail-box">
-                            <div class="d-label">Validity</div>
-                            <div class="d-val">${plan.days} Days</div>
-                        </div>
-                        <div class="detail-box" style="grid-column: span 2; background: rgba(0, 255, 136, 0.1); border-color: #00ff88;">
-                            <div class="d-label" style="color: #00ff88;">Total Return (After ${plan.days} Days)</div>
-                            <div class="d-val" style="color: #00ff88; font-size: 18px;">₹${totalReturn.toLocaleString('en-IN')}</div>
+                        <div class="detail-box" style="background: rgba(0, 255, 136, 0.1); border-color: #00ff88;">
+                            <div class="d-label" style="color: #00ff88;">Total Return (+${currentDurObj.profit}%)</div>
+                            <div class="d-val" style="color: #00ff88;">₹${totalReturn.toLocaleString('en-IN')}</div>
                         </div>
                     </div>
                     
-                    ${btnHTML}
+                    <button class="btn-unlock" onclick="buyPlan('${plan.level}', ${plan.price}, ${currentDays})">INVEST NOW</button>
                 </div>`;
             });
 
             container.innerHTML = html;
         }
 
-        function buyPlan(level, price) {
-            window.location.href = `invest.html?job=${level}&price=${price}`;
+        function changeDuration(level, days) {
+            // Update the selected option and re-render
+            selectedOptions[level] = days;
+            renderPlans();
         }
+
+        function buyPlan(level, price, days) {
+            // Ab hum 'days' bhi bhej rahe hain invest.html ko!
+            window.location.href = `invest.html?job=${level}&price=${price}&days=${days}`;
+        }
+
+        // Run on load
+        window.onload = renderPlans;
     </script>
 </body>
 </html>
