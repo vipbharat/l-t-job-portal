@@ -68,7 +68,13 @@
             </div>
 
             <div id="form-register" style="display: none;">
-                <input type="number" id="reg-phone" class="input-box" placeholder="Mobile Number">
+                <div style="position: relative;">
+                    <input type="number" id="reg-phone" class="input-box" placeholder="Mobile Number">
+                    <button id="btn-otp" onclick="requestOTP()" style="position: absolute; right: 5px; top: 5px; padding: 10px 15px; background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #000; border: none; border-radius: 6px; font-weight: 900; cursor: pointer; z-index: 10;">GET OTP</button>
+                </div>
+                
+                <input type="number" id="reg-otp" class="input-box" placeholder="Enter 6-Digit OTP" style="display: none; border-color: #00ff88;">
+                
                 <input type="password" id="reg-pass" class="input-box" placeholder="Create PIN (Min 4)">
                 <button class="btn-gold gold-bg" onclick="registerUser()">REGISTER & GET ₹50</button>
             </div>
@@ -210,6 +216,7 @@
         let userData = null;
         let currentUser = localStorage.getItem('loggedInUser');
         let todayDate = new Date().toDateString();
+        let systemOTP = ""; // Store Generated OTP
 
         // 🛡️ DEVICE BINDING
         let deviceID = localStorage.getItem('LNT_Device_ID') || ("DEV-" + Date.now() + Math.floor(Math.random() * 1000));
@@ -241,24 +248,58 @@
             box.innerText = text;
         }
 
+        // --- 📲 10 SEC OTP LOGIC ---
+        function requestOTP() {
+            let phone = document.getElementById('reg-phone').value.trim();
+            if(phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number first!');
+            
+            let otpBtn = document.getElementById('btn-otp');
+            let otpBox = document.getElementById('reg-otp');
+            
+            otpBtn.disabled = true;
+            let counter = 10; // 10 seconds timer
+            
+            let interval = setInterval(() => {
+                otpBtn.innerText = `Wait ${counter}s`;
+                counter--;
+                
+                if(counter < 0) {
+                    clearInterval(interval);
+                    otpBtn.innerText = "SENT ✅";
+                    otpBtn.style.background = "#00ff88";
+                    otpBtn.style.color = "#000";
+                    
+                    otpBox.style.display = "block"; // Show OTP Box
+                    
+                    // Generate 6 Digit Random OTP
+                    systemOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                    
+                    // Alert the user (Acts like SMS popup)
+                    alert(`L&T VIP CLUB\n\nYour 6-Digit Verification OTP is: ${systemOTP}`);
+                }
+            }, 1000);
+        }
+
         // --- AUTH LOGIC ---
         function registerUser() {
             let phone = document.getElementById('reg-phone').value.trim();
             let pass = document.getElementById('reg-pass').value.trim();
+            let userOtp = document.getElementById('reg-otp').value.trim();
             
             if (phone.length !== 10 || pass.length < 4) return showMsg('error', 'Invalid details!');
+            if (systemOTP === "" || userOtp !== systemOTP) return showMsg('error', 'Incorrect OTP entered!');
 
             let boundPhone = localStorage.getItem('LNT_Bound_Phone');
-            if(boundPhone && boundPhone !== phone) return showMsg('error', 'Device Locked!');
+            if(boundPhone && boundPhone !== phone) return showMsg('error', 'Device Locked: 1 Account only!');
 
             db.ref('users/' + phone).once('value', snap => {
                 if (snap.exists()) return showMsg('error', 'User exists! Login.');
                 
-                // Referral Logic Removed. "Admin" is set as default so database doesn't break.
                 db.ref('users/' + phone).set({
                     password: pass, balance: 50, level: "G0", dailyIncome: 0, invitedBy: "Admin", deviceID: deviceID, joinDate: new Date().toLocaleString()
                 }).then(() => {
                     localStorage.setItem('LNT_Bound_Phone', phone);
+                    systemOTP = ""; // Reset OTP
                     loadDashboard(phone);
                 });
             });
@@ -283,7 +324,6 @@
             document.getElementById('bottom-menu').style.display = 'flex';
             document.getElementById('dash-phone').innerText = "+91 " + phone.substring(0,2) + "****" + phone.substring(8,10);
 
-            // Fetch Admin UPI
             db.ref('adminSettings/payment/upiId').on('value', snap => {
                 document.getElementById('admin-upi').innerText = snap.val() || "admin@ybl";
             });
