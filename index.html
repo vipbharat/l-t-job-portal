@@ -52,7 +52,7 @@
         /* Dashboard Specifics */
         .bal-amount { font-size: 45px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(191, 149, 63, 0.4); margin: 10px 0; }
         .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 15px 5px; text-align: center; color: #f2e3c6; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s;}
+        .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 15px 5px; text-align: center; color: #f2e3c6; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s;}
         .action-btn:active { transform: scale(0.95); background: #1a1a1a; }
 
         /* Bottom Navigation */
@@ -104,16 +104,69 @@
         </div>
 
         <div class="action-grid">
-            <div class="action-btn"><span>💳</span>Deposit</div>
-            <div class="action-btn"><span>🏦</span>Withdraw</div>
-            <div class="action-btn"><span>📜</span>History</div>
-            <div class="action-btn"><span>👥</span>Team</div>
+            <div class="action-btn" onclick="alert('Deposit module linking pending')"><span>💳</span>Deposit</div>
+            <div class="action-btn" onclick="alert('Withdraw module linking pending')"><span>🏦</span>Withdraw</div>
+            <div class="action-btn" onclick="alert('History module linking pending')"><span>📜</span>History</div>
+            <div class="action-btn" onclick="alert('Team module linking pending')"><span>👥</span>Team</div>
         </div>
 
-        <div class="premium-card" style="text-align: center; border-style: dashed; cursor: pointer;">
+        <div class="premium-card" style="text-align: center; border-style: dashed; cursor: pointer;" onclick="switchMenu('job', document.getElementById('nav-job'))">
             <h3 class="gold-text">🎁 CLAIM DAILY SALARY</h3>
             <p style="font-size: 12px; color: #aaa; margin-top: 5px;">Enter the work station to collect today's profit</p>
         </div>
+    </div>
+
+    <div id="section-vip" class="app-section">
+        <h2 class="gold-text" style="text-align: center; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">Exclusive Projects</h2>
+        
+        <div class="premium-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 class="gold-text" style="font-size: 20px;">🥉 Project G1</h3>
+                <h3 style="color: #00ff88;">₹500</h3>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 13px; margin-bottom: 15px;">
+                <p>Daily Income: <span class="gold-text">₹45</span></p>
+                <p>Duration: <span style="color:#fcf6ba;">30 Days</span></p>
+            </div>
+            <button class="btn-gold gold-bg" style="padding: 12px; font-size: 14px;" onclick="buyProject('G1', 500, 45, 30)">INVEST NOW</button>
+        </div>
+
+        <div class="premium-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 class="gold-text" style="font-size: 20px;">🥈 Project G2</h3>
+                <h3 style="color: #00ff88;">₹1,500</h3>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 13px; margin-bottom: 15px;">
+                <p>Daily Income: <span class="gold-text">₹150</span></p>
+                <p>Duration: <span style="color:#fcf6ba;">30 Days</span></p>
+            </div>
+            <button class="btn-gold gold-bg" style="padding: 12px; font-size: 14px;" onclick="buyProject('G2', 1500, 150, 30)">INVEST NOW</button>
+        </div>
+        
+        <div class="premium-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 class="gold-text" style="font-size: 20px;">🥇 Project G3</h3>
+                <h3 style="color: #00ff88;">₹3,000</h3>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 13px; margin-bottom: 15px;">
+                <p>Daily Income: <span class="gold-text">₹350</span></p>
+                <p>Duration: <span style="color:#fcf6ba;">30 Days</span></p>
+            </div>
+            <button class="btn-gold gold-bg" style="padding: 12px; font-size: 14px;" onclick="buyProject('G3', 3000, 350, 30)">INVEST NOW</button>
+        </div>
+    </div>
+
+    <div id="section-job" class="app-section">
+        <h2 class="gold-text" style="text-align: center; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;">Work Station</h2>
+        
+        <div class="premium-card" style="text-align: center; padding: 40px 20px; border-style: dashed;">
+            <div style="font-size: 60px; margin-bottom: 15px; text-shadow: 0 0 20px rgba(191,149,63,0.5);" id="job-icon">🎰</div>
+            <h3 class="gold-text" style="margin-bottom: 10px;" id="job-level-display">LOADING...</h3>
+            <p style="color: #aaa; font-size: 14px; margin-bottom: 25px;">Daily Salary: <span id="job-salary-display" style="color:#00ff88; font-weight:bold; font-size: 20px;">₹0</span></p>
+
+            <button class="btn-gold" id="btn-claim-salary" style="background: transparent; border: 2px solid #bf953f; color: #fcf6ba;" onclick="claimDailySalary()">START WORK & CLAIM</button>
+        </div>
+        <p style="text-align: center; color: #888; font-size: 12px;">Tasks refresh every day at midnight.</p>
     </div>
 
     <div id="section-profile" class="app-section">
@@ -127,11 +180,11 @@
             </div>
         </div>
 
-        <div class="action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px; margin-bottom: 10px;">
+        <div class="action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px; margin-bottom: 10px;" onclick="alert('Bank Setup Coming Soon')">
             <div style="display: flex; gap: 15px; font-size: 15px;"><span style="font-size: 20px;">🏦</span> Bind Bank Account</div>
             <span class="gold-text">➔</span>
         </div>
-        <div class="action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px; margin-bottom: 10px;">
+        <div class="action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px; margin-bottom: 10px;" onclick="alert('Support linking pending')">
             <div style="display: flex; gap: 15px; font-size: 15px;"><span style="font-size: 20px;">🎧</span> 24/7 VIP Support</div>
             <span class="gold-text">➔</span>
         </div>
@@ -142,7 +195,7 @@
     <div class="bottom-nav" id="bottom-menu" style="display: none;">
         <div class="nav-item active" onclick="switchMenu('dashboard', this)"><div class="nav-icon">🏠</div>Home</div>
         <div class="nav-item" onclick="switchMenu('vip', this)"><div class="nav-icon">💎</div>Projects</div>
-        <div class="nav-item" onclick="switchMenu('job', this)"><div class="nav-icon">🎰</div>Tasks</div>
+        <div class="nav-item" id="nav-job" onclick="switchMenu('job', this)"><div class="nav-icon">🎰</div>Tasks</div>
         <div class="nav-item" onclick="switchMenu('profile', this)"><div class="nav-icon">⚜️</div>Profile</div>
     </div>
 
@@ -156,6 +209,9 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        let userData = null;
+        let todayDate = new Date().toDateString();
 
         // 🛡️ DEVICE BINDING LOGIC (Anti-Cheat)
         let deviceID = localStorage.getItem('LNT_Device_ID');
@@ -186,7 +242,6 @@
             document.querySelectorAll('.app-section').forEach(sec => sec.style.display = 'none');
             let target = document.getElementById('section-' + tabName);
             if(target) target.style.display = 'block';
-            else alert("Coming Soon: " + tabName + " section!"); // For pages we haven't merged yet
 
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
@@ -205,8 +260,6 @@
         // ==========================================
         // 🔐 3. AUTHENTICATION LOGIC
         // ==========================================
-
-        // Auto-Login Check
         let currentUser = localStorage.getItem('loggedInUser');
         if(currentUser) {
             loadDashboard(currentUser);
@@ -215,39 +268,28 @@
         function registerUser() {
             let phone = document.getElementById('reg-phone').value.trim();
             let pass = document.getElementById('reg-pass').value.trim();
-            let invite = document.getElementById('reg-invite').value.trim();
             let btn = document.getElementById('btn-reg');
 
             if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number!');
             if (pass.length < 4) return showMsg('error', 'PIN must be at least 4 digits!');
 
-            // 🛑 ANTI-CHEAT CHECK: Is device already bound to another number?
             let boundPhone = localStorage.getItem('LNT_Bound_Phone');
             if(boundPhone && boundPhone !== phone) {
-                return showMsg('error', 'DEVICE LOCKED: Multiple accounts are not allowed on one device!');
+                return showMsg('error', 'DEVICE LOCKED: One account per device allowed!');
             }
 
             btn.disabled = true; btn.innerText = "CREATING...";
 
             db.ref('users/' + phone).once('value').then(snap => {
                 if (snap.exists()) {
-                    showMsg('error', 'Account already exists! Please login.');
+                    showMsg('error', 'Account exists! Please login.');
                     btn.disabled = false; btn.innerText = "REGISTER & CLAIM ₹50";
                 } else {
-                    let joinDate = new Date().toLocaleString('en-IN');
-                    
-                    // Create User & Give ₹50 Bonus
                     db.ref('users/' + phone).set({
-                        password: pass,
-                        balance: 50,
-                        level: "G1",
-                        invitedBy: invite || "Admin",
-                        deviceID: deviceID,
-                        joinDate: joinDate
+                        password: pass, balance: 50, level: "G0", dailyIncome: 0,
+                        deviceID: deviceID, joinDate: new Date().toLocaleString()
                     }).then(() => {
-                        // Bind device to this phone permanently in local storage
                         localStorage.setItem('LNT_Bound_Phone', phone);
-                        
                         showMsg('success', 'Club access granted! Entering...');
                         setTimeout(() => loadDashboard(phone), 1500);
                     });
@@ -275,50 +317,110 @@
                     showMsg('error', 'Incorrect Mobile or PIN!');
                     btn.disabled = false; btn.innerText = "ENTER CLUB";
                 }
-            }).catch(() => {
-                showMsg('error', 'Network Error!');
-                btn.disabled = false; btn.innerText = "ENTER CLUB";
             });
         }
 
         // ==========================================
-        // 📊 4. DASHBOARD DATA LOADER
+        // 📊 4. DASHBOARD & DATA LOGIC
         // ==========================================
         function loadDashboard(phone) {
+            currentUser = phone;
             localStorage.setItem('loggedInUser', phone);
             
-            // Switch UI
             document.getElementById('section-auth').style.display = 'none';
             document.getElementById('section-dashboard').style.display = 'block';
             document.getElementById('bottom-menu').style.display = 'flex';
 
-            // Mask Phone
             let maskedPhone = "+91 " + phone.substring(0, 2) + "******" + phone.substring(8, 10);
             document.getElementById('dash-phone').innerText = maskedPhone;
 
-            // Fetch Live Data
+            // Fetch Live User Data
             db.ref('users/' + phone).on('value', (snap) => {
-                let userData = snap.val();
+                userData = snap.val();
                 if(userData) {
                     document.getElementById('dash-bal').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
-                    document.getElementById('dash-level').innerText = "VIP " + (userData.level || "G1");
+                    document.getElementById('dash-level').innerText = "VIP " + (userData.level || "G0");
+                    
+                    // Update Work Station Info
+                    document.getElementById('job-level-display').innerText = userData.level === "G0" ? "NO ACTIVE PLAN" : "Project " + userData.level;
+                    document.getElementById('job-salary-display').innerText = "₹" + (userData.dailyIncome || 0);
+                    
+                    checkJobStatus();
                 }
             });
+        }
+
+        // ==========================================
+        // 💼 5. VIP INVESTMENT LOGIC
+        // ==========================================
+        function buyProject(level, price, dailyIncome, days) {
+            if(!userData) return;
+            if((userData.balance || 0) < price) {
+                alert(`Insufficient Funds!\nYou need ₹${price} to buy ${level}. Please Deposit.`);
+                return;
+            }
+
+            if(confirm(`Invest ₹${price} in Project ${level}?\nYou will earn ₹${dailyIncome} daily for ${days} days.`)) {
+                let newBal = userData.balance - price;
+                db.ref('users/' + currentUser).update({
+                    balance: newBal,
+                    level: level,
+                    dailyIncome: dailyIncome,
+                    lastTaskDate: "none" // Reset task so they can claim today
+                }).then(() => {
+                    alert(`✅ Successfully upgraded to ${level}!`);
+                    switchMenu('job', document.getElementById('nav-job')); // Auto go to Tasks
+                });
+            }
+        }
+
+        // ==========================================
+        // 🎰 6. DAILY SALARY (JOB) LOGIC
+        // ==========================================
+        function checkJobStatus() {
+            let btn = document.getElementById('btn-claim-salary');
+            let icon = document.getElementById('job-icon');
+
+            if(userData.level === "G0" || !userData.level) {
+                btn.innerText = "BUY A PROJECT FIRST";
+                btn.style.color = "#888"; btn.style.borderColor = "#888";
+                btn.disabled = true;
+                icon.innerText = "🔒";
+            } else if(userData.lastTaskDate === todayDate) {
+                btn.innerText = "TODAY'S SALARY CLAIMED ✅";
+                btn.style.color = "#888"; btn.style.borderColor = "#888";
+                btn.disabled = true;
+                icon.innerText = "🎉";
+            } else {
+                btn.innerText = "START WORK & CLAIM";
+                btn.style.color = "#fcf6ba"; btn.style.borderColor = "#bf953f";
+                btn.disabled = false;
+                icon.innerText = "🎰";
+            }
+        }
+
+        function claimDailySalary() {
+            let btn = document.getElementById('btn-claim-salary');
+            let income = parseInt(userData.dailyIncome || 0);
+
+            btn.innerText = "PROCESSING...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                let newBal = (userData.balance || 0) + income;
+                db.ref('users/' + currentUser).update({
+                    balance: newBal,
+                    lastTaskDate: todayDate
+                }).then(() => {
+                    alert(`✅ Salary Credited!\n₹${income} added to your wealth assets.`);
+                });
+            }, 1000);
         }
 
         function logout() {
             if(confirm("Are you sure you want to exit the club?")) {
                 localStorage.removeItem('loggedInUser');
-                document.getElementById('section-auth').style.display = 'block';
-                document.getElementById('section-dashboard').style.display = 'none';
-                document.getElementById('section-profile').style.display = 'none';
-                document.getElementById('bottom-menu').style.display = 'none';
-                
-                // Reset Forms
-                document.getElementById('log-phone').value = "";
-                document.getElementById('log-pass').value = "";
-                document.getElementById('btn-login').innerText = "ENTER CLUB";
-                document.getElementById('btn-login').disabled = false;
+                window.location.reload();
             }
         }
     </script>
