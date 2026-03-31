@@ -22,7 +22,8 @@
         .input-box:focus { box-shadow: 0 0 15px rgba(191, 149, 63, 0.4); }
         .btn-gold { width: 100%; padding: 16px; border-radius: 8px; border: none; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
         .btn-gold:active { transform: scale(0.95); }
-        .msg-box { font-size: 15px; margin-bottom: 15px; font-weight: bold; padding: 12px; border-radius: 6px; display: none; text-align: center; border: 1px dashed; }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; }
+        .msg-box { font-size: 14px; margin-bottom: 15px; font-weight: bold; padding: 10px; border-radius: 6px; display: none; text-align: center; border: 1px dashed; }
         .bal-amount { font-size: 40px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(191, 149, 63, 0.4); margin: 10px 0; }
         .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
         .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 15px 5px; text-align: center; color: #f2e3c6; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
@@ -53,7 +54,7 @@
             <div id="form-login">
                 <input type="number" id="log-phone" class="input-box" placeholder="Mobile Number">
                 <input type="password" id="log-pass" class="input-box" placeholder="Security PIN">
-                <button class="btn-gold gold-bg" onclick="loginUser()">ENTER CLUB</button>
+                <button class="btn-gold gold-bg" id="btn-log-action" onclick="loginUser()">ENTER CLUB</button>
             </div>
 
             <div id="form-register" style="display: none;">
@@ -65,7 +66,7 @@
                 <input type="number" id="reg-otp" class="input-box" placeholder="Enter 6-Digit OTP" style="display: none; border-color: #00ff88;">
                 <input type="password" id="reg-pass" class="input-box" placeholder="Create PIN (Min 4)">
                 
-                <button class="btn-gold gold-bg" onclick="registerUser()">REGISTER & GET ₹50</button>
+                <button class="btn-gold gold-bg" id="btn-reg-action" onclick="registerUser()">REGISTER & GET ₹50</button>
             </div>
         </div>
     </div>
@@ -126,7 +127,7 @@
         <div class="header-bar"><button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button><h2 class="gold-text">RECHARGE</h2></div>
         <div class="premium-card" style="text-align: center;">
             <p style="color:#aaa; font-size:12px; margin-bottom:10px;">Company UPI ID</p>
-            <h3 class="gold-text" id="admin-upi" style="font-size:20px; margin-bottom:15px; letter-spacing: 1px;">Loading...</h3>
+            <h3 class="gold-text" id="admin-upi" style="font-size:20px; margin-bottom:15px; letter-spacing: 1px;">admin@ybl</h3>
             <button class="btn-gold gold-bg" style="padding:10px; font-size:12px;" onclick="copyUPI()">COPY UPI</button>
         </div>
         <input type="number" id="dep-amt" class="input-box" placeholder="Enter Amount (Min ₹300)">
@@ -211,7 +212,7 @@
             box.innerText = text;
         }
 
-        // --- 📲 10 SEC OTP LOGIC (FIXED) ---
+        // --- 📲 10 SEC OTP LOGIC ---
         function requestOTP() {
             let phone = document.getElementById('reg-phone').value.trim();
             if(phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number first!');
@@ -236,41 +237,75 @@
                     
                     otpBox.style.display = "block"; 
                     systemOTP = Math.floor(100000 + Math.random() * 900000).toString();
-                    
-                    // 💡 SHOW OTP DIRECTLY ON SCREEN FOR TESTING
                     showMsg('success', `Your OTP is: ${systemOTP} (Copy & Paste below)`);
                 }
             }, 1000);
         }
 
-        // --- AUTH LOGIC ---
+        // --- AUTH LOGIC (WITH ERROR CATCHER) ---
         function registerUser() {
             let phone = document.getElementById('reg-phone').value.trim();
             let pass = document.getElementById('reg-pass').value.trim();
             let userOtp = document.getElementById('reg-otp').value.trim();
+            let btn = document.getElementById('btn-reg-action');
             
             if (phone.length !== 10 || pass.length < 4) return showMsg('error', 'Invalid details!');
             if (systemOTP === "" || userOtp !== systemOTP) return showMsg('error', 'Incorrect OTP entered!');
 
-            // Note: Device Lock temp removed for developer testing
-            db.ref('users/' + phone).once('value', snap => {
-                if (snap.exists()) return showMsg('error', 'User exists! Login.');
+            btn.innerText = "CREATING ACCOUNT...";
+            btn.classList.add('btn-disabled');
+
+            // Trying to connect to Firebase
+            db.ref('users/' + phone).once('value').then(snap => {
+                if (snap.exists()) {
+                    btn.innerText = "REGISTER & GET ₹50";
+                    btn.classList.remove('btn-disabled');
+                    return showMsg('error', 'User exists! Please Login.');
+                }
                 
+                // Saving new user
                 db.ref('users/' + phone).set({
-                    password: pass, balance: 50, level: "G0", dailyIncome: 0, invitedBy: "Admin", joinDate: new Date().toLocaleString()
+                    password: pass, balance: 50, level: "G0", dailyIncome: 0, joinDate: new Date().toLocaleString()
                 }).then(() => {
                     systemOTP = ""; 
-                    loadDashboard(phone);
+                    showMsg('success', 'Registration Successful! Entering Club...');
+                    setTimeout(() => loadDashboard(phone), 1000);
+                }).catch(err => {
+                    // FIREBASE RULES ERROR WILL SHOW HERE
+                    showMsg('error', 'Database Error: Check Firebase Rules!');
+                    btn.innerText = "REGISTER & GET ₹50";
+                    btn.classList.remove('btn-disabled');
                 });
+            }).catch(err => {
+                showMsg('error', 'Network connection failed!');
+                btn.innerText = "REGISTER & GET ₹50";
+                btn.classList.remove('btn-disabled');
             });
         }
 
         function loginUser() {
             let phone = document.getElementById('log-phone').value.trim();
             let pass = document.getElementById('log-pass').value.trim();
-            db.ref('users/' + phone).once('value', snap => {
-                if (snap.exists() && snap.val().password === pass) loadDashboard(phone);
-                else showMsg('error', 'Invalid Credentials!');
+            let btn = document.getElementById('btn-log-action');
+
+            if(phone.length !== 10) return showMsg('error', 'Invalid number!');
+            
+            btn.innerText = "CHECKING...";
+            btn.classList.add('btn-disabled');
+
+            db.ref('users/' + phone).once('value').then(snap => {
+                if (snap.exists() && snap.val().password === pass) {
+                    showMsg('success', 'Identity Verified!');
+                    setTimeout(() => loadDashboard(phone), 1000);
+                } else {
+                    showMsg('error', 'Incorrect Mobile or PIN!');
+                    btn.innerText = "ENTER CLUB";
+                    btn.classList.remove('btn-disabled');
+                }
+            }).catch(err => {
+                showMsg('error', 'Network Error!');
+                btn.innerText = "ENTER CLUB";
+                btn.classList.remove('btn-disabled');
             });
         }
 
@@ -284,7 +319,9 @@
             document.getElementById('bottom-menu').style.display = 'flex';
             document.getElementById('dash-phone').innerText = "+91 " + phone.substring(0,2) + "****" + phone.substring(8,10);
 
-            db.ref('adminSettings/payment/upiId').on('value', snap => { document.getElementById('admin-upi').innerText = snap.val() || "admin@ybl"; });
+            db.ref('adminSettings/payment/upiId').on('value', snap => { 
+                if(snap.val()) document.getElementById('admin-upi').innerText = snap.val(); 
+            });
 
             db.ref('users/' + phone).on('value', snap => {
                 userData = snap.val();
@@ -336,7 +373,8 @@
 
         function claimDailySalary() {
             let inc = userData.dailyIncome || 0;
-            db.ref('users/' + currentUser).update({ balance: userData.balance + inc, lastTaskDate: todayDate }).then(() => {
+            db.ref('users/' + currentUser).update({ balance: userData.balance + inc, lastTaskDate: todayDate })
+            .then(() => {
                 db.ref(`users/${currentUser}/history/TASK${Date.now()}`).set({ type: "Daily Salary", amount: inc, status: "Success", date: new Date().toLocaleString() });
                 alert("Salary Credited!");
             });
