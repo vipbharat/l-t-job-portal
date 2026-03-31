@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     
     <style>
+        /* 👑 ANTIQUE & PREMIUM LUXURY THEME */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Times New Roman', serif; }
         body { background: #0a0a0c; background-image: radial-gradient(circle at center, #1a1814 0%, #0a0a0c 100%); min-height: 100vh; color: #f2e3c6; padding-bottom: 80px; overflow-x: hidden; }
         .gold-text { background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; color: transparent; font-weight: 900; }
@@ -15,6 +16,8 @@
         .premium-card { background: rgba(20, 20, 20, 0.8); border: 1px solid #bf953f; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(191, 149, 63, 0.1); }
         .app-section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Inputs & Buttons */
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .auth-tab { flex: 1; padding: 12px; background: transparent; border: 1px solid #aa771c; color: #aa771c; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
         .auth-tab.active { background: rgba(191, 149, 63, 0.2); color: #fcf6ba; border-color: #fcf6ba; box-shadow: 0 0 15px rgba(191, 149, 63, 0.3); }
@@ -24,9 +27,13 @@
         .btn-gold:active { transform: scale(0.95); }
         .btn-disabled { opacity: 0.5; cursor: not-allowed; }
         .msg-box { font-size: 14px; margin-bottom: 15px; font-weight: bold; padding: 10px; border-radius: 6px; display: none; text-align: center; border: 1px dashed; }
+        
+        /* Dashboard */
         .bal-amount { font-size: 40px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(191, 149, 63, 0.4); margin: 10px 0; }
-        .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 15px 5px; text-align: center; color: #f2e3c6; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px; margin-bottom: 25px; }
+        .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 12px 5px; text-align: center; color: #f2e3c6; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
+        
+        /* Lists & Navigation */
         .list-item { background: #111; border: 1px solid #bf953f; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #bf953f; padding-bottom: 15px; }
         .back-btn { background: #111; border: 1px solid #bf953f; color: #fcf6ba; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; cursor: pointer;}
@@ -62,10 +69,8 @@
                     <input type="number" id="reg-phone" class="input-box" placeholder="Mobile Number">
                     <button id="btn-otp" onclick="requestOTP()" style="position: absolute; right: 5px; top: 5px; padding: 10px 15px; background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #000; border: none; border-radius: 6px; font-weight: 900; cursor: pointer; z-index: 10;">GET OTP</button>
                 </div>
-                
                 <input type="number" id="reg-otp" class="input-box" placeholder="Enter 6-Digit OTP" style="display: none; border-color: #00ff88;">
                 <input type="password" id="reg-pass" class="input-box" placeholder="Create PIN (Min 4)">
-                
                 <button class="btn-gold gold-bg" id="btn-reg-action" onclick="registerUser()">REGISTER & GET ₹50</button>
             </div>
         </div>
@@ -76,16 +81,24 @@
             <div><p style="color:#aaa; font-size:12px;">Welcome back,</p><h3 class="gold-text" id="dash-phone">Loading...</h3></div>
             <div style="border:1px solid #bf953f; padding:5px 15px; border-radius:20px; color:#fcf6ba;" id="dash-level">VIP G0</div>
         </div>
+        
         <div class="premium-card" style="text-align: center;">
             <p style="color: #bf953f; font-size: 13px; text-transform: uppercase;">Current Wallet Balance</p>
             <div class="gold-text bal-amount" id="dash-bal">₹0.00</div>
         </div>
+        
         <div class="action-grid">
             <div class="action-btn" onclick="switchMenu('deposit')"><span>💳</span>Deposit</div>
             <div class="action-btn" onclick="switchMenu('withdraw')"><span>🏦</span>Withdraw</div>
             <div class="action-btn" onclick="switchMenu('history'); loadHistory();"><span>📜</span>History</div>
             <div class="action-btn" onclick="switchMenu('team'); loadTeam();"><span>👥</span>Team</div>
+            
+            <div class="action-btn" onclick="window.location.href='spin.html'"><span>🎡</span>Lucky Spin</div>
+            <div class="action-btn" onclick="window.location.href='salary.html'"><span>💼</span>Salary</div>
+            <div class="action-btn" onclick="window.location.href='refer.html'"><span>🔗</span>Refer</div>
+            <div class="action-btn" onclick="window.location.href='gift.html'"><span>🎁</span>Gift Code</div>
         </div>
+        
         <div class="premium-card" style="text-align: center; border-style: dashed; cursor: pointer;" onclick="switchMenu('job', document.getElementById('nav-job'))">
             <h3 class="gold-text">🎁 CLAIM DAILY PROFIT</h3>
             <p style="font-size: 12px; color: #aaa; margin-top: 5px;">Go to work station</p>
@@ -120,6 +133,10 @@
             <div style="display: flex; gap: 15px; font-size: 15px; color:#fcf6ba;"><span style="font-size: 20px;">🏦</span> Bind Bank Account</div>
             <span class="gold-text">➔</span>
         </div>
+        <div class="premium-card action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px;" onclick="window.location.href='about.html'">
+            <div style="display: flex; gap: 15px; font-size: 15px; color:#fcf6ba;"><span style="font-size: 20px;">🏢</span> About Us</div>
+            <span class="gold-text">➔</span>
+        </div>
         <button class="btn-gold" style="background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d;" onclick="logout()">LOGOUT</button>
     </div>
 
@@ -127,7 +144,7 @@
         <div class="header-bar"><button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button><h2 class="gold-text">RECHARGE</h2></div>
         <div class="premium-card" style="text-align: center;">
             <p style="color:#aaa; font-size:12px; margin-bottom:10px;">Company UPI ID</p>
-            <h3 class="gold-text" id="admin-upi" style="font-size:20px; margin-bottom:15px; letter-spacing: 1px;">admin@ybl</h3>
+            <h3 class="gold-text" id="admin-upi" style="font-size:20px; margin-bottom:15px; letter-spacing: 1px;">Loading...</h3>
             <button class="btn-gold gold-bg" style="padding:10px; font-size:12px;" onclick="copyUPI()">COPY UPI</button>
         </div>
         <input type="number" id="dep-amt" class="input-box" placeholder="Enter Amount (Min ₹300)">
@@ -177,7 +194,7 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = { apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM", databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -187,6 +204,7 @@
         let todayDate = new Date().toDateString();
         let systemOTP = ""; 
 
+        // --- UI & NAVIGATION LOGIC ---
         function switchAuth(type) {
             document.getElementById('status-msg').style.display = 'none';
             document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
@@ -212,7 +230,7 @@
             box.innerText = text;
         }
 
-        // --- 📲 10 SEC OTP LOGIC ---
+        // --- AUTHENTICATION & OTP LOGIC ---
         function requestOTP() {
             let phone = document.getElementById('reg-phone').value.trim();
             if(phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number first!');
@@ -222,27 +240,23 @@
             
             otpBtn.disabled = true;
             let counter = 10; 
-            
             showMsg('success', 'Sending OTP... Please wait.');
             
             let interval = setInterval(() => {
                 otpBtn.innerText = `Wait ${counter}s`;
                 counter--;
-                
                 if(counter < 0) {
                     clearInterval(interval);
                     otpBtn.innerText = "SENT ✅";
                     otpBtn.style.background = "#00ff88";
                     otpBtn.style.color = "#000";
-                    
                     otpBox.style.display = "block"; 
                     systemOTP = Math.floor(100000 + Math.random() * 900000).toString();
-                    showMsg('success', `Your OTP is: ${systemOTP} (Copy & Paste below)`);
+                    showMsg('success', `Your OTP is: ${systemOTP} (Enter it below)`);
                 }
             }, 1000);
         }
 
-        // --- AUTH LOGIC (WITH ERROR CATCHER) ---
         function registerUser() {
             let phone = document.getElementById('reg-phone').value.trim();
             let pass = document.getElementById('reg-pass').value.trim();
@@ -255,7 +269,6 @@
             btn.innerText = "CREATING ACCOUNT...";
             btn.classList.add('btn-disabled');
 
-            // Trying to connect to Firebase
             db.ref('users/' + phone).once('value').then(snap => {
                 if (snap.exists()) {
                     btn.innerText = "REGISTER & GET ₹50";
@@ -263,7 +276,6 @@
                     return showMsg('error', 'User exists! Please Login.');
                 }
                 
-                // Saving new user
                 db.ref('users/' + phone).set({
                     password: pass, balance: 50, level: "G0", dailyIncome: 0, joinDate: new Date().toLocaleString()
                 }).then(() => {
@@ -271,15 +283,10 @@
                     showMsg('success', 'Registration Successful! Entering Club...');
                     setTimeout(() => loadDashboard(phone), 1000);
                 }).catch(err => {
-                    // FIREBASE RULES ERROR WILL SHOW HERE
                     showMsg('error', 'Database Error: Check Firebase Rules!');
                     btn.innerText = "REGISTER & GET ₹50";
                     btn.classList.remove('btn-disabled');
                 });
-            }).catch(err => {
-                showMsg('error', 'Network connection failed!');
-                btn.innerText = "REGISTER & GET ₹50";
-                btn.classList.remove('btn-disabled');
             });
         }
 
@@ -289,7 +296,6 @@
             let btn = document.getElementById('btn-log-action');
 
             if(phone.length !== 10) return showMsg('error', 'Invalid number!');
-            
             btn.innerText = "CHECKING...";
             btn.classList.add('btn-disabled');
 
@@ -302,16 +308,12 @@
                     btn.innerText = "ENTER CLUB";
                     btn.classList.remove('btn-disabled');
                 }
-            }).catch(err => {
-                showMsg('error', 'Network Error!');
-                btn.innerText = "ENTER CLUB";
-                btn.classList.remove('btn-disabled');
             });
         }
 
         function logout() { localStorage.clear(); location.reload(); }
 
-        // --- DASHBOARD LOGIC ---
+        // --- DASHBOARD DATA LOADING ---
         function loadDashboard(phone) {
             currentUser = phone;
             localStorage.setItem('loggedInUser', phone);
@@ -320,15 +322,15 @@
             document.getElementById('dash-phone').innerText = "+91 " + phone.substring(0,2) + "****" + phone.substring(8,10);
 
             db.ref('adminSettings/payment/upiId').on('value', snap => { 
-                if(snap.val()) document.getElementById('admin-upi').innerText = snap.val(); 
+                document.getElementById('admin-upi').innerText = snap.val() || "admin@ybl"; 
             });
 
             db.ref('users/' + phone).on('value', snap => {
                 userData = snap.val();
                 if(userData) {
                     let bal = userData.balance || 0;
-                    document.getElementById('dash-bal').innerText = "₹" + bal.toLocaleString();
-                    document.getElementById('with-bal').innerText = "₹" + bal.toLocaleString();
+                    document.getElementById('dash-bal').innerText = "₹" + bal.toLocaleString('en-IN');
+                    document.getElementById('with-bal').innerText = "₹" + bal.toLocaleString('en-IN');
                     document.getElementById('dash-level').innerText = "VIP " + (userData.level || "G0");
                     document.getElementById('job-level-display').innerText = userData.level === "G0" ? "NO ACTIVE PLAN" : "Project " + userData.level;
                     document.getElementById('job-salary-display').innerText = "₹" + (userData.dailyIncome || 0);
@@ -346,12 +348,22 @@
             renderVIPPlans();
         }
 
-        // --- VIP & TASKS ---
+        // --- VIP PROJECTS (G1 TO G8) ---
         function renderVIPPlans() {
-            const plans = [{id:'G1',p:500,d:45}, {id:'G2',p:1500,d:150}, {id:'G3',p:3000,d:350}, {id:'G4',p:6000,d:750}, {id:'G5',p:12000,d:1600}];
+            const plans = [
+                {id:'G1', p:500, d:45, icon:'🥉'}, {id:'G2', p:1500, d:150, icon:'🥉'}, 
+                {id:'G3', p:3000, d:350, icon:'🥈'}, {id:'G4', p:6000, d:750, icon:'🥈'}, 
+                {id:'G5', p:12000, d:1600, icon:'🥇'}, {id:'G6', p:30000, d:4500, icon:'🥇'},
+                {id:'G7', p:75000, d:12000, icon:'💎'}, {id:'G8', p:150000, d:28000, icon:'🔥'}
+            ];
             let html = "";
             plans.forEach(p => {
-                html += `<div class="premium-card"><h3 class="gold-text">${p.id} Project - ₹${p.p}</h3><p style="color:#aaa; font-size:12px; margin:10px 0;">Income: ₹${p.d}/Day</p><button class="btn-gold gold-bg" style="padding:10px;" onclick="buyPlan('${p.id}', ${p.p}, ${p.d})">INVEST</button></div>`;
+                html += `
+                <div class="premium-card">
+                    <h3 class="gold-text">${p.icon} Project ${p.id} - ₹${p.p.toLocaleString('en-IN')}</h3>
+                    <p style="color:#aaa; font-size:13px; margin:10px 0;">Daily Income: <span style="color:#00ff88; font-weight:bold;">₹${p.d.toLocaleString('en-IN')}</span></p>
+                    <button class="btn-gold gold-bg" style="padding:10px;" onclick="buyPlan('${p.id}', ${p.p}, ${p.d})">INVEST NOW</button>
+                </div>`;
             });
             document.getElementById('vip-container').innerHTML = html;
         }
@@ -360,10 +372,11 @@
             if(userData.balance < price) return alert("Insufficient Balance!");
             if(confirm(`Invest ₹${price} in ${id}?`)) {
                 db.ref('users/' + currentUser).update({ balance: userData.balance - price, level: id, dailyIncome: daily, lastTaskDate: "none" })
-                .then(() => alert("Upgraded!"));
+                .then(() => alert("Upgraded Successfully!"));
             }
         }
 
+        // --- DAILY SALARY / WORK STATION ---
         function checkJobStatus() {
             let btn = document.getElementById('btn-claim-salary');
             if(userData.level === "G0") { btn.disabled = true; btn.innerText = "BUY PROJECT"; }
@@ -405,21 +418,19 @@
 
             let id = "WD" + Date.now();
             db.ref('users/' + currentUser).update({ balance: userData.balance - amt }).then(() => {
-                let wData = { phone: currentUser, amount: amt, status: "Pending", accountNo: userData.bankDetails.accountNo, date: new Date().toLocaleString() };
-                db.ref('Admin/Withdrawals/' + id).set(wData);
+                db.ref('Admin/Withdrawals/' + id).set({ phone: currentUser, amount: amt, status: "Pending", accountNo: userData.bankDetails.accountNo, date: new Date().toLocaleString() });
                 db.ref(`users/${currentUser}/history/${id}`).set({ type: "Withdraw", amount: amt, status: "Pending", date: new Date().toLocaleString() });
                 alert("Withdrawal Requested!"); switchMenu('history'); loadHistory();
             });
         }
 
-        // --- BANK BIND ---
+        // --- BANK, HISTORY & TEAM ---
         function saveBank() {
             let bankData = { bankName: document.getElementById('bank-name').value, accountNo: document.getElementById('bank-acc').value, ifsc: document.getElementById('bank-ifsc').value, holderName: document.getElementById('bank-holder').value };
             if(!bankData.accountNo || !bankData.ifsc) return alert("Fill all details!");
             db.ref('users/' + currentUser + '/bankDetails').set(bankData).then(() => { alert("Bank Saved!"); switchMenu('profile'); });
         }
 
-        // --- HISTORY & TEAM ---
         function loadHistory() {
             db.ref(`users/${currentUser}/history`).once('value', snap => {
                 let html = ""; let data = snap.val();
@@ -439,7 +450,7 @@
                 if(members) {
                     for(let key in members) {
                         count++; let m = members[key];
-                        let cMap = {"G1":0, "G2":150, "G3":400, "G4":1000, "G5":2500};
+                        let cMap = {"G1":0, "G2":150, "G3":400, "G4":1000, "G5":2500, "G6":4500, "G7":12000, "G8":28000};
                         let earned = cMap[m.level] || 0; comm += earned;
                         html += `<div class="list-item"><div><p style="color:#fff; font-size:14px; font-weight:bold;">+91 ${key.substring(0,2)}****${key.substring(8,10)}</p><p style="color:#aaa; font-size:10px;">Project ${m.level}</p></div><div style="text-align:right;"><p style="color:#00ff88; font-size:16px; font-weight:bold;">+₹${earned}</p></div></div>`;
                     }
@@ -448,6 +459,7 @@
             });
         }
 
+        // Initialize App
         if(currentUser) loadDashboard(currentUser);
     </script>
 </body>
