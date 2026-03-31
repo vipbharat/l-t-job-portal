@@ -8,39 +8,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     
     <style>
-        /* 👑 ANTIQUE & PREMIUM LUXURY THEME */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Times New Roman', serif; }
-        body { 
-            background: #0a0a0c; 
-            background-image: radial-gradient(circle at center, #1a1814 0%, #0a0a0c 100%);
-            min-height: 100vh; color: #f2e3c6; padding-bottom: 80px; overflow-x: hidden;
-        }
-
+        body { background: #0a0a0c; background-image: radial-gradient(circle at center, #1a1814 0%, #0a0a0c 100%); min-height: 100vh; color: #f2e3c6; padding-bottom: 80px; overflow-x: hidden; }
         .gold-text { background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; color: transparent; font-weight: 900; }
         .gold-bg { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7); color: #000; border: 1px solid #aa771c; }
-
         .premium-card { background: rgba(20, 20, 20, 0.8); border: 1px solid #bf953f; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(191, 149, 63, 0.1); }
         .app-section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .auth-tab { flex: 1; padding: 12px; background: transparent; border: 1px solid #aa771c; color: #aa771c; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
         .auth-tab.active { background: rgba(191, 149, 63, 0.2); color: #fcf6ba; border-color: #fcf6ba; box-shadow: 0 0 15px rgba(191, 149, 63, 0.3); }
-
         .input-box { width: 100%; padding: 15px; background: #000; border: 1px solid #bf953f; border-radius: 8px; color: #fcf6ba; font-size: 16px; margin-bottom: 15px; outline: none; }
         .input-box:focus { box-shadow: 0 0 15px rgba(191, 149, 63, 0.4); }
         .btn-gold { width: 100%; padding: 16px; border-radius: 8px; border: none; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s;}
         .btn-gold:active { transform: scale(0.95); }
-        .msg-box { font-size: 14px; margin-bottom: 15px; font-weight: bold; padding: 10px; border-radius: 6px; display: none; text-align: center; border: 1px dashed; }
-
+        .msg-box { font-size: 15px; margin-bottom: 15px; font-weight: bold; padding: 12px; border-radius: 6px; display: none; text-align: center; border: 1px dashed; }
         .bal-amount { font-size: 40px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(191, 149, 63, 0.4); margin: 10px 0; }
         .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
         .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 15px 5px; text-align: center; color: #f2e3c6; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        
         .list-item { background: #111; border: 1px solid #bf953f; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #bf953f; padding-bottom: 15px; }
         .back-btn { background: #111; border: 1px solid #bf953f; color: #fcf6ba; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; cursor: pointer;}
-
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0c; border-top: 1px solid #bf953f; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         .nav-item { color: #888; font-size: 11px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
         .nav-item.active { color: #fcf6ba; text-shadow: 0 0 15px #bf953f; }
@@ -56,6 +44,7 @@
             <p style="color: #aaa; font-size: 13px; font-style: italic; margin-bottom: 25px;">Elite Wealth Management</p>
             
             <div id="status-msg" class="msg-box"></div>
+            
             <div class="auth-tabs">
                 <button class="auth-tab active" id="tab-login" onclick="switchAuth('login')">LOGIN</button>
                 <button class="auth-tab" id="tab-register" onclick="switchAuth('register')">REGISTER</button>
@@ -74,8 +63,8 @@
                 </div>
                 
                 <input type="number" id="reg-otp" class="input-box" placeholder="Enter 6-Digit OTP" style="display: none; border-color: #00ff88;">
-                
                 <input type="password" id="reg-pass" class="input-box" placeholder="Create PIN (Min 4)">
+                
                 <button class="btn-gold gold-bg" onclick="registerUser()">REGISTER & GET ₹50</button>
             </div>
         </div>
@@ -86,19 +75,16 @@
             <div><p style="color:#aaa; font-size:12px;">Welcome back,</p><h3 class="gold-text" id="dash-phone">Loading...</h3></div>
             <div style="border:1px solid #bf953f; padding:5px 15px; border-radius:20px; color:#fcf6ba;" id="dash-level">VIP G0</div>
         </div>
-
         <div class="premium-card" style="text-align: center;">
             <p style="color: #bf953f; font-size: 13px; text-transform: uppercase;">Current Wallet Balance</p>
             <div class="gold-text bal-amount" id="dash-bal">₹0.00</div>
         </div>
-
         <div class="action-grid">
             <div class="action-btn" onclick="switchMenu('deposit')"><span>💳</span>Deposit</div>
             <div class="action-btn" onclick="switchMenu('withdraw')"><span>🏦</span>Withdraw</div>
             <div class="action-btn" onclick="switchMenu('history'); loadHistory();"><span>📜</span>History</div>
             <div class="action-btn" onclick="switchMenu('team'); loadTeam();"><span>👥</span>Team</div>
         </div>
-
         <div class="premium-card" style="text-align: center; border-style: dashed; cursor: pointer;" onclick="switchMenu('job', document.getElementById('nav-job'))">
             <h3 class="gold-text">🎁 CLAIM DAILY PROFIT</h3>
             <p style="font-size: 12px; color: #aaa; margin-top: 5px;">Go to work station</p>
@@ -137,10 +123,7 @@
     </div>
 
     <div id="section-deposit" class="app-section">
-        <div class="header-bar">
-            <button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button>
-            <h2 class="gold-text">RECHARGE</h2>
-        </div>
+        <div class="header-bar"><button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button><h2 class="gold-text">RECHARGE</h2></div>
         <div class="premium-card" style="text-align: center;">
             <p style="color:#aaa; font-size:12px; margin-bottom:10px;">Company UPI ID</p>
             <h3 class="gold-text" id="admin-upi" style="font-size:20px; margin-bottom:15px; letter-spacing: 1px;">Loading...</h3>
@@ -152,14 +135,8 @@
     </div>
 
     <div id="section-withdraw" class="app-section">
-        <div class="header-bar">
-            <button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button>
-            <h2 class="gold-text">WITHDRAW</h2>
-        </div>
-        <div class="premium-card" style="text-align: center;">
-            <p style="color:#aaa; font-size:12px;">Available Balance</p>
-            <h3 class="gold-text" id="with-bal" style="font-size:30px;">₹0</h3>
-        </div>
+        <div class="header-bar"><button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button><h2 class="gold-text">WITHDRAW</h2></div>
+        <div class="premium-card" style="text-align: center;"><p style="color:#aaa; font-size:12px;">Available Balance</p><h3 class="gold-text" id="with-bal" style="font-size:30px;">₹0</h3></div>
         <p id="bank-warn" style="color:#ff4d4d; font-size:12px; text-align:center; margin-bottom:15px; display:none;">⚠️ Bank not linked! Bind bank in Profile first.</p>
         <input type="number" id="with-amt" class="input-box" placeholder="Withdrawal Amount (Min ₹200)">
         <input type="password" id="with-pass" class="input-box" placeholder="Security PIN">
@@ -167,10 +144,7 @@
     </div>
 
     <div id="section-bank" class="app-section">
-        <div class="header-bar">
-            <button class="back-btn" onclick="switchMenu('profile')">⬅ Back</button>
-            <h2 class="gold-text">BANK DETAILS</h2>
-        </div>
+        <div class="header-bar"><button class="back-btn" onclick="switchMenu('profile')">⬅ Back</button><h2 class="gold-text">BANK DETAILS</h2></div>
         <div class="premium-card">
             <input type="text" id="bank-name" class="input-box" placeholder="Bank Name (e.g., SBI)">
             <input type="number" id="bank-acc" class="input-box" placeholder="Account Number">
@@ -181,18 +155,12 @@
     </div>
 
     <div id="section-history" class="app-section">
-        <div class="header-bar">
-            <button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button>
-            <h2 class="gold-text">FINANCIAL RECORDS</h2>
-        </div>
+        <div class="header-bar"><button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button><h2 class="gold-text">FINANCIAL RECORDS</h2></div>
         <div id="history-container"></div>
     </div>
 
     <div id="section-team" class="app-section">
-        <div class="header-bar">
-            <button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button>
-            <h2 class="gold-text">MY TEAM</h2>
-        </div>
+        <div class="header-bar"><button class="back-btn" onclick="switchMenu('dashboard')">⬅ Back</button><h2 class="gold-text">MY TEAM</h2></div>
         <div class="premium-card" style="display:flex; justify-content:space-between; text-align:center;">
             <div><p style="color:#aaa; font-size:12px;">Members</p><h3 class="gold-text" id="team-count">0</h3></div>
             <div><p style="color:#aaa; font-size:12px;">Commission</p><h3 class="gold-text" id="team-comm">₹0</h3></div>
@@ -216,13 +184,8 @@
         let userData = null;
         let currentUser = localStorage.getItem('loggedInUser');
         let todayDate = new Date().toDateString();
-        let systemOTP = ""; // Store Generated OTP
+        let systemOTP = ""; 
 
-        // 🛡️ DEVICE BINDING
-        let deviceID = localStorage.getItem('LNT_Device_ID') || ("DEV-" + Date.now() + Math.floor(Math.random() * 1000));
-        localStorage.setItem('LNT_Device_ID', deviceID);
-
-        // --- UI LOGIC ---
         function switchAuth(type) {
             document.getElementById('status-msg').style.display = 'none';
             document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
@@ -248,7 +211,7 @@
             box.innerText = text;
         }
 
-        // --- 📲 10 SEC OTP LOGIC ---
+        // --- 📲 10 SEC OTP LOGIC (FIXED) ---
         function requestOTP() {
             let phone = document.getElementById('reg-phone').value.trim();
             if(phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number first!');
@@ -257,7 +220,9 @@
             let otpBox = document.getElementById('reg-otp');
             
             otpBtn.disabled = true;
-            let counter = 10; // 10 seconds timer
+            let counter = 10; 
+            
+            showMsg('success', 'Sending OTP... Please wait.');
             
             let interval = setInterval(() => {
                 otpBtn.innerText = `Wait ${counter}s`;
@@ -269,13 +234,11 @@
                     otpBtn.style.background = "#00ff88";
                     otpBtn.style.color = "#000";
                     
-                    otpBox.style.display = "block"; // Show OTP Box
-                    
-                    // Generate 6 Digit Random OTP
+                    otpBox.style.display = "block"; 
                     systemOTP = Math.floor(100000 + Math.random() * 900000).toString();
                     
-                    // Alert the user (Acts like SMS popup)
-                    alert(`L&T VIP CLUB\n\nYour 6-Digit Verification OTP is: ${systemOTP}`);
+                    // 💡 SHOW OTP DIRECTLY ON SCREEN FOR TESTING
+                    showMsg('success', `Your OTP is: ${systemOTP} (Copy & Paste below)`);
                 }
             }, 1000);
         }
@@ -289,17 +252,14 @@
             if (phone.length !== 10 || pass.length < 4) return showMsg('error', 'Invalid details!');
             if (systemOTP === "" || userOtp !== systemOTP) return showMsg('error', 'Incorrect OTP entered!');
 
-            let boundPhone = localStorage.getItem('LNT_Bound_Phone');
-            if(boundPhone && boundPhone !== phone) return showMsg('error', 'Device Locked: 1 Account only!');
-
+            // Note: Device Lock temp removed for developer testing
             db.ref('users/' + phone).once('value', snap => {
                 if (snap.exists()) return showMsg('error', 'User exists! Login.');
                 
                 db.ref('users/' + phone).set({
-                    password: pass, balance: 50, level: "G0", dailyIncome: 0, invitedBy: "Admin", deviceID: deviceID, joinDate: new Date().toLocaleString()
+                    password: pass, balance: 50, level: "G0", dailyIncome: 0, invitedBy: "Admin", joinDate: new Date().toLocaleString()
                 }).then(() => {
-                    localStorage.setItem('LNT_Bound_Phone', phone);
-                    systemOTP = ""; // Reset OTP
+                    systemOTP = ""; 
                     loadDashboard(phone);
                 });
             });
@@ -324,9 +284,7 @@
             document.getElementById('bottom-menu').style.display = 'flex';
             document.getElementById('dash-phone').innerText = "+91 " + phone.substring(0,2) + "****" + phone.substring(8,10);
 
-            db.ref('adminSettings/payment/upiId').on('value', snap => {
-                document.getElementById('admin-upi').innerText = snap.val() || "admin@ybl";
-            });
+            db.ref('adminSettings/payment/upiId').on('value', snap => { document.getElementById('admin-upi').innerText = snap.val() || "admin@ybl"; });
 
             db.ref('users/' + phone).on('value', snap => {
                 userData = snap.val();
@@ -339,7 +297,6 @@
                     document.getElementById('job-salary-display').innerText = "₹" + (userData.dailyIncome || 0);
                     
                     document.getElementById('bank-warn').style.display = (userData.bankDetails) ? 'none' : 'block';
-                    
                     if(userData.bankDetails) {
                         document.getElementById('bank-name').value = userData.bankDetails.bankName || "";
                         document.getElementById('bank-acc').value = userData.bankDetails.accountNo || "";
@@ -379,8 +336,7 @@
 
         function claimDailySalary() {
             let inc = userData.dailyIncome || 0;
-            db.ref('users/' + currentUser).update({ balance: userData.balance + inc, lastTaskDate: todayDate })
-            .then(() => {
+            db.ref('users/' + currentUser).update({ balance: userData.balance + inc, lastTaskDate: todayDate }).then(() => {
                 db.ref(`users/${currentUser}/history/TASK${Date.now()}`).set({ type: "Daily Salary", amount: inc, status: "Success", date: new Date().toLocaleString() });
                 alert("Salary Credited!");
             });
@@ -420,10 +376,7 @@
 
         // --- BANK BIND ---
         function saveBank() {
-            let bankData = {
-                bankName: document.getElementById('bank-name').value, accountNo: document.getElementById('bank-acc').value,
-                ifsc: document.getElementById('bank-ifsc').value, holderName: document.getElementById('bank-holder').value
-            };
+            let bankData = { bankName: document.getElementById('bank-name').value, accountNo: document.getElementById('bank-acc').value, ifsc: document.getElementById('bank-ifsc').value, holderName: document.getElementById('bank-holder').value };
             if(!bankData.accountNo || !bankData.ifsc) return alert("Fill all details!");
             db.ref('users/' + currentUser + '/bankDetails').set(bankData).then(() => { alert("Bank Saved!"); switchMenu('profile'); });
         }
@@ -431,8 +384,7 @@
         // --- HISTORY & TEAM ---
         function loadHistory() {
             db.ref(`users/${currentUser}/history`).once('value', snap => {
-                let html = "";
-                let data = snap.val();
+                let html = ""; let data = snap.val();
                 if(data) {
                     Object.values(data).reverse().forEach(t => {
                         let color = t.type.includes('Withdraw') ? '#ff4d4d' : '#00ff88';
@@ -445,8 +397,7 @@
 
         function loadTeam() {
             db.ref('users').orderByChild('invitedBy').equalTo(currentUser).once('value', snap => {
-                let html = ""; let count = 0; let comm = 0;
-                let members = snap.val();
+                let html = ""; let count = 0; let comm = 0; let members = snap.val();
                 if(members) {
                     for(let key in members) {
                         count++; let m = members[key];
@@ -455,9 +406,7 @@
                         html += `<div class="list-item"><div><p style="color:#fff; font-size:14px; font-weight:bold;">+91 ${key.substring(0,2)}****${key.substring(8,10)}</p><p style="color:#aaa; font-size:10px;">Project ${m.level}</p></div><div style="text-align:right;"><p style="color:#00ff88; font-size:16px; font-weight:bold;">+₹${earned}</p></div></div>`;
                     }
                 } else html = "<p style='text-align:center; color:#888;'>No team members yet.</p>";
-                document.getElementById('team-count').innerText = count;
-                document.getElementById('team-comm').innerText = "₹" + comm;
-                document.getElementById('team-container').innerHTML = html;
+                document.getElementById('team-count').innerText = count; document.getElementById('team-comm').innerText = "₹" + comm; document.getElementById('team-container').innerHTML = html;
             });
         }
 
