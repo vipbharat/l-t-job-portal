@@ -3,81 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L&T Job Portal - Login</title>
+    <title>L&T Luxury VIP</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        /* 👑 ANTIQUE & PREMIUM LUXURY THEME */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Times New Roman', serif; }
         body { 
-            background: #050914; 
-            background-image: linear-gradient(135deg, #050914 0%, #111b2b 100%);
-            min-height: 100vh; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+            background: #0a0a0c; 
+            background-image: radial-gradient(circle at center, #1a1814 0%, #0a0a0c 100%);
+            min-height: 100vh; color: #f2e3c6; padding-bottom: 80px;
         }
 
-        .auth-card {
-            background: #0f172a; width: 100%; max-width: 400px;
-            padding: 30px 20px; border-radius: 16px; border: 1px solid #1f365c;
-            box-shadow: 0 10px 30px rgba(0, 230, 255, 0.1); text-align: center;
+        /* Gold Gradient Elements */
+        .gold-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; color: transparent; font-weight: 900;
+        }
+        .gold-bg {
+            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7);
+            color: #000; border: 1px solid #aa771c;
         }
 
-        .logo-box { font-size: 50px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0, 230, 255, 0.5); }
-        .app-title { font-size: 24px; font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        .app-sub { color: #8898aa; font-size: 13px; font-weight: bold; margin-bottom: 25px; }
+        /* Premium Cards */
+        .premium-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #bf953f; border-radius: 12px;
+            padding: 20px; margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(191, 149, 63, 0.1);
+        }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; background: transparent; border: 1px solid #2d4a77; color: #8898aa; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { background: rgba(0, 230, 255, 0.1); color: #00e6ff; border-color: #00e6ff; }
+        .app-section { display: none; padding: 20px; max-width: 500px; margin: 0 auto; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group input { width: 100%; padding: 14px; background: #050914; border: 1px solid #2d4a77; border-radius: 8px; color: #fff; font-size: 16px; outline: none; }
-        .input-group input:focus { border-color: #00e6ff; }
+        /* Auth Tabs & Inputs */
+        .auth-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .auth-tab { flex: 1; padding: 12px; background: transparent; border: 1px solid #aa771c; color: #aa771c; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase;}
+        .auth-tab.active { background: rgba(191, 149, 63, 0.2); color: #fcf6ba; border-color: #fcf6ba; box-shadow: 0 0 15px rgba(191, 149, 63, 0.3); }
 
-        .btn-submit { width: 100%; padding: 16px; border-radius: 8px; border: none; background: linear-gradient(90deg, #007bff 0%, #00e6ff 100%); color: #000; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-submit:active { transform: scale(0.98); }
+        .input-box { width: 100%; padding: 15px; background: #000; border: 1px solid #bf953f; border-radius: 8px; color: #fcf6ba; font-size: 16px; margin-bottom: 15px; outline: none; letter-spacing: 1px;}
+        .input-box:focus { box-shadow: 0 0 15px rgba(191, 149, 63, 0.4); }
+        
+        .btn-gold { width: 100%; padding: 16px; border-radius: 8px; border: none; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s; letter-spacing: 1px; box-shadow: 0 5px 15px rgba(191, 149, 63, 0.3);}
+        .btn-gold:active { transform: scale(0.95); }
 
-        #status-msg { font-size: 13px; margin-bottom: 15px; font-weight: bold; display: none; padding: 10px; border-radius: 6px; }
+        .msg-box { font-size: 14px; margin-bottom: 15px; font-weight: bold; padding: 10px; border-radius: 6px; display: none; text-align: center; border: 1px dashed; }
+
+        /* Dashboard Specifics */
+        .bal-amount { font-size: 45px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(191, 149, 63, 0.4); margin: 10px 0; }
+        .action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .action-btn { background: #111; border: 1px solid #bf953f; border-radius: 12px; padding: 15px 5px; text-align: center; color: #f2e3c6; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s;}
+        .action-btn:active { transform: scale(0.95); background: #1a1a1a; }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0a0a0c; border-top: 1px solid #bf953f; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); }
+        .nav-item { color: #888; font-size: 11px; font-weight: bold; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.3s;}
+        .nav-item.active { color: #fcf6ba; text-shadow: 0 0 15px #bf953f; }
+        .nav-icon { font-size: 22px; }
     </style>
 </head>
 <body>
 
-    <div class="auth-card">
-        <div class="logo-box">🏢</div>
-        <div class="app-title">L&T Job Portal</div>
-        <div class="app-sub">Welcome to the future of digital earnings</div>
+    <div id="section-auth" class="app-section" style="display: block; margin-top: 30px;">
+        <div class="premium-card" style="text-align: center; padding: 30px 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px; text-shadow: 0 0 20px #bf953f;">⚜️</div>
+            <h1 class="gold-text" style="font-size: 32px; margin-bottom: 5px; letter-spacing: 2px;">L&T VIP</h1>
+            <p style="color: #aaa; font-size: 13px; font-style: italic; margin-bottom: 25px;">The Elite Wealth Club</p>
+            
+            <div id="status-msg" class="msg-box"></div>
 
-        <div id="status-msg"></div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" onclick="switchAuth('login')">MEMBER LOGIN</button>
+                <button class="auth-tab" id="tab-register" onclick="switchAuth('register')">JOIN CLUB</button>
+            </div>
+            
+            <div id="form-login">
+                <input type="number" id="log-phone" class="input-box" placeholder="Registered Mobile Number">
+                <input type="password" id="log-pass" class="input-box" placeholder="Security PIN">
+                <button class="btn-gold gold-bg" id="btn-login" onclick="loginUser()">ENTER CLUB</button>
+            </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" id="tab-login" onclick="switchForm('login')">LOGIN</button>
-            <button class="tab-btn" id="tab-register" onclick="switchForm('register')">REGISTER</button>
-        </div>
-
-        <div id="login-form">
-            <div class="input-group">
-                <input type="number" id="log-phone" placeholder="Phone Number (10 digits)">
+            <div id="form-register" style="display: none;">
+                <input type="number" id="reg-phone" class="input-box" placeholder="Enter Mobile Number">
+                <input type="password" id="reg-pass" class="input-box" placeholder="Create Security PIN (Min 4)">
+                <input type="text" id="reg-invite" class="input-box" placeholder="Referral Code (Optional)">
+                <button class="btn-gold gold-bg" id="btn-reg" onclick="registerUser()">REGISTER & CLAIM ₹50</button>
             </div>
-            <div class="input-group">
-                <input type="password" id="log-pass" placeholder="Login Password">
-            </div>
-            <button class="btn-submit" onclick="loginUser()">LOGIN NOW</button>
-        </div>
-
-        <div id="register-form" style="display: none;">
-            <div class="input-group">
-                <input type="number" id="reg-phone" placeholder="Mobile Number">
-            </div>
-            <div class="input-group">
-                <input type="password" id="reg-pass" placeholder="Create Password">
-            </div>
-            <div class="input-group">
-                <input type="text" id="reg-invite" placeholder="Invite Code (Optional)">
-            </div>
-            <button class="btn-submit" onclick="registerUser()">CREATE ACCOUNT</button>
         </div>
     </div>
 
+    <div id="section-dashboard" class="app-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div><p style="color:#aaa; font-size:12px;">Welcome back,</p><h3 class="gold-text" id="dash-phone">Loading...</h3></div>
+            <div style="border:1px solid #bf953f; padding:5px 15px; border-radius:20px; font-weight:bold; color:#fcf6ba; box-shadow: 0 0 10px rgba(191,149,63,0.3);" id="dash-level">VIP G1</div>
+        </div>
+
+        <div class="premium-card" style="text-align: center;">
+            <p style="color: #bf953f; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Total Wealth Assets</p>
+            <div class="gold-text bal-amount" id="dash-bal">₹0.00</div>
+        </div>
+
+        <div class="action-grid">
+            <div class="action-btn"><span>💳</span>Deposit</div>
+            <div class="action-btn"><span>🏦</span>Withdraw</div>
+            <div class="action-btn"><span>📜</span>History</div>
+            <div class="action-btn"><span>👥</span>Team</div>
+        </div>
+
+        <div class="premium-card" style="text-align: center; border-style: dashed; cursor: pointer;">
+            <h3 class="gold-text">🎁 CLAIM DAILY SALARY</h3>
+            <p style="font-size: 12px; color: #aaa; margin-top: 5px;">Enter the work station to collect today's profit</p>
+        </div>
+    </div>
+
+    <div id="section-profile" class="app-section">
+        <h2 class="gold-text" style="text-align: center; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;">My Estate</h2>
+        
+        <div class="premium-card" style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 40px; border: 2px solid #bf953f; border-radius: 50%; padding: 10px;">⚜️</div>
+            <div>
+                <h3 class="gold-text" style="font-size: 20px;">Executive Member</h3>
+                <p style="color:#aaa; font-size: 13px; margin-top: 5px;">Status: Active & Secure</p>
+            </div>
+        </div>
+
+        <div class="action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px; margin-bottom: 10px;">
+            <div style="display: flex; gap: 15px; font-size: 15px;"><span style="font-size: 20px;">🏦</span> Bind Bank Account</div>
+            <span class="gold-text">➔</span>
+        </div>
+        <div class="action-btn" style="flex-direction: row; justify-content: space-between; padding: 20px; margin-bottom: 10px;">
+            <div style="display: flex; gap: 15px; font-size: 15px;"><span style="font-size: 20px;">🎧</span> 24/7 VIP Support</div>
+            <span class="gold-text">➔</span>
+        </div>
+
+        <button class="btn-gold" style="background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; margin-top: 20px; box-shadow: none;" onclick="logout()">LOGOUT SECURELY</button>
+    </div>
+
+    <div class="bottom-nav" id="bottom-menu" style="display: none;">
+        <div class="nav-item active" onclick="switchMenu('dashboard', this)"><div class="nav-icon">🏠</div>Home</div>
+        <div class="nav-item" onclick="switchMenu('vip', this)"><div class="nav-icon">💎</div>Projects</div>
+        <div class="nav-item" onclick="switchMenu('job', this)"><div class="nav-icon">🎰</div>Tasks</div>
+        <div class="nav-item" onclick="switchMenu('profile', this)"><div class="nav-icon">⚜️</div>Profile</div>
+    </div>
+
     <script>
-        // --- FIREBASE CONFIG ---
+        // ==========================================
+        // 🔥 1. FIREBASE & SECURITY CONFIG
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyD5N1owkFBQDT7kP8Vd4bU9LqmLfZmprKM",
             databaseURL: "https://lnt-job-portal-default-rtdb.firebaseio.com"
@@ -85,81 +157,169 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Agar pehle se login hai, direct dashboard pe bhejo
-        if (localStorage.getItem('loggedInUser')) {
-            window.location.href = "dashboard.html";
+        // 🛡️ DEVICE BINDING LOGIC (Anti-Cheat)
+        let deviceID = localStorage.getItem('LNT_Device_ID');
+        if(!deviceID) {
+            deviceID = "DEV-" + Date.now() + Math.floor(Math.random() * 1000);
+            localStorage.setItem('LNT_Device_ID', deviceID);
         }
 
-        function switchForm(type) {
+        // ==========================================
+        // 🔄 2. UI SWITCHING LOGIC
+        // ==========================================
+        function switchAuth(type) {
             document.getElementById('status-msg').style.display = 'none';
             if (type === 'login') {
-                document.getElementById('login-form').style.display = 'block';
-                document.getElementById('register-form').style.display = 'none';
+                document.getElementById('form-login').style.display = 'block';
+                document.getElementById('form-register').style.display = 'none';
                 document.getElementById('tab-login').classList.add('active');
                 document.getElementById('tab-register').classList.remove('active');
             } else {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('register-form').style.display = 'block';
+                document.getElementById('form-login').style.display = 'none';
+                document.getElementById('form-register').style.display = 'block';
                 document.getElementById('tab-login').classList.remove('active');
                 document.getElementById('tab-register').classList.add('active');
             }
+        }
+
+        function switchMenu(tabName, btnElement) {
+            document.querySelectorAll('.app-section').forEach(sec => sec.style.display = 'none');
+            let target = document.getElementById('section-' + tabName);
+            if(target) target.style.display = 'block';
+            else alert("Coming Soon: " + tabName + " section!"); // For pages we haven't merged yet
+
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
         }
 
         function showMsg(type, text) {
             let box = document.getElementById('status-msg');
             box.style.display = 'block';
             if (type === 'error') {
-                box.style.background = 'rgba(255, 77, 77, 0.1)'; box.style.color = '#ff4d4d'; box.innerText = "❌ " + text;
+                box.style.background = 'rgba(255, 77, 77, 0.1)'; box.style.color = '#ff4d4d'; box.style.borderColor = '#ff4d4d'; box.innerText = "❌ " + text;
             } else {
-                box.style.background = 'rgba(0, 255, 136, 0.1)'; box.style.color = '#00ff88'; box.innerText = "✅ " + text;
+                box.style.background = 'rgba(191, 149, 63, 0.1)'; box.style.color = '#00ff88'; box.style.borderColor = '#00ff88'; box.innerText = "✅ " + text;
             }
+        }
+
+        // ==========================================
+        // 🔐 3. AUTHENTICATION LOGIC
+        // ==========================================
+
+        // Auto-Login Check
+        let currentUser = localStorage.getItem('loggedInUser');
+        if(currentUser) {
+            loadDashboard(currentUser);
         }
 
         function registerUser() {
             let phone = document.getElementById('reg-phone').value.trim();
             let pass = document.getElementById('reg-pass').value.trim();
+            let invite = document.getElementById('reg-invite').value.trim();
+            let btn = document.getElementById('btn-reg');
 
-            if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit phone number.');
-            if (pass.length < 4) return showMsg('error', 'Password must be at least 4 characters.');
+            if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number!');
+            if (pass.length < 4) return showMsg('error', 'PIN must be at least 4 digits!');
 
-            // Check if user exists
+            // 🛑 ANTI-CHEAT CHECK: Is device already bound to another number?
+            let boundPhone = localStorage.getItem('LNT_Bound_Phone');
+            if(boundPhone && boundPhone !== phone) {
+                return showMsg('error', 'DEVICE LOCKED: Multiple accounts are not allowed on one device!');
+            }
+
+            btn.disabled = true; btn.innerText = "CREATING...";
+
             db.ref('users/' + phone).once('value').then(snap => {
                 if (snap.exists()) {
-                    showMsg('error', 'Account already exists! Please Login.');
+                    showMsg('error', 'Account already exists! Please login.');
+                    btn.disabled = false; btn.innerText = "REGISTER & CLAIM ₹50";
                 } else {
-                    // Create new user with Default Values
+                    let joinDate = new Date().toLocaleString('en-IN');
+                    
+                    // Create User & Give ₹50 Bonus
                     db.ref('users/' + phone).set({
                         password: pass,
-                        balance: 0,
+                        balance: 50,
                         level: "G1",
-                        spins: { welcomeSpin: 1 }, // 1 Free Spin
-                        joinDate: new Date().toLocaleDateString()
+                        invitedBy: invite || "Admin",
+                        deviceID: deviceID,
+                        joinDate: joinDate
                     }).then(() => {
-                        showMsg('success', 'Account created! Logging in...');
-                        setTimeout(() => {
-                            localStorage.setItem('loggedInUser', phone);
-                            window.location.href = "dashboard.html";
-                        }, 1500);
+                        // Bind device to this phone permanently in local storage
+                        localStorage.setItem('LNT_Bound_Phone', phone);
+                        
+                        showMsg('success', 'Club access granted! Entering...');
+                        setTimeout(() => loadDashboard(phone), 1500);
                     });
                 }
+            }).catch(() => {
+                showMsg('error', 'Network Error!');
+                btn.disabled = false; btn.innerText = "REGISTER & CLAIM ₹50";
             });
         }
 
         function loginUser() {
             let phone = document.getElementById('log-phone').value.trim();
             let pass = document.getElementById('log-pass').value.trim();
+            let btn = document.getElementById('btn-login');
 
-            if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number.');
+            if (phone.length !== 10) return showMsg('error', 'Enter valid 10-digit number!');
+
+            btn.disabled = true; btn.innerText = "CHECKING...";
 
             db.ref('users/' + phone).once('value').then(snap => {
                 if (snap.exists() && snap.val().password === pass) {
-                    showMsg('success', 'Login Successful!');
-                    localStorage.setItem('loggedInUser', phone);
-                    setTimeout(() => window.location.href = "dashboard.html", 1000);
+                    showMsg('success', 'Identity Verified!');
+                    setTimeout(() => loadDashboard(phone), 1000);
                 } else {
-                    showMsg('error', 'Incorrect Phone Number or Password!');
+                    showMsg('error', 'Incorrect Mobile or PIN!');
+                    btn.disabled = false; btn.innerText = "ENTER CLUB";
                 }
-            }).catch(() => showMsg('error', 'Network Error!'));
+            }).catch(() => {
+                showMsg('error', 'Network Error!');
+                btn.disabled = false; btn.innerText = "ENTER CLUB";
+            });
+        }
+
+        // ==========================================
+        // 📊 4. DASHBOARD DATA LOADER
+        // ==========================================
+        function loadDashboard(phone) {
+            localStorage.setItem('loggedInUser', phone);
+            
+            // Switch UI
+            document.getElementById('section-auth').style.display = 'none';
+            document.getElementById('section-dashboard').style.display = 'block';
+            document.getElementById('bottom-menu').style.display = 'flex';
+
+            // Mask Phone
+            let maskedPhone = "+91 " + phone.substring(0, 2) + "******" + phone.substring(8, 10);
+            document.getElementById('dash-phone').innerText = maskedPhone;
+
+            // Fetch Live Data
+            db.ref('users/' + phone).on('value', (snap) => {
+                let userData = snap.val();
+                if(userData) {
+                    document.getElementById('dash-bal').innerText = "₹" + (userData.balance || 0).toLocaleString('en-IN');
+                    document.getElementById('dash-level').innerText = "VIP " + (userData.level || "G1");
+                }
+            });
+        }
+
+        function logout() {
+            if(confirm("Are you sure you want to exit the club?")) {
+                localStorage.removeItem('loggedInUser');
+                document.getElementById('section-auth').style.display = 'block';
+                document.getElementById('section-dashboard').style.display = 'none';
+                document.getElementById('section-profile').style.display = 'none';
+                document.getElementById('bottom-menu').style.display = 'none';
+                
+                // Reset Forms
+                document.getElementById('log-phone').value = "";
+                document.getElementById('log-pass').value = "";
+                document.getElementById('btn-login').innerText = "ENTER CLUB";
+                document.getElementById('btn-login').disabled = false;
+            }
         }
     </script>
 </body>
