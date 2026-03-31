@@ -70,7 +70,6 @@
             <div id="form-register" style="display: none;">
                 <input type="number" id="reg-phone" class="input-box" placeholder="Mobile Number">
                 <input type="password" id="reg-pass" class="input-box" placeholder="Create PIN (Min 4)">
-                <input type="text" id="reg-invite" class="input-box" placeholder="Referral Code (Optional)">
                 <button class="btn-gold gold-bg" onclick="registerUser()">REGISTER & GET ₹50</button>
             </div>
         </div>
@@ -246,7 +245,7 @@
         function registerUser() {
             let phone = document.getElementById('reg-phone').value.trim();
             let pass = document.getElementById('reg-pass').value.trim();
-            let invite = document.getElementById('reg-invite').value.trim() || "Admin";
+            
             if (phone.length !== 10 || pass.length < 4) return showMsg('error', 'Invalid details!');
 
             let boundPhone = localStorage.getItem('LNT_Bound_Phone');
@@ -254,8 +253,10 @@
 
             db.ref('users/' + phone).once('value', snap => {
                 if (snap.exists()) return showMsg('error', 'User exists! Login.');
+                
+                // Referral Logic Removed. "Admin" is set as default so database doesn't break.
                 db.ref('users/' + phone).set({
-                    password: pass, balance: 50, level: "G0", dailyIncome: 0, invitedBy: invite, deviceID: deviceID, joinDate: new Date().toLocaleString()
+                    password: pass, balance: 50, level: "G0", dailyIncome: 0, invitedBy: "Admin", deviceID: deviceID, joinDate: new Date().toLocaleString()
                 }).then(() => {
                     localStorage.setItem('LNT_Bound_Phone', phone);
                     loadDashboard(phone);
@@ -299,7 +300,6 @@
                     
                     document.getElementById('bank-warn').style.display = (userData.bankDetails) ? 'none' : 'block';
                     
-                    // Populate bank inputs if exist
                     if(userData.bankDetails) {
                         document.getElementById('bank-name').value = userData.bankDetails.bankName || "";
                         document.getElementById('bank-acc').value = userData.bankDetails.accountNo || "";
